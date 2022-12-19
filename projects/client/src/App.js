@@ -2,15 +2,16 @@
 import "./App.css";
 
 // chakra
-import { Box } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react";
 
 // route
 import { Routes, Route } from "react-router-dom";
 
 // components
 import { Layout } from "./components/Layout";
-import { NavbarTest } from "./components/test"
-import { DrawerCompUser } from "./components/DrawerUser"
+import { NavbarTest } from "./components/test";
+import { DrawerCompUser } from "./components/DrawerUser";
+import { VerificationPage } from "./pages/VerificationPage";
 // import { Footer } from "./components/Footer"
 // import { CarouselBanner } from "./components/CarouselBanner"
 // import { FeaturedCategories } from "./components/FeatCategories"
@@ -42,7 +43,7 @@ function App() {
   return (
     <Box>
       <Routes>
-        <Route path="/" element={<Layout />} >
+        <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
         </Route>
 
@@ -53,9 +54,10 @@ function App() {
         <Route path="/breadcrumbs/featured/test2" element={<BreadCrumbsComp />} /> */}
         <Route path="/drawer" element={<DrawerCompUser />} />
         <Route path="/test" element={<NavbarTest />} />
-        
+
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/verification/:token" element={<VerificationPage />} />
       </Routes>
       {/* <Footer /> */}
     </Box>

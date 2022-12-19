@@ -28,6 +28,7 @@ import { CgShoppingCart, CgHeart } from "react-icons/cg";
 
 // comp
 import { DrawerCompUser } from "./DrawerUser";
+import { RegisterModal } from "../components/Authentications/RegisterModal";
 import { useEffect } from "react";
 
 export const NavbarComp = () => {
@@ -44,7 +45,7 @@ export const NavbarComp = () => {
             h={{ base: "45px" }}
             alignItems={"center"}
             templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }}
-            gap={{ base: 3,md: 3, lg: 5 }}
+            gap={{ base: 3, md: 3, lg: 5 }}
           >
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", md: "200px" }}>
               <Center>
@@ -189,18 +190,7 @@ export const NavbarComp = () => {
                     >
                       Sign In
                     </Button>
-                    <Button
-                      fontSize={"sm"}
-                      fontWeight={600}
-                      color={"white"}
-                      bg={"#D54B79"}
-                      href={"#"}
-                      _hover={{
-                        bg: "#C146ED",
-                      }}
-                    >
-                      Sign Up
-                    </Button>
+                    <RegisterModal />
                   </Flex>
                 )}
               </Center>
