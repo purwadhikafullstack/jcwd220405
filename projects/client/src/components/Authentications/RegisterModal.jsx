@@ -71,7 +71,9 @@ export const RegisterModal = () => {
   return (
     <>
       <Button
+
         display={{ base: "solid", md: "inline-flex" }}
+
         fontSize={"sm"}
         fontWeight={600}
         color={"white"}

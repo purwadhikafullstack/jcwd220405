@@ -181,7 +181,9 @@ export const NavbarComp = () => {
                   <DrawerCompUser />
                 ) : (
                   <Flex gap={4} display={{ base: "none", lg: "inline-flex" }}>
+
                     <LoginModal />
+
                     <RegisterModal />
                   </Flex>
                 )}

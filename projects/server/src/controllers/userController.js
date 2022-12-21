@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const key = process.env.OKAI_SECRET;
 
+
 module.exports = {
   register: async (req, res) => {
     try {
@@ -16,9 +17,8 @@ module.exports = {
         raw: true,
       });
       if (isEmailExist) throw "Email have been used";
-
+      
       const token = jwt.sign({ id: email }, key);
-
       await transporter.sendMail({
         from: "Admin",
         to: email,
@@ -58,6 +58,7 @@ module.exports = {
           is_verified: true,
           role: 1,
           name: userName,
+
         },
 
         {
@@ -77,7 +78,6 @@ module.exports = {
   verification: async (req, res) => {
     try {
       const verify = jwt.verify(req.token, key);
-
       // console.log(verify);
 
       res.status(200).send({

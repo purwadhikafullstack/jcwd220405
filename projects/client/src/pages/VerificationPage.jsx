@@ -72,6 +72,7 @@ export const VerificationPage = () => {
       .required("User Name is required")
       .min(4, "must contain at least 4 character")
       .max(20, "maximum 20 character"),
+
   });
 
   const OnSignUp = async (data) => {
@@ -92,7 +93,7 @@ export const VerificationPage = () => {
       Swal.fire({
         icon: "success",
         title: "Account Verified",
-        text: "Now you can sign in to your account",
+        text: "You can now log in to your account, Happy shopping!",
         customClass: {
           container: "my-swal",
         },
@@ -103,6 +104,7 @@ export const VerificationPage = () => {
         password: data.password,
         confirmPassword: data.confirmPassword,
         userName: data.userName,
+
       });
       console.log(result);
       navigate("/");
@@ -145,6 +147,7 @@ export const VerificationPage = () => {
             password: "",
             confirmPassword: "",
             userName: "",
+
           }}
           validationSchema={signUpSchema}
           onSubmit={(value, action) => {
@@ -178,6 +181,7 @@ export const VerificationPage = () => {
                       style={{ color: "#D0BDAC" }}
                     />
                   </FormControl>
+
                   <FormControl id="password" colorScheme={"white"}>
                     <FormLabel> Create Password</FormLabel>
                     <InputGroup size="md">
