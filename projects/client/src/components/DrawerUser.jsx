@@ -19,17 +19,30 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 
+//component
+import { RegisterModal } from "./Authentications/RegisterModal";
+import { LoginModal } from "./Authentications/LoginModal";
+
+//redux
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../redux/userSlice";
+
 export const DrawerCompUser = () => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const dispatch = useDispatch();
   const [user, setUser] = useState();
+  const { name } = useSelector((state) => state.userSlice.value);
+
+  const onLogout = async () => {
+    dispatch(logout());
+    localStorage.removeItem("token");
+  };
 
   //   const User = () => {
   //     setUser("test");
   //   };
 
-  useEffect(() => {
-  }, [user]);
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // useEffect(() => {}, [user]);
 
   return (
     <Box>
@@ -67,29 +80,30 @@ export const DrawerCompUser = () => {
             </Box>
           </DrawerHeader>
           <DrawerBody display={"flex"} flexDir={"column"}>
-            {user ? (
+            {name ? (
               <Stack>
                 <Button>Profile</Button>
                 <Button>History</Button>
               </Stack>
             ) : (
               <Stack>
-                <Button onClick={() => setUser("Jhonny")}>Sign In</Button>
-                <Button>Sign Up</Button>
+                <LoginModal />
+                <RegisterModal />
               </Stack>
             )}
           </DrawerBody>
-          {user ? (
+          {name ? (
             <DrawerFooter borderTop={"1px solid black"}>
               {/* <Center> */}
-                <Button
-                  onClick={() => {
-                    setUser();
-                    onClose(onClose);
-                  }}
-                >
-                  Sign Out
-                </Button>
+              <Button
+                colorScheme={"teal"}
+                onClick={() => {
+                  onLogout();
+                  onClose(onClose);
+                }}
+              >
+                Sign Out
+              </Button>
               {/* </Center> */}
             </DrawerFooter>
           ) : null}

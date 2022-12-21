@@ -41,7 +41,7 @@ export const VerificationPage = () => {
           Authorization: `Bearer ${params.token}`,
         },
       });
-      // console.log(result.data);
+      console.log(result.data);
       setUser(result.data.user);
     } catch (err) {
       Swal.fire({
@@ -68,6 +68,10 @@ export const VerificationPage = () => {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password"), null], "Passwords does'nt match")
       .required("Please match with password"),
+    userName: Yup.string()
+      .required("User Name is required")
+      .min(4, "must contain at least 4 character")
+      .max(20, "maximum 20 character"),
   });
 
   const OnSignUp = async (data) => {
@@ -88,7 +92,7 @@ export const VerificationPage = () => {
       Swal.fire({
         icon: "success",
         title: "Account Verified",
-        text: "You can now log in to your account, Happy shopping!",
+        text: "Now you can sign in to your account",
         customClass: {
           container: "my-swal",
         },
@@ -98,6 +102,7 @@ export const VerificationPage = () => {
         email: user,
         password: data.password,
         confirmPassword: data.confirmPassword,
+        userName: data.userName,
       });
       console.log(result);
       navigate("/");
@@ -139,6 +144,7 @@ export const VerificationPage = () => {
             email: user,
             password: "",
             confirmPassword: "",
+            userName: "",
           }}
           validationSchema={signUpSchema}
           onSubmit={(value, action) => {
@@ -161,6 +167,15 @@ export const VerificationPage = () => {
                       type="email"
                       value={user}
                       disabled={user ? true : false}
+                    />
+                  </FormControl>
+                  <FormControl id="userName">
+                    <FormLabel>Username</FormLabel>
+                    <Field as={Input} type="text" name="userName" />
+                    <ErrorMessage
+                      name="userName"
+                      component="div"
+                      style={{ color: "#D0BDAC" }}
                     />
                   </FormControl>
                   <FormControl id="password" colorScheme={"white"}>
