@@ -1,3 +1,5 @@
+import Axios from "axios";
+
 // chakra
 import {
   Drawer,
@@ -21,6 +23,14 @@ import {
   MenuDivider,
   MenuItem,
   MenuList,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  TableContainer,
+  Center,
 } from "@chakra-ui/react";
 
 // logo
@@ -32,6 +42,37 @@ import { FiChevronDown } from "react-icons/fi";
 import { useEffect, useState } from "react";
 
 export const AdminPage = () => {
+  const url = "http://localhost:8000/api/admin/";
+
+  const [tab, setTab] = useState("all_user");
+  const [users, setUsers] = useState();
+
+  const getTab = async () => {
+    try {
+      // console.log(tab);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getUsers = async () => {
+    try {
+      const newURL = url + tab;
+      const resultUsers = await Axios.get(newURL);
+      setUsers(resultUsers.data);
+      // console.log(resultUsers.data);
+      // console.log(newURL);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getUsers();
+    getTab();
+  }, [tab]);
+
+  // components
   const NavbarAdmin = () => {
     return (
       <Flex
@@ -44,14 +85,12 @@ export const AdminPage = () => {
         borderLeft={"1px solid white"}
       >
         <DrawerAdmin />
-  
         <Image
           src={mokomdo2}
           display={{ base: "block", md: "none" }}
           w={"auto"}
           h={10}
         />
-  
         <HStack spacing={{ base: "0", md: "6" }}>
           <Flex alignItems={"center"}>
             <Menu>
@@ -96,7 +135,7 @@ export const AdminPage = () => {
       </Flex>
     );
   };
-  
+
   const DrawerAdmin = () => {
     return (
       <Box>
@@ -119,7 +158,7 @@ export const AdminPage = () => {
       </Box>
     );
   };
-  
+
   const DrawerAdminMobile = () => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
@@ -150,23 +189,8 @@ export const AdminPage = () => {
     );
   };
 
-  const [context, setContext] = useState(0);
-  
-  const testing = async () => {
-    try {
-      console.log(context);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    testing();
-  }, [context]);
-
-  
   const DrawerItems = () => {
-    const items = ["Users", "Warehouses", "Items", "Report"]; 
+    const items = ["Users", "Warehouses", "Items", "Report"];
 
     return (
       <Box>
@@ -182,12 +206,13 @@ export const AdminPage = () => {
           {items.map((item, index) => {
             return (
               <Button
+                key={index}
                 borderRadius={0}
                 color={"white"}
                 bg={"none"}
                 _hover={{ bg: "#C146ED" }}
                 onClick={() => {
-                  setContext(index);
+                  setTab(index);
                 }}
               >
                 {item}
@@ -199,16 +224,36 @@ export const AdminPage = () => {
     );
   };
 
-  const bodyContext = ["user", "warehouse", "item", "report", ]
-  
   const ItemBody = () => {
+    const tableHead = ["Id", "Name", "Role"];
     return (
       <Box paddingLeft={{ md: 64 }} paddingTop={{ md: 3 }}>
-        This is {bodyContext[context]}
+        <TableContainer>
+          <Table variant="simple">
+            <Thead>
+              <Tr>
+                {tableHead.map((item, index) => {
+                  return <Th key={index} textAlign={"center"}>{item}</Th>;
+                })}
+              </Tr>
+            </Thead>
+            {users?.map((item, index) => {
+              return (
+                <Tbody key={index}>
+                  <Tr>
+                    <Td>{item.id}</Td>
+                    <Td>{item.name}</Td>
+                    <Td>{item.role}</Td>
+                  </Tr>
+                </Tbody>
+                
+              );
+            })}
+          </Table>
+        </TableContainer>
       </Box>
     );
   };
-
 
   return (
     <Box>
@@ -219,4 +264,3 @@ export const AdminPage = () => {
     </Box>
   );
 };
-
