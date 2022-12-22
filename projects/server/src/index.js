@@ -35,8 +35,8 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-const { user } = require("./routers");
-app.use("/api", user);
+const { user, admin } = require("./routers");
+app.use("/api", user, admin);
 
 // ===========================
 
