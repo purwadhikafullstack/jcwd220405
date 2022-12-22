@@ -1,6 +1,3 @@
-// components
-import { BreadCrumbsComp } from "./BreadCrumbs";
-
 // chakra
 import {
   Box,
@@ -11,6 +8,9 @@ import {
   Text,
   Center,
 } from "@chakra-ui/react";
+
+// components
+import { BreadCrumbsComp } from "./BreadCrumbs";
 
 const ListHeader = ({ children }) => {
   return (
@@ -78,7 +78,7 @@ export const Footer = () => {
             </SimpleGrid>
           </Center>
         </Container>
-        <Center>
+        <Center paddingBottom={{base: "30px"}}>
           <Text my={"30px"} color={"white"} textAlign="center">
             Copyright ©️ 2022 All Rights Reversed by MOKOMDO
           </Text>

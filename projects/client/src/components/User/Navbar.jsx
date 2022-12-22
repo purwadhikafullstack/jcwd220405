@@ -2,9 +2,9 @@
 import { useState } from "react";
 
 // logo
-import icon from "../assets/mokomdo-icon2.png";
-import mokomdo from "../assets/mokomdo2.png";
-import mokomdo2 from "../assets/mokomdo-simplified2.png";
+import icon from "../../assets/mokomdo-icon2.png";
+import mokomdo from "../../assets/mokomdo2.png";
+import mokomdo2 from "../../assets/mokomdo-simplified2.png";
 
 // chakra
 import {
@@ -28,20 +28,13 @@ import { CgShoppingCart, CgHeart } from "react-icons/cg";
 
 // comp
 import { DrawerCompUser } from "./DrawerUser";
-import { RegisterModal } from "../components/Authentications/RegisterModal";
-import { LoginModal } from "../components/Authentications/LoginModal";
 import { useEffect } from "react";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/userSlice";
-
 export const NavbarComp = () => {
-  const { name } = useSelector((state) => state.userSlice.value);
-
+  const [user, setUser] = useState();
   const [isMobile] = useMediaQuery("(max-width: 1007px)");
 
-  // useEffect(() => {}, [user]);
+  useEffect(() => {}, [user]);
 
   return (
     <Box bg={"#351734"} px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
@@ -51,7 +44,7 @@ export const NavbarComp = () => {
             h={{ base: "45px" }}
             alignItems={"center"}
             templateColumns={{ base: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }}
-            gap={{ base: 3, md: 3, lg: 5 }}
+            gap={{ base: 3,md: 3, lg: 5 }}
           >
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", md: "200px" }}>
               <Center>
@@ -177,14 +170,37 @@ export const NavbarComp = () => {
             </GridItem>
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", lg: "200px" }}>
               <Center>
-                {name || isMobile ? (
+                {user || isMobile ? (
                   <DrawerCompUser />
                 ) : (
                   <Flex gap={4} display={{ base: "none", lg: "inline-flex" }}>
-
-                    <LoginModal />
-
-                    <RegisterModal />
+                    <Button
+                      fontSize={"sm"}
+                      fontWeight={600}
+                      bg={"none"}
+                      border={"1px solid"}
+                      borderColor={"#D54B79"}
+                      color={"#D54B79"}
+                      href={"#"}
+                      _hover={{
+                        borderColor: "#C146ED",
+                        color: "#C146ED",
+                      }}
+                    >
+                      Sign In
+                    </Button>
+                    <Button
+                      fontSize={"sm"}
+                      fontWeight={600}
+                      color={"white"}
+                      bg={"#D54B79"}
+                      href={"#"}
+                      _hover={{
+                        bg: "#C146ED",
+                      }}
+                    >
+                      Sign Up
+                    </Button>
                   </Flex>
                 )}
               </Center>

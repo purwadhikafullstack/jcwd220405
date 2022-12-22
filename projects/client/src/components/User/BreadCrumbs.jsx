@@ -1,5 +1,5 @@
 // image
-import icon from "../assets/mokomdo-icon2.png";
+import icon from "../../assets/mokomdo-icon2.png";
 
 // chakra
 import {
@@ -10,7 +10,7 @@ import {
   Image,
 } from "@chakra-ui/react";
 
-// react icon
+// icon
 import { CgChevronRight } from "react-icons/cg";
 
 export const BreadCrumbsComp = () => {

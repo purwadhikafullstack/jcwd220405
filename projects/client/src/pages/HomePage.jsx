@@ -5,23 +5,23 @@ import { Box, Image, Center } from "@chakra-ui/react";
 import banner2 from "../assets/anoun2.png";
 
 // components
-import { CarouselBanner } from "../components/CarouselBanner";
-import { FeaturedCategories } from "../components/FeatCategories";
+import { CarouselBanner } from "../components/User/CarouselBanner";
+import { FeaturedCategories } from "../components/User/FeatCategories";
 
 export const HomePage = () => {
   return (
     <Box bgGradient="linear(to-br, #3B0D2C, #260843)">
-      <CarouselBanner />
-      <Center>
-        <Image
-          src={banner2}
-          minW={{ base: "auto", lg: "1400px" }}
-          minH={{ base: "70px", lg: "auto" }}
-          padding={"30px"}
-          pt={0}
-        />
-      </Center>
-      {/* <FeaturedCategories /> */}
+        <CarouselBanner />
+        <Center>
+          <Image
+            src={banner2}
+            minW={{ base: "auto", lg: "1400px" }}
+            minH={{ base: "70px", lg: "auto" }}
+            padding={"30px"}
+            pt={0}
+          />
+        </Center>
+        {/* <FeaturedCategories /> */}
     </Box>
   );
 };
