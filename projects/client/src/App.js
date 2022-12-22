@@ -1,9 +1,6 @@
 // import logo from "./logo.svg";
 import "./App.css";
 
-// chakra
-import { Box } from "@chakra-ui/react";
-
 // route
 import { Routes, Route } from "react-router-dom";
 
@@ -11,7 +8,6 @@ import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { NavbarTest } from "./components/test";
 import { DrawerCompUser } from "./components/DrawerUser";
-import { VerificationPage } from "./pages/VerificationPage";
 // import { Footer } from "./components/Footer"
 // import { CarouselBanner } from "./components/CarouselBanner"
 // import { FeaturedCategories } from "./components/FeatCategories"
@@ -20,6 +16,9 @@ import { VerificationPage } from "./pages/VerificationPage";
 // pages
 import { HomePage } from "./pages/HomePage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
+import { VerificationPage } from "./pages/VerificationPage";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -74,10 +73,15 @@ function App() {
     console.log("MOKOMDO HERE");
   }, []);
   return (
-    <Box>
+    <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="/profile/settings" element={<ProfilePage />} />
+          <Route
+            path="/profile/settings/address"
+            element={<ProfileAddressPage />}
+          />
         </Route>
 
         {/* Test Components */}
@@ -87,13 +91,13 @@ function App() {
         <Route path="/breadcrumbs/featured/test2" element={<BreadCrumbsComp />} /> */}
         <Route path="/drawer" element={<DrawerCompUser />} />
         <Route path="/test" element={<NavbarTest />} />
+        <Route path="/verification/:token" element={<VerificationPage />} />
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
-        <Route path="/verification/:token" element={<VerificationPage />} />
+        {/* <Footer /> */}
       </Routes>
-      {/* <Footer /> */}
-    </Box>
+    </>
   );
 }
 
