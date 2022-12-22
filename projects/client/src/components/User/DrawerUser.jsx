@@ -1,4 +1,5 @@
-import { useState } from "react";
+// react
+import { useState, useEffect } from "react";
 
 // chakra
 import {
@@ -14,46 +15,23 @@ import {
   Avatar,
   Center,
   Box,
-  Text,
   Stack,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
-
-//component
-import { RegisterModal } from "./Authentications/RegisterModal";
-import { LoginModal } from "./Authentications/LoginModal";
-
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/userSlice";
 
 export const DrawerCompUser = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const dispatch = useDispatch();
   const [user, setUser] = useState();
-  const { name } = useSelector((state) => state.userSlice.value);
-
-  const onLogout = async () => {
-    dispatch(logout());
-    localStorage.removeItem("token");
-  };
 
   //   const User = () => {
   //     setUser("test");
   //   };
 
-  // useEffect(() => {}, [user]);
+  useEffect(() => {
+  }, [user]);
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      {/* <Button borderRadius={"50%"}>
-        <Avatar
-          size={"sm"}
-          src={"https://bit.ly/broken-link"}
-          bg="grey"
-          onClick={onOpen}
-        />
-      </Button> */}
       <Button
         as={Avatar}
         size={"xl"}
@@ -80,30 +58,29 @@ export const DrawerCompUser = () => {
             </Box>
           </DrawerHeader>
           <DrawerBody display={"flex"} flexDir={"column"}>
-            {name ? (
+            {user ? (
               <Stack>
                 <Button>Profile</Button>
                 <Button>History</Button>
               </Stack>
             ) : (
               <Stack>
-                <LoginModal />
-                <RegisterModal />
+                <Button onClick={() => setUser("Jhonny")}>Sign In</Button>
+                <Button>Sign Up</Button>
               </Stack>
             )}
           </DrawerBody>
-          {name ? (
+          {user ? (
             <DrawerFooter borderTop={"1px solid black"}>
               {/* <Center> */}
-              <Button
-                colorScheme={"teal"}
-                onClick={() => {
-                  onLogout();
-                  onClose(onClose);
-                }}
-              >
-                Sign Out
-              </Button>
+                <Button
+                  onClick={() => {
+                    setUser();
+                    onClose(onClose);
+                  }}
+                >
+                  Sign Out
+                </Button>
               {/* </Center> */}
             </DrawerFooter>
           ) : null}
