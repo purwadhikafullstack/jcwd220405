@@ -161,9 +161,8 @@ export const FeaturedCategories = () => {
             >
               {PicBanner.map((pic, index) => {
                 return (
-                  <Center>
+                  <Center key={index}>
                     <Box
-                      key={index}
                       // h={{ base: "200px", md: "200px" }}
                       w={{ base: "100px", md: "200px", lg: "250px" }}
                       // mx={"40%"}
