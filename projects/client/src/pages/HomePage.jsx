@@ -11,17 +11,17 @@ import { FeaturedCategories } from "../components/FeatCategories";
 export const HomePage = () => {
   return (
     <Box bgGradient="linear(to-br, #3B0D2C, #260843)">
-        <CarouselBanner />
-        <Center>
-          <Image
-            src={banner2}
-            minW={{ base: "auto", lg: "1400px" }}
-            minH={{ base: "70px", lg: "auto" }}
-            padding={"30px"}
-            pt={0}
-          />
-        </Center>
-        <FeaturedCategories />
+      <CarouselBanner />
+      <Center>
+        <Image
+          src={banner2}
+          minW={{ base: "auto", lg: "1400px" }}
+          minH={{ base: "70px", lg: "auto" }}
+          padding={"30px"}
+          pt={0}
+        />
+      </Center>
+      {/* <FeaturedCategories /> */}
     </Box>
   );
 };

@@ -4,6 +4,8 @@ const { Op } = require("sequelize");
 const transporter = require("../helpers/transporter");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const key = process.env.OKAI_SECRET;
+
 
 module.exports = {
   register: async (req, res) => {
@@ -15,9 +17,8 @@ module.exports = {
         raw: true,
       });
       if (isEmailExist) throw "Email have been used";
-
-      const token = jwt.sign({ id: email }, "mokomdo");
-
+      
+      const token = jwt.sign({ id: email }, key);
       await transporter.sendMail({
         from: "Admin",
         to: email,
@@ -40,7 +41,7 @@ module.exports = {
 
   setpass: async (req, res) => {
     try {
-      const { email, password, confirmPassword } = req.body;
+      const { email, password, confirmPassword, userName } = req.body;
 
       if (password != confirmPassword)
         throw "Confirmed password does not match!";
@@ -55,6 +56,9 @@ module.exports = {
         {
           password: hashPass,
           is_verified: true,
+          role: 1,
+          name: userName,
+
         },
 
         {
@@ -73,8 +77,7 @@ module.exports = {
 
   verification: async (req, res) => {
     try {
-      const verify = jwt.verify(req.token, "mokomdo");
-
+      const verify = jwt.verify(req.token, key);
       // console.log(verify);
 
       res.status(200).send({
@@ -83,6 +86,54 @@ module.exports = {
       });
     } catch (err) {
       res.send(400).send(err);
+    }
+  },
+
+  login: async (req, res) => {
+    try {
+      const { email, password } = req.body;
+
+      const isUserExist = await user.findOne({
+        where: {
+          email: email ? email : "",
+        },
+        raw: true,
+      });
+      // console.log(isUserExist)
+      if (!isUserExist) throw "User not Found!";
+
+      const isValid = await bcrypt.compare(password, isUserExist.password);
+      if (!isValid) throw "Wrong Password";
+
+      const payload = {
+        id: isUserExist.id,
+        email: isUserExist.email,
+        name: isUserExist.name,
+      };
+      const token = jwt.sign(payload, key);
+
+      res
+        .status(200)
+        .send({ message: "Welcome to Mokomdo", token, isUserExist });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+
+  keeplogin: async (req, res) => {
+    try {
+      // console.log(req.user);
+      const isUserExist = await db.User.findOne({
+        where: {
+          id: req.user.id,
+        },
+        raw: true,
+      });
+      // console.log(isUserExist);
+
+      res.status(200).send(isUserExist);
+    } catch (err) {
+      res.status(400).send(err);
     }
   },
 };
