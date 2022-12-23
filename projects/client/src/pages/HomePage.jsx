@@ -10,7 +10,8 @@ import { FeaturedCategories } from "../components/FeatCategories";
 
 export const HomePage = () => {
   return (
-    <Box bgGradient="linear(to-br, #3B0D2C, #260843)">
+    // bgGradient="linear(to-br, #3B0D2C, #260843)"
+    <Box>
       <CarouselBanner />
       <Center>
         <Image

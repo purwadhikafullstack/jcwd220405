@@ -12,15 +12,27 @@ import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 
 // chakra
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 import reportWebVitals from "./reportWebVitals";
+
+const theme = extendTheme({
+  styles: {
+    global: () => ({
+      body: {
+        // bg: "",
+        bgGradient:
+          "linear(150.64deg, #3B0D2C 0%, rgba(74, 10, 71, 1) 16.61%, #2F0C39 61.16%, rgba(38, 8, 67, 1)  92.29%)",
+      },
+    }),
+  },
+});
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <Provider store={store}>
-      <ChakraProvider>
+      <ChakraProvider theme={theme}>
         <App />
       </ChakraProvider>
     </Provider>

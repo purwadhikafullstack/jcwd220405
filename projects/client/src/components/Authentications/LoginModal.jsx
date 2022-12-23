@@ -34,7 +34,8 @@ export const LoginModal = () => {
   const inputEmail = useRef("");
   const inputPass = useRef("");
 
-  const onLogin = async () => {
+  const onLogin = async (e) => {
+    e.preventDefault();
     try {
       const user = {
         email: inputEmail.current.value,
