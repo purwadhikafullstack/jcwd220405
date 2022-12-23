@@ -16,12 +16,15 @@ module.exports = (sequelize, DataTypes) => {
   }
   Address_User.init(
     {
-      received_name: DataTypes.STRING,
-      province: DataTypes.STRING,
-      city_type: DataTypes.STRING,
-      city: DataTypes.STRING,
-      postal_code: DataTypes.STRING,
-      full_address: DataTypes.STRING,
+      received_name: { type: DataTypes.STRING, allowNull: false },
+      province: { type: DataTypes.STRING, allowNull: false },
+      city_type: { type: DataTypes.STRING, allowNull: false },
+      city: { type: DataTypes.STRING, allowNull: false },
+      postal_code: { type: DataTypes.STRING, allowNull: false },
+      full_address: { type: DataTypes.STRING, allowNull: false },
+      status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: 0 },
+      lat: DataTypes.STRING,
+      lng: DataTypes.STRING,
     },
     {
       sequelize,
