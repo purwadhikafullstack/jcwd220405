@@ -82,7 +82,9 @@ export const NotFoundPage = () => {
           <div class="number">4</div>
         </div>
         <div class="subtitle">Oops. Looks like you took a wrong turn.</div>
-        <Button variant="outline" mt="4">Go back</Button>
+        <Button variant="outline" mt="4" onClick={() => window.history.back()}>
+          Go back
+        </Button>
       </div>
     </div>
   );
