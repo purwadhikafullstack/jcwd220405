@@ -28,8 +28,8 @@ import { CgShoppingCart, CgHeart } from "react-icons/cg";
 
 // comp
 import { DrawerCompUser } from "./DrawerUser";
-import { RegisterModal } from "../Authentications/RegisterModal";
-import { LoginModal } from "../Authentications/LoginModal";
+import { RegisterModal } from "../components/Authentications/RegisterModal";
+import { LoginModal } from "../components/Authentications/LoginModal";
 import { useEffect } from "react";
 
 //redux
@@ -44,7 +44,7 @@ export const NavbarComp = () => {
   // useEffect(() => {}, [user]);
 
   return (
-    <Box bg={"#351734"} px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
+    <Box px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
       <Container>
         <Center>
           <Grid
@@ -141,7 +141,7 @@ export const NavbarComp = () => {
               // borderRight={"1px solid white"}
             >
               <Flex>
-                <IconButton
+                {/* <IconButton
                   icon={<CgShoppingCart />}
                   fontSize={"35px"}
                   href={"#"}
@@ -156,7 +156,8 @@ export const NavbarComp = () => {
                     color: "#C146ED",
                   }}
                   _active={{ color: "white" }}
-                />
+                /> */}
+                <CartButton />
                 <IconButton
                   icon={<CgHeart />}
                   fontSize={"35px"}
@@ -181,9 +182,7 @@ export const NavbarComp = () => {
                   <DrawerCompUser />
                 ) : (
                   <Flex gap={4} display={{ base: "none", lg: "inline-flex" }}>
-
                     <LoginModal />
-
                     <RegisterModal />
                   </Flex>
                 )}

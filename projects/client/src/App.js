@@ -1,26 +1,26 @@
 // import logo from "./logo.svg";
 import "./App.css";
 
-// chakra
-import { Box } from "@chakra-ui/react";
-
 // route
 import { Routes, Route } from "react-router-dom";
 
 // components
 import { Layout } from "./components/Layout";
-// import { NavbarTest } from "./components/test";
-// import { DrawerCompUser } from "./components/DrawerUser";
+import { NavbarTest } from "./components/test";
+import { DrawerCompUser } from "./components/DrawerUser";
 // import { Footer } from "./components/Footer"
 // import { CarouselBanner } from "./components/CarouselBanner"
 // import { FeaturedCategories } from "./components/FeatCategories"
 // import { BreadCrumbsComp } from "./components/BreadCrumbs"
 
 // pages
-import { VerificationPage } from "./pages/VerificationPage";
 import { HomePage } from "./pages/HomePage";
 import { AdminPage } from "./pages/AdminPage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
+import { VerificationPage } from "./pages/VerificationPage";
+import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
+import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -75,22 +75,32 @@ function App() {
     console.log("MOKOMDO HERE");
   }, []);
   return (
-    <Box>
+    <>
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="/profile/settings" element={<ProfilePage />} />
+          <Route
+            path="/profile/settings/address"
+            element={<ProfileAddressPage />}
+          />
         </Route>
         <Route path="/verification/:token" element={<VerificationPage />} />
         <Route path="/admin" element={<AdminPage />} />
 
         {/* Test Components */}
-        {/* <Route path="/test" element={<NavbarTest />} /> */}
+        {/* <Route path="/carousel" element={<CarouselBanner />} />
+        <Route path="/footer" element={<Footer />} />
+        <Route path="/featured" element={<FeaturedCategories />} />
+        <Route path="/breadcrumbs/featured/test2" element={<BreadCrumbsComp />} /> */}
+        <Route path="/drawer" element={<DrawerCompUser />} />
+        <Route path="/test" element={<NavbarTest />} />
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
+        {/* <Footer /> */}
       </Routes>
-      {/* <Footer /> */}
-    </Box>
+    </>
   );
 }
 
