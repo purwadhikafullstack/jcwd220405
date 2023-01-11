@@ -90,8 +90,8 @@ export const DrawerCompUser = () => {
               </Stack>
             ) : (
               <Stack>
-                <Button onClick={() => setUser("Jhonny")}>Sign In</Button>
-                <Button>Sign Up</Button>
+                <LoginModal />
+                <RegisterModal />
               </Stack>
             )}
           </DrawerBody>

@@ -15,7 +15,6 @@ import { DrawerCompUser } from "./components/DrawerUser";
 
 // pages
 import { HomePage } from "./pages/HomePage";
-import { AdminPage } from "./pages/AdminPage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
 import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
@@ -85,8 +84,6 @@ function App() {
             element={<ProfileAddressPage />}
           />
         </Route>
-        <Route path="/verification/:token" element={<VerificationPage />} />
-        <Route path="/admin" element={<AdminPage />} />
 
         {/* Test Components */}
         {/* <Route path="/carousel" element={<CarouselBanner />} />
@@ -95,6 +92,8 @@ function App() {
         <Route path="/breadcrumbs/featured/test2" element={<BreadCrumbsComp />} /> */}
         <Route path="/drawer" element={<DrawerCompUser />} />
         <Route path="/test" element={<NavbarTest />} />
+        <Route path="/verification/:token" element={<VerificationPage />} />
+        <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />

@@ -2,9 +2,9 @@
 import { useState } from "react";
 
 // logo
-import icon from "../../assets/mokomdo-icon2.png";
-import mokomdo from "../../assets/mokomdo2.png";
-import mokomdo2 from "../../assets/mokomdo-simplified2.png";
+import icon from "../assets/mokomdo-icon2.png";
+import mokomdo from "../assets/mokomdo2.png";
+import mokomdo2 from "../assets/mokomdo-simplified2.png";
 
 // chakra
 import {
@@ -30,11 +30,12 @@ import { CgShoppingCart, CgHeart } from "react-icons/cg";
 import { DrawerCompUser } from "./DrawerUser";
 import { RegisterModal } from "../components/Authentications/RegisterModal";
 import { LoginModal } from "../components/Authentications/LoginModal";
+import { CartButton } from "./Button/CartButton";
 import { useEffect } from "react";
 
 //redux
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../redux/userSlice";
+import { logout } from "../redux/userSlice";
 
 export const NavbarComp = () => {
   const { name } = useSelector((state) => state.userSlice.value);

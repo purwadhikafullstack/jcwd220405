@@ -38,15 +38,10 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-<<<<<<< HEAD
-const { user, admin } = require("./routers");
-app.use("/api", user, admin);
-=======
 const { user, userProfile, userAddress } = require("./routers");
 app.use("/api", user);
 app.use("/api", userProfile);
 app.use("/api", userAddress);
->>>>>>> fbd66807115e307df66152187e513738ee948989
 
 // ===========================
 

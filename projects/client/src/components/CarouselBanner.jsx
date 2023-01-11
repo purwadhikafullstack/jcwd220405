@@ -1,12 +1,6 @@
-// carousel
+// caraousel
 import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-
-// image
-import banner1 from "../../assets/banner1.png";
-import banner2_1 from "../../assets/banner2.1.png";
-import banner3 from "../../assets/banner3.png";
-import banner4 from "../../assets/banner4.png";
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 // chakra
 import {
@@ -17,6 +11,11 @@ import {
   Center,
 } from "@chakra-ui/react";
 
+// picture
+import banner1 from "../assets/banner1.png";
+import banner2_1 from "../assets/banner2.1.png";
+import banner3 from "../assets/banner3.png";
+import banner4 from "../assets/banner4.png";
 
 export const CarouselBanner = () => {
   const PicBanner = [

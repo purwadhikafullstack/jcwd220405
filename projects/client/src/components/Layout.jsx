@@ -1,7 +1,6 @@
 import { Outlet } from "react-router-dom";
-import { NavbarComp } from "./User/Navbar";
-import { Footer } from "./User/Footer";
-import { NavBottomMobile } from "./User/NavbarBottomMobile"
+import { NavbarComp } from "./Navbar";
+import { Footer } from "./Footer";
 
 export const Layout = () => {
   return (
@@ -9,7 +8,6 @@ export const Layout = () => {
       <NavbarComp />
       <Outlet />
       <Footer />
-      <NavBottomMobile />
     </div>
   );
 };
