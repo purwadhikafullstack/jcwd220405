@@ -41,7 +41,7 @@ export const NavbarComp = () => {
 
   const [isMobile] = useMediaQuery("(max-width: 1007px)");
 
-  useEffect(() => {}, [user]);
+  // useEffect(() => {}, [user]);
 
   return (
     <Box px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
