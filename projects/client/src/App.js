@@ -19,6 +19,7 @@ import { NotFoundPage } from "./pages/NotFound/NotFound";
 import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -92,6 +93,7 @@ function App() {
         <Route path="/drawer" element={<DrawerCompUser />} />
         <Route path="/test" element={<NavbarTest />} />
         <Route path="/verification/:token" element={<VerificationPage />} />
+        <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />

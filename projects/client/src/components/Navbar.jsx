@@ -30,6 +30,7 @@ import { CgShoppingCart, CgHeart } from "react-icons/cg";
 import { DrawerCompUser } from "./DrawerUser";
 import { RegisterModal } from "../components/Authentications/RegisterModal";
 import { LoginModal } from "../components/Authentications/LoginModal";
+import { CartButton } from "./Button/CartButton";
 import { useEffect } from "react";
 
 //redux
@@ -42,7 +43,6 @@ export const NavbarComp = () => {
   const [isMobile] = useMediaQuery("(max-width: 1007px)");
 
   // useEffect(() => {}, [user]);
-  // bg={"#351734"}
 
   return (
     <Box px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
@@ -142,7 +142,7 @@ export const NavbarComp = () => {
               // borderRight={"1px solid white"}
             >
               <Flex>
-                <IconButton
+                {/* <IconButton
                   icon={<CgShoppingCart />}
                   fontSize={"35px"}
                   href={"#"}
@@ -157,7 +157,8 @@ export const NavbarComp = () => {
                     color: "#C146ED",
                   }}
                   _active={{ color: "white" }}
-                />
+                /> */}
+                <CartButton />
                 <IconButton
                   icon={<CgHeart />}
                   fontSize={"35px"}
@@ -183,7 +184,6 @@ export const NavbarComp = () => {
                 ) : (
                   <Flex gap={4} display={{ base: "none", lg: "inline-flex" }}>
                     <LoginModal />
-
                     <RegisterModal />
                   </Flex>
                 )}
