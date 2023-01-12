@@ -107,6 +107,7 @@ module.exports = {
         id: isUserExist.id,
         email: isUserExist.email,
         name: isUserExist.name,
+        role: isUserExist.role,
       };
       const token = jwt.sign(payload, key);
 

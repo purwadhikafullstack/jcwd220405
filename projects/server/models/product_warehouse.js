@@ -1,7 +1,7 @@
-'use strict';
-const {
-  Model
-} = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
+const product = require("./product");
+const warehouse = require("./warehouse");
 module.exports = (sequelize, DataTypes) => {
   class Product_Warehouses extends Model {
     /**
@@ -13,14 +13,23 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       Product_Warehouses.belongsToMany(models.Transaction, {
         through: "Transaction_Product_Warehouses",
-      })
+      });
+      Product_Warehouses.belongsTo(models.Product);
+      Product_Warehouses.belongsTo(models.Warehouse);
     }
   }
-  Product_Warehouses.init({
-    stocks: DataTypes.INTEGER
-  }, {
-    sequelize,
-    modelName: 'Product_Warehouses',
-  });
+  Product_Warehouses.init(
+    {
+      stocks: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+    },
+    {
+      sequelize,
+      modelName: "Product_Warehouses",
+      timestamps: false,
+    }
+  );
   return Product_Warehouses;
 };
