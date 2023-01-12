@@ -23,7 +23,7 @@ import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 //redux
 import { useDispatch } from "react-redux";
@@ -35,8 +35,6 @@ function App() {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
 
-  const [role, setRole] = useState();
-
   const keepLogin = async () => {
     try {
       const result = await Axios.get(`${url}/user/keeplogin`, {
@@ -45,7 +43,7 @@ function App() {
         },
       });
       // console.log(result.data);
-      setRole(result.data.role);
+      // setRole(result.data.role);
       console.log(result.data.role);
 
       dispatch(
@@ -70,19 +68,18 @@ function App() {
     }
   };
 
-  // useEffect(() => {
-  //   keepLogin();
-  // });
+  useEffect(() => {
+    keepLogin();
+  }, []);
 
   useEffect(() => {
     testApi();
-    keepLogin();
+    // keepLogin();
     console.log("MOKOMDO HERE");
   }, []);
   return (
     <>
       <Routes>
-        {role === 1 || role ? (
           <Route path="/" element={<Layout />}>
             <Route index element={<HomePage />} />
             <Route path="/profile/settings" element={<ProfilePage />} />
@@ -91,13 +88,8 @@ function App() {
               element={<ProfileAddressPage />}
             />
           </Route>
-        ) : (
-        //  <Navigate to="/admin" />
-        "test"
-        )}
 
-        <Route exact path="/admin" element={<AdminPage />} />
-
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/verification/:token" element={<VerificationPage />} />
         <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
