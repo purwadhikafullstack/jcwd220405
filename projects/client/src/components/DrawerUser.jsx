@@ -26,6 +26,7 @@ import { LoginModal } from "./Authentications/LoginModal";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/userSlice";
+import { Link } from "react-router-dom";
 
 export const DrawerCompUser = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -82,7 +83,9 @@ export const DrawerCompUser = () => {
           <DrawerBody display={"flex"} flexDir={"column"}>
             {name ? (
               <Stack>
-                <Button>Profile</Button>
+                <Button as={Link} to={"/profile/settings"}>
+                  Profile
+                </Button>
                 <Button>History</Button>
               </Stack>
             ) : (

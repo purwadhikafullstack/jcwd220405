@@ -7,6 +7,8 @@ const bearerToken = require("express-bearer-token");
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+const path = require("path");
+
 app.use(cors());
 // app.use(
 //   cors({
@@ -19,6 +21,7 @@ app.use(cors());
 
 app.use(express.json());
 app.use(bearerToken());
+app.use("/public", express.static(path.join(__dirname, "public")));
 
 //#region API ROUTES
 
@@ -35,8 +38,14 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-const { user } = require("./routers");
+const { user, userProfile, userAddress, admin } = require("./routers");
+const { getProduct } = require("./routers/product");
+
 app.use("/api", user);
+app.use("/api", admin);
+app.use("/api", userProfile);
+app.use("/api", userAddress);
+app.use("/api", getProduct);
 
 // ===========================
 
@@ -77,6 +86,7 @@ app.listen(PORT, (err) => {
     console.log(`ERROR: ${err}`);
   } else {
     console.log(`APP RUNNING at ${PORT} ✅`);
-    // db.sequelize.sync({ force: true });`
+    // db.sequelize.sync({ force: true });
+    // db.sequelize.sync({ alter: true });
   }
 });

@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../redux/userSlice";
 import Axios from "axios";
 import Swal from "sweetalert2";
-
+import { ResetPassword } from "./ResetPasswordModal";
 import {
   Box,
   Button,
@@ -19,6 +19,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Link,
 } from "@chakra-ui/react";
 const url = process.env.REACT_APP_API_BASE_URL;
 
@@ -34,7 +35,8 @@ export const LoginModal = () => {
   const inputEmail = useRef("");
   const inputPass = useRef("");
 
-  const onLogin = async () => {
+  const onLogin = async (e) => {
+    e.preventDefault();
     try {
       const user = {
         email: inputEmail.current.value,
@@ -104,19 +106,10 @@ export const LoginModal = () => {
             <form onSubmit={onLogin}>
               <FormControl>
                 <FormLabel mb={4}>Email</FormLabel>
-                <Input
-                  id="email"
-                  placeholder="Enter your Email"
-                  type="email"
-                  ref={inputEmail}
-                />
+                <Input id="email" type="email" ref={inputEmail} />
                 <FormLabel mt={5}>Password</FormLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your Password"
-                  ref={inputPass}
-                />
+                <Input id="password" type="password" ref={inputPass} />
+                <ResetPassword />
               </FormControl>
               <ModalFooter>
                 <Button mr={5} type="submit">
