@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const key = process.env.OKAI_SECRET;
 
-
 module.exports = {
   register: async (req, res) => {
     try {
@@ -17,7 +16,6 @@ module.exports = {
         raw: true,
       });
       if (isEmailExist) throw "Email have been used";
-      
       const token = jwt.sign({ id: email }, key);
       await transporter.sendMail({
         from: "Admin",
@@ -58,7 +56,6 @@ module.exports = {
           is_verified: true,
           role: 1,
           name: userName,
-
         },
 
         {
@@ -109,6 +106,7 @@ module.exports = {
         id: isUserExist.id,
         email: isUserExist.email,
         name: isUserExist.name,
+        role: isUserExist.role,
       };
       const token = jwt.sign(payload, key);
 
@@ -132,6 +130,63 @@ module.exports = {
       // console.log(isUserExist);
 
       res.status(200).send(isUserExist);
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  emailResetPass: async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      const isEmailExist = await user.findOne({
+        where: { email },
+        raw: true,
+      });
+
+      if (!isEmailExist) throw "Email incorrect";
+
+      const token = jwt.sign({ id: email }, key);
+      await transporter.sendMail({
+        from: "Admin",
+        to: email,
+        subject: "Reset Password Email",
+        html: `<a href="http://localhost:3000/resetpassword/${token}" target ="_blank"> Click here to reset your password </a>`,
+      });
+
+      res.status(200).send({
+        message: "Please check your email to reset your password",
+        email,
+      });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  resetpassword: async (req, res) => {
+    try {
+      const { email, password, confirmPassword } = req.body;
+
+      if (password != confirmPassword)
+        throw "Confirmed password does not match!";
+
+      if (password.length < 8) throw "Password contains minimal 8 character";
+
+      const salt = await bcrypt.genSalt(10);
+
+      const hashPass = await bcrypt.hash(password, salt);
+
+      const data = await user.update(
+        {
+          password: hashPass,
+        },
+
+        {
+          where: {
+            email: email,
+          },
+        }
+      );
+
+      res.status(200).send(data);
     } catch (err) {
       res.status(400).send(err);
     }

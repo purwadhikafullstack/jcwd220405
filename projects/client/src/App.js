@@ -2,7 +2,7 @@
 import "./App.css";
 
 // route
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 // components
 import { Layout } from "./components/Layout";
@@ -15,10 +15,14 @@ import { DrawerCompUser } from "./components/DrawerUser";
 
 // pages
 import { HomePage } from "./pages/HomePage";
+import { AdminPage } from "./pages/AdminPage";
+import { ProductPage } from "./pages/ProductPage/ProductPage";
+import { DetailProductPage } from "./pages/ProductPage/DetailProductPage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
 import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
+import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -41,6 +45,9 @@ function App() {
         },
       });
       // console.log(result.data);
+
+      // setRole(result.data.role);
+      console.log(result.data.role);
 
       dispatch(
         login({
@@ -66,10 +73,11 @@ function App() {
 
   useEffect(() => {
     keepLogin();
-  });
+  }, []);
 
   useEffect(() => {
     testApi();
+    // keepLogin();
     console.log("MOKOMDO HERE");
   }, []);
   return (
@@ -83,15 +91,15 @@ function App() {
             element={<ProfileAddressPage />}
           />
         </Route>
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/product/:name" element={<DetailProductPage />} />
+
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/verification/:token" element={<VerificationPage />} />
+        <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
         {/* Test Components */}
-        {/* <Route path="/carousel" element={<CarouselBanner />} />
-        <Route path="/footer" element={<Footer />} />
-        <Route path="/featured" element={<FeaturedCategories />} />
-        <Route path="/breadcrumbs/featured/test2" element={<BreadCrumbsComp />} /> */}
-        <Route path="/drawer" element={<DrawerCompUser />} />
         <Route path="/test" element={<NavbarTest />} />
-        <Route path="/verification/:token" element={<VerificationPage />} />
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
