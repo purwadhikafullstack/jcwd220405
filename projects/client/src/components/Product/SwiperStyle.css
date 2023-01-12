@@ -1,0 +1,13 @@
+.swiper-button-next,
+.swiper-button-prev {
+    color: rgba(213, 75, 121, .69) !important;
+    fill: rgba(213, 75, 121, .69) !important;
+    stroke: rgba(213, 75, 121, .69) !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    color: rgba(213, 75, 121, .99) !important;
+    fill: rgba(213, 75, 121, .99) !important;
+    stroke: rgba(213, 75, 121, .99) !important;
+}

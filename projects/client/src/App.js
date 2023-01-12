@@ -15,6 +15,8 @@ import { DrawerCompUser } from "./components/DrawerUser";
 
 // pages
 import { HomePage } from "./pages/HomePage";
+import { ProductPage } from "./pages/ProductPage/ProductPage";
+import { DetailProductPage } from "./pages/ProductPage/DetailProductPage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
 import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
@@ -84,6 +86,8 @@ function App() {
             element={<ProfileAddressPage />}
           />
         </Route>
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/product/:name" element={<DetailProductPage />} />
 
         {/* Test Components */}
         {/* <Route path="/carousel" element={<CarouselBanner />} />

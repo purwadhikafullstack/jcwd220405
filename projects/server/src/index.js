@@ -39,9 +39,12 @@ app.get("/api/greetings", (req, res, next) => {
 });
 
 const { user, userProfile, userAddress } = require("./routers");
+const { getProduct } = require("./routers/product");
+
 app.use("/api", user);
 app.use("/api", userProfile);
 app.use("/api", userAddress);
+app.use("/api", getProduct);
 
 // ===========================
 

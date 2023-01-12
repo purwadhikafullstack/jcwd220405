@@ -1,5 +1,6 @@
 // main
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 // logo
 import icon from "../assets/mokomdo-icon2.png";
@@ -20,6 +21,7 @@ import {
   Center,
   Container,
   useMediaQuery,
+  useToast,
 } from "@chakra-ui/react";
 
 // icons
@@ -37,10 +39,30 @@ import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/userSlice";
 
-export const NavbarComp = () => {
+export const NavbarComp = ({
+  setPage,
+  handleSearch,
+  searchquery,
+  setSearchParams,
+  setPmax,
+  setPmin,
+  setClick,
+}) => {
   const { name } = useSelector((state) => state.userSlice.value);
 
   const [isMobile] = useMediaQuery("(max-width: 1007px)");
+  const navigate = useNavigate();
+  const toast = useToast();
+  const [valuesearch, setValueSearch] = useState("");
+  const [enter, setEnter] = useState(0);
+  const location = useLocation();
+
+  function handleSearch() {
+    if (location.pathname === "/product") {
+      setPage(1);
+      setSearchParams(`search_query=${valuesearch}`);
+    }
+  }
 
   // useEffect(() => {}, [user]);
 
@@ -106,6 +128,42 @@ export const NavbarComp = () => {
                     _focusVisible={{
                       outline: "none",
                     }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        if (!valuesearch) {
+                          if (enter === 2) {
+                            return setTimeout(
+                              () => window.location.reload(),
+                              500
+                            );
+                          }
+                          toast({
+                            position: "top",
+                            title: `Find Something?`,
+                            variant: "subtle",
+                            duration: 1500,
+                            isClosable: true,
+                          });
+                          return setEnter(enter + 1);
+                        }
+                        navigate(`/product?search_query=${e.target.value}`);
+                        if (location.pathname === "/product") {
+                          setPage(1);
+                          setPmax(null);
+                          setPmin(null);
+                          setClick(0);
+                          setSearchParams(`search_query=${e.target.value}`);
+                        }
+                        e.preventDefault();
+                      }
+                    }}
+                    onChange={(e) => {
+                      setValueSearch(e.target.value);
+                      if (location.pathname === "/product") {
+                        setClick(0);
+                      }
+                    }}
+                    defaultValue={searchquery}
                   />
                 </Box>
                 <Box
@@ -132,6 +190,15 @@ export const NavbarComp = () => {
                       bg: "none",
                       color: "white",
                     }}
+                    onClick={() => {
+                      navigate(`/product?search_query=${valuesearch}`);
+                      handleSearch();
+                      if (location.pathname === "/product") {
+                        setClick(0);
+                      }
+                    }}
+                    disabled={valuesearch ? false : true}
+                    title={"Search"}
                   />
                 </Box>
               </Flex>
