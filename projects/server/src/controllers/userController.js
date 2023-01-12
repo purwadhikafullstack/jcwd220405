@@ -100,8 +100,8 @@ module.exports = {
       // console.log(isUserExist)
       if (!isUserExist) throw "User not Found!";
 
-      // const isValid = await bcrypt.compare(password, isUserExist.password);
-      // if (!isValid) throw "Wrong Password";
+      const isValid = await bcrypt.compare(password, isUserExist.password);
+      if (!isValid) throw "Wrong Password";
 
       const payload = {
         id: isUserExist.id,
