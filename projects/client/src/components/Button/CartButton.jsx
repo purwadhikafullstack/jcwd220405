@@ -1,39 +1,19 @@
 import React from "react";
-import { useRef } from "react";
-import { useDispatch } from "react-redux";
-import { login } from "../../redux/userSlice";
-import Axios from "axios";
-import Swal from "sweetalert2";
-import { CgShoppingCart, CgHeart } from "react-icons/cg";
+import { CgShoppingCart } from "react-icons/cg";
 import { useSelector } from "react-redux";
-import { LoginModal } from "../Authentications/LoginModal";
-import {
-  Box,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  FormControl,
-  FormLabel,
-  Input,
-  Link,
-  IconButton,
-  useToast,
-} from "@chakra-ui/react";
-const url = process.env.REACT_APP_API_BASE_URL;
+import { Badge, Button, IconButton, useToast } from "@chakra-ui/react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export const CartButton = () => {
   const toast = useToast();
   const { name } = useSelector((state) => state.userSlice.value);
+  const navigate = useNavigate();
+  const cart = useSelector((state) => state.cartSlice.value);
+  const location = useLocation();
 
   const onClickCart = () => {
     if (name) {
-      return console.log("test");
+      return navigate("/cart");
     } else {
       toast({
         title: "Failed Attempt",
@@ -61,6 +41,7 @@ export const CartButton = () => {
         color: "#C146ED",
       }}
       _active={{ color: "white" }}
+      disabled={location.pathname === "/cart" ? true : false}
     ></IconButton>
   );
 };

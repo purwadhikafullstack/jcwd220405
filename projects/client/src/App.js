@@ -12,12 +12,14 @@ import { DrawerCompUser } from "./components/DrawerUser";
 // import { CarouselBanner } from "./components/CarouselBanner"
 // import { FeaturedCategories } from "./components/FeatCategories"
 // import { BreadCrumbsComp } from "./components/BreadCrumbs"
+import { ProtectingRoute } from "./components/ProtectingRoute";
 
 // pages
 import { HomePage } from "./pages/HomePage";
 import { AdminPage } from "./pages/AdminPage";
 import { ProductPage } from "./pages/ProductPage/ProductPage";
 import { DetailProductPage } from "./pages/ProductPage/DetailProductPage";
+import { CartPage } from "./pages/CartPage/CartPage";
 import { NotFoundPage } from "./pages/NotFound/NotFound";
 import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
@@ -29,14 +31,16 @@ import Axios from "axios";
 import { useEffect } from "react";
 
 //redux
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/userSlice";
+import { cartUser } from "./redux/cartSlice";
 
 const url = process.env.REACT_APP_API_BASE_URL;
 
 function App() {
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
+  const { id } = useSelector((state) => state.userSlice.value);
 
   const keepLogin = async () => {
     try {
@@ -57,8 +61,12 @@ function App() {
           id: result.data.id,
           email: result.data.email,
           name: result.data.name,
+          is_verified: result.data.is_verified,
         })
       );
+
+      const cart = await (await Axios.get(`${url}/cart/${id}`)).data;
+      dispatch(cartUser(cart.result));
     } catch (err) {
       console.log(err);
       console.log(err.response.data);
@@ -97,6 +105,14 @@ function App() {
         </Route>
         <Route path="/product" element={<ProductPage />} />
         <Route path="/product/:name" element={<DetailProductPage />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectingRoute>
+              <CartPage />
+            </ProtectingRoute>
+          }
+        />
 
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/verification/:token" element={<VerificationPage />} />
