@@ -23,6 +23,7 @@ import { VerificationPage } from "./pages/VerificationPage";
 import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
+import { OrderListPage } from "./pages/OrderListPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -90,6 +91,7 @@ function App() {
             path="/profile/settings/address"
             element={<ProfileAddressPage />}
           />
+          <Route path="/order-list" element={<OrderListPage />} />
         </Route>
         <Route path="/product" element={<ProductPage />} />
         <Route path="/product/:name" element={<DetailProductPage />} />

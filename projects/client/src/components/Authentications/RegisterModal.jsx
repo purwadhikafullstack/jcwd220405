@@ -38,7 +38,7 @@ export const RegisterModal = () => {
     try {
       setIsLoading(true);
       const result = await axios.post(`${url}/user/register`, data);
-      console.log(result);
+      // console.log(result);
 
       Swal.fire({
         icon: "success",
@@ -71,9 +71,7 @@ export const RegisterModal = () => {
   return (
     <>
       <Button
-
         display={{ base: "solid", md: "inline-flex" }}
-
         fontSize={"sm"}
         fontWeight={600}
         color={"white"}
