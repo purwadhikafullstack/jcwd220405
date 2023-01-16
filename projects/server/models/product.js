@@ -12,7 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       Product.hasMany(models.Product_Image, {
         foreignKey: "IdProduct",
       });
-      Product.hasMany(models.Cart);
+      Product.hasMany(models.Cart, {
+        foreignKey: "IdProduct",
+      });
       Product.hasMany(models.Journal);
       Product.hasOne(models.Stock_Mutation);
       Product.belongsToMany(models.Warehouse, {

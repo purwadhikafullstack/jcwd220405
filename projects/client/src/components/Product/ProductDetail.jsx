@@ -104,6 +104,9 @@ export const ProductDetail = () => {
             setQuantity={setQuantity}
             subtotal={subtotal}
             totalStock={totalStock}
+            product={product}
+            baseApi={baseApi}
+            baseServer={baseServer}
           />
         </GridItem>
       </Grid>

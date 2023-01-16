@@ -38,14 +38,23 @@ app.get("/api/greetings", (req, res, next) => {
   });
 });
 
-const { user, userProfile, userAddress, admin } = require("./routers");
+const {
+  user,
+  userProfile,
+  userAddress,
+  admin,
+  orderList,
+} = require("./routers");
 const { getProduct } = require("./routers/product");
+const { cart } = require("./routers/cart");
 
 app.use("/api", user);
 app.use("/api", admin);
 app.use("/api", userProfile);
 app.use("/api", userAddress);
 app.use("/api", getProduct);
+app.use("/api", orderList);
+app.use("/api", cart);
 
 // ===========================
 

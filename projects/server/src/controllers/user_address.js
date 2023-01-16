@@ -8,11 +8,12 @@ module.exports = {
     try {
       const { search_query } = req.query;
       const search = search_query || "";
+      console.log(req.params);
 
       const addressUser = await address.findAll({
         where: {
           [Op.and]: [
-            { IdUser: req.params.user },
+            { idUser: req.params.user },
             {
               [Op.or]: [
                 {

@@ -16,7 +16,6 @@ module.exports = {
         raw: true,
       });
       if (isEmailExist) throw "Email have been used";
-
       const token = jwt.sign({ id: email }, key);
       await transporter.sendMail({
         from: "Admin",
