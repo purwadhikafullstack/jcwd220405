@@ -1,6 +1,6 @@
 // react
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 // chakra
 import {
@@ -18,28 +18,20 @@ import {
 } from "@chakra-ui/react";
 
 // props
-import { EditModal } from "./Warehouse props/EditModal";
-import { AddModal } from "./Warehouse props/AddModal";
+import { AddWarehouse } from "./WarehouseProps/AddWarehouse";
+import { EditWarehouse } from "./WarehouseProps/EditWarehouse";
 
 export const WarehouseList = () => {
   const url = "http://localhost:8000/api/admin/";
 
   const [warehouse, setWarehouse] = useState();
   const [admin, setAdmin] = useState();
-  const [reload, setReload] = useState();
   const [sort, setSort] = useState();
   const [direction, setDirection] = useState();
   const [pagination, setPagination] = useState(0);
   const [page, setPage] = useState(1);
 
-  // const [dirid, setDirid] = useState();
-  // const [dirwarehouse, setDirwarehouse] = useState();
-  // const [dirprovince, setDirprovince] = useState();
-  // const [dircity, setDircity] = useState();
-  // const [dirpostal, setDirpostal] = useState();
-  // const [diradmin, setDiradmin] = useState();
-
-  const getWarehouse = async () => {
+  const getWarehouse = useCallback(async () => {
     try {
       const warehouseURL = url + "all_warehouse?";
       const sortURL = sort ? warehouseURL + `sort=${sort}&` : warehouseURL;
@@ -51,17 +43,15 @@ export const WarehouseList = () => {
         : directionURL;
       const resultWarehouse = await Axios.get(paginationURL);
       setWarehouse(resultWarehouse.data);
-      setReload(false);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [sort, direction, pagination]);
 
   const getAdmin = async () => {
     try {
       const resultAdmin = await Axios.get(url + "warehouse_admin");
       setAdmin(resultAdmin.data);
-      // console.log(resultAdmin.data);
     } catch (err) {
       console.log(err);
     }
@@ -79,7 +69,7 @@ export const WarehouseList = () => {
   useEffect(() => {
     getWarehouse();
     getAdmin();
-  }, [reload, pagination, sort, direction]);
+  }, [getWarehouse]);
 
   const tableHead = [
     { name: "Id", origin: "id" },
@@ -92,7 +82,7 @@ export const WarehouseList = () => {
 
   return (
     <Box>
-      <AddModal setReload={setReload} admin={admin} />
+      <AddWarehouse getWarehouse={getWarehouse} admin={admin} />
       <TableContainer>
         <Table variant={"striped"}>
           <Thead>
@@ -134,10 +124,10 @@ export const WarehouseList = () => {
                       justifyContent={"center"}
                       alignItems={"center"}
                     >
-                      <EditModal
+                      <EditWarehouse
                         warehouse={item}
                         admin={admin}
-                        setReload={setReload}
+                        getWarehouse={getWarehouse}
                       />
                       <Button
                         onClick={() => {
@@ -174,7 +164,6 @@ export const WarehouseList = () => {
               setPagination(pagination + 10);
               setPage(page + 1);
             }}
-            
           >
             Next
           </Button>

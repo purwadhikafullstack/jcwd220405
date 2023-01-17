@@ -19,12 +19,14 @@ module.exports = (sequelize, DataTypes) => {
         through: "Product_Warehouses",
       });
       Product.hasMany(models.Product_Warehouses, { as: "Details" });
+      Product.belongsTo(models.Product_Category)
     }
   }
   Product.init(
     {
       name: {
         type: DataTypes.STRING(255),
+        unique: true,
       },
       desc: {
         type: DataTypes.STRING(1234),
@@ -34,9 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       weight: {
         type: DataTypes.INTEGER,
-      },
-      category: {
-        type: DataTypes.STRING(100),
       },
     },
     {

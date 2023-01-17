@@ -177,7 +177,7 @@ export const AdminPage = () => {
   };
 
   const DrawerItems = () => {
-    const items = ["Users", "Warehouses", "Items", "Report"];
+    const items = ["Users", "Warehouses", "Products", "Categories", "Reports"];
 
     return (
       <Box>
@@ -193,6 +193,7 @@ export const AdminPage = () => {
           {items.map((item, index) => {
             return (
               <Button
+              key={index}
                 borderRadius={0}
                 color={"white"}
                 bg={"none"}

@@ -5,6 +5,7 @@ const initialState = {
     id: null,
     email: "",
     name: "",
+    is_verified: 0,
   },
 };
 
@@ -16,11 +17,13 @@ export const userSlice = createSlice({
       state.value.id = action.payload.id;
       state.value.email = action.payload.email;
       state.value.name = action.payload.name;
+      state.value.is_verified = action.payload.is_verified;
     },
     logout: (state) => {
       state.value.id = null;
       state.value.email = null;
       state.value.name = null;
+      state.value.is_verified = null;
     },
   },
 });

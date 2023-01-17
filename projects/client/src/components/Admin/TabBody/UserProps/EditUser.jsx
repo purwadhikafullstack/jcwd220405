@@ -24,7 +24,7 @@ import {
   NumberDecrementStepper,
 } from "@chakra-ui/react";
 
-export const EditModal = ({ user, setReload }) => {
+export const EditUser = ({ user, setReload }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
     // console.log(user);
   
