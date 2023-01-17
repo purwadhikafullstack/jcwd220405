@@ -107,6 +107,7 @@ export const ProductDetail = () => {
             product={product}
             baseApi={baseApi}
             baseServer={baseServer}
+            imageProduct={imageProduct}
           />
         </GridItem>
       </Grid>

@@ -12,7 +12,7 @@ import { CartSummary } from "./CartSummary";
 
 export const Cart = ({ baseServer, baseApi }) => {
   const [cart, setCart] = useState([]);
-  const [quantity, setQuantity] = useState([]);
+  const [quantity, setQuantity] = useState(0);
   const [selectedCart, setSelectedCart] = useState(0);
   const [totalPriceCart, setTotalPriceCart] = useState(0);
   const { id } = useSelector((state) => state.userSlice.value);

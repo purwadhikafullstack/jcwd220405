@@ -1,7 +1,7 @@
 import React from "react";
 import { CgShoppingCart } from "react-icons/cg";
 import { useSelector } from "react-redux";
-import { Badge, Button, IconButton, useToast } from "@chakra-ui/react";
+import { Badge, Box, IconButton, useToast } from "@chakra-ui/react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export const CartButton = () => {
@@ -26,22 +26,36 @@ export const CartButton = () => {
   };
 
   return (
-    <IconButton
-      color="#D54B79"
-      variant="ghost"
-      icon={<CgShoppingCart />}
-      onClick={() => onClickCart()}
-      width={70}
-      height={30}
-      borderRadius={0}
-      borderRight={"1px solid white"}
-      fontSize={"35px"}
-      _hover={{
-        bg: "none",
-        color: "#C146ED",
-      }}
-      _active={{ color: "white" }}
-      disabled={location.pathname === "/cart" ? true : false}
-    ></IconButton>
+    <Box color={"white"} position={"relative"}>
+      <IconButton
+        color="#D54B79"
+        variant="ghost"
+        icon={<CgShoppingCart />}
+        onClick={() => onClickCart()}
+        width={70}
+        height={30}
+        borderRadius={0}
+        borderRight={"1px solid white"}
+        fontSize={"35px"}
+        _hover={{
+          bg: "none",
+          color: "#C146ED",
+        }}
+        _active={{ color: "white" }}
+        disabled={location.pathname === "/cart" ? true : false}
+      ></IconButton>
+      <Badge
+        position={"absolute"}
+        right={"3"}
+        top={"-.3em"}
+        borderRadius={"45%"}
+        backgroundColor={"#D0BDAC"}
+        color={"#D54B79"}
+        userSelect={"none"}
+        hidden={name && cart?.length ? false : true}
+      >
+        {cart?.length}
+      </Badge>
+    </Box>
   );
 };
