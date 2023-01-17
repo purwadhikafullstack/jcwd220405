@@ -1,6 +1,6 @@
 // react
 import Axios from "axios";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 // chakra
 import {
@@ -18,7 +18,7 @@ import {
 } from "@chakra-ui/react";
 
 // props
-import { EditModal } from "./User Props/EditModal";
+import { EditUser } from "./UserProps/EditUser";
 
 export const UserList = () => {
   const url = "http://localhost:8000/api/admin/";
@@ -30,7 +30,7 @@ export const UserList = () => {
   const [pagination, setPagination] = useState(0);
   const [page, setPage] = useState(1);
 
-  const getUsers = async () => {
+  const getUsers = useCallback(async () => {
     try {
       const userURL = url + "all_user?";
       const sortURL = sort ? userURL + `sort=${sort}&` : userURL;
@@ -47,7 +47,7 @@ export const UserList = () => {
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [sort, pagination, direction]);
 
   const deleteUser = async (id) => {
     try {
@@ -60,7 +60,7 @@ export const UserList = () => {
 
   useEffect(() => {
     getUsers();
-  }, [reload, sort, direction, pagination]);
+  }, [getUsers]);
 
   const tableHead = [
     { name: "Id", origin: "id" },
@@ -109,7 +109,7 @@ export const UserList = () => {
                       justifyContent={"center"}
                       alignItems={"center"}
                     >
-                      <EditModal user={item} setReload={setReload} />
+                      <EditUser user={item} setReload={setReload} />
                       <Button
                         onClick={() => {
                           deleteUser(item.id);

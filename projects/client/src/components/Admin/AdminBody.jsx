@@ -6,11 +6,12 @@ import {
 // components
 import { UserList } from "./TabBody/UserList";
 import { WarehouseList } from "./TabBody/WarehouseList";
-import { ItemList } from "./TabBody/ItemList";
+import { ProductList } from "./TabBody/ProductList";
 import { ReportList } from "./TabBody/ReportList";
+import { CategoryList } from "./TabBody/CategoryList";
 
 export const AdminBody = ({ tabNum }) => {
-  const tabs = [UserList, WarehouseList, ItemList, ReportList];
+  const tabs = [UserList, WarehouseList, ProductList, CategoryList, ReportList];
   const TabBody = tabs[tabNum];
   // console.log(tabNum);
 

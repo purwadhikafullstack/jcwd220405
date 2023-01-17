@@ -48,13 +48,18 @@ const {
 const { getProduct } = require("./routers/product");
 const { cart } = require("./routers/cart");
 
+const { userComp, warehouseComp, productComp, categoryComp } = admin;
+
+// user
 app.use("/api", user);
-app.use("/api", admin);
 app.use("/api", userProfile);
 app.use("/api", userAddress);
 app.use("/api", getProduct);
 app.use("/api", orderList);
 app.use("/api", cart);
+
+// admin
+app.use("/api", userComp, warehouseComp, productComp, categoryComp);
 
 // ===========================
 
