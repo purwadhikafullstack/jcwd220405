@@ -84,7 +84,7 @@ function App() {
 
   useEffect(() => {
     keepLogin();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     testApi();

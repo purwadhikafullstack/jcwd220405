@@ -122,6 +122,10 @@ export const CartCard = ({
                         updateCart(item, "", 5);
                         return 0;
                       }
+                      if (e.target.value < 1) {
+                        updateCart(item, "", 1);
+                        return 0;
+                      }
                       updateCart(item, "", e.target.value);
                     }}
                     _focus={{
