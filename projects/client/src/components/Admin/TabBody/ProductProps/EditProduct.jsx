@@ -22,75 +22,93 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  Textarea,
+  Select,
 } from "@chakra-ui/react";
 
-export const EditProduct = ({ user, setReload }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    // console.log(user);
-  
-    return (
-      <Box>
-        <Button onClick={onOpen}>Edit</Button>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <EditForm user={user} setReload={setReload} close={onClose} />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </Box>
-    );
+export const EditProduct = ({ getProducts, category, item }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  // console.log(user);
+
+  return (
+    <Box>
+      <Button onClick={onOpen}>Edit</Button>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Modal Title</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <EditForm
+              close={onClose}
+              category_name={category}
+              getProducts={getProducts}
+              item={item}
+            />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
+  );
+};
+
+const EditForm = ({ close, category_name, getProducts, item }) => {
+  const url = "http://localhost:8000/api/admin/add_product";
+
+  const name = useRef("");
+  const desc = useRef("");
+  const price = useRef("");
+  const weight = useRef("");
+  const ProductCategoryId = useRef("");
+
+  const editProduct = async () => {
+    try {
+      const editData = {
+        name: name.current.value,
+        desc: desc.current.value,
+        price: +price.current.value,
+        weight: +weight.current.value,
+        ProductCategoryId: +ProductCategoryId.current.value,
+      };
+      Axios.patch(url, editData);
+      getProducts();
+      close();
+    } catch (err) {
+      console.log(err);
+    }
   };
-  
-  const EditForm = ({ user, close, setReload }) => {
-    const url = `http://localhost:8000/api/admin/edit_user/${user.id}`;
-  
-    const email = useRef("");
-    const name = useRef("");
-    const role = useRef("");
-  
-    const editProduct = async () => {
-      try {
-        const editData = {
-          email: email.current.value,
-          name: name.current.value,
-          role: parseInt(role.current.value),
-        };
-        Axios.patch(url, editData);
-        setReload(true);
-        close();
-      } catch (err) {
-        console.log(err);
-      }
-    };
-  
-    return (
-      <Box>
-        <FormControl>
-          <FormLabel>Email</FormLabel>
-          <Input type="email" defaultValue={user.email} ref={email} />
-          <FormLabel>Name</FormLabel>
-          <Input defaultValue={user.name} ref={name} />
-          <FormLabel>Role</FormLabel>
-          <NumberInput defaultValue={user.role} min={1} max={3}>
-            <NumberInputField ref={role} />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={editProduct}>
-              Submit
-            </Button>
-            <Button colorScheme="blue" mr={3} onClick={close}>
-              Close
-            </Button>
-          </ModalFooter>
-        </FormControl>
-      </Box>
-    );
-  };
+
+  return (
+    <Box>
+      <FormControl>
+        <FormLabel>Category Name</FormLabel>
+        <Input defaultValue={item.name} ref={name} />
+        <FormLabel>Description</FormLabel>
+        <Textarea defaultValue={item.desc} ref={desc} />
+        <FormLabel>Price</FormLabel>
+        <Input defaultValue={item.price} ref={price} />
+        <FormLabel>Weight</FormLabel>
+        <Input defaultValue={item.weight} ref={weight} />
+        <FormLabel>Category</FormLabel>
+        <Select ref={ProductCategoryId} defaultValue={item.Product_Category.id}>
+          {console.log(item.Product_Category.category)}
+          {category_name?.map((item, index) => {
+            return (
+              <option value={item.id} key={index}>
+                {item.category}
+              </option>
+            );
+          })}
+        </Select>
+        <ModalFooter>
+          <Button colorScheme="blue" mr={3} onClick={editProduct}>
+            Submit
+          </Button>
+          <Button colorScheme="blue" mr={3} onClick={close}>
+            Close
+          </Button>
+        </ModalFooter>
+      </FormControl>
+    </Box>
+  );
+};

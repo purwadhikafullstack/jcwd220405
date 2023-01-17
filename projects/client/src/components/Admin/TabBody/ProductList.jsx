@@ -18,6 +18,7 @@ import {
 
 // props
 import { AddProduct } from "./ProductProps/AddProduct";
+import { EditProduct } from "./ProductProps/EditProduct";
 
 export const ProductList = () => {
   const url = "http://localhost:8000/api/admin/";
@@ -28,9 +29,9 @@ export const ProductList = () => {
   const getProducts = useCallback(async () => {
     try {
       const result = await Axios.get(url + "all_products");
-      const categoryResult = await Axios.get(url + "all_category")
+      const categoryResult = await Axios.get(url + "all_category");
       setProducts(result.data);
-      setCategory(categoryResult.data)
+      setCategory(categoryResult.data);
     } catch (err) {
       console.log(err);
     }
@@ -98,14 +99,14 @@ export const ProductList = () => {
                   </Td>
                   <Td>{item.price}</Td>
                   <Td>{item.weight}</Td>
-                  <Td>{item.Product_Category.category}</Td>
+                  <Td>{item?.Product_Category?.category}</Td>
                   <Td>
                     <Flex
                       gap={"20px"}
                       justifyContent={"center"}
                       alignItems={"center"}
                     >
-                      {/* <EditModal user={item} setReload={setReload} /> */}
+                      <EditProduct getProducts={getProducts} category={category} item={item}  />
                       <Button
                         onClick={() => {
                           deleteProduct(item.id);

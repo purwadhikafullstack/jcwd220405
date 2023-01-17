@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const db = require("../../../models");
 const product = db.Product;
-const category = db.Product_Category
+const category = db.Product_Category;
 
 module.exports = {
   AddProduct: async (req, res) => {
@@ -52,10 +52,21 @@ module.exports = {
   },
   allProduct: async (req, res) => {
     try {
+      const { sort, direction, pagination } = req.query;
+
       const result = await product.findAll({
         include: [
-          { model: category }
-        ]
+          {
+            model: category,
+            // attributes: {
+            //   exclude: ["createdAt", "updatedAt"],
+            // },
+          },
+        ],
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination : 0,
+        // raw: true,
       });
 
       res.status(200).send(result);

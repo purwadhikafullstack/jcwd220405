@@ -61,7 +61,7 @@ const AddForm = ({ close, category_name, getProducts }) => {
         desc: desc.current.value,
         price: +price.current.value,
         weight: +weight.current.value,
-        ProductCategoryId: ProductCategoryId.current.value,
+        ProductCategoryId: +ProductCategoryId.current.value,
       };
       // console.log(data);
       await Axios.post(url, data);
