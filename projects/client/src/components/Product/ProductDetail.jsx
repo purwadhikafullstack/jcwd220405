@@ -9,6 +9,7 @@ import {
   Grid,
   GridItem,
   Text,
+  useMediaQuery,
 } from "@chakra-ui/react";
 
 import { ProductDetailImage } from "./ProductDetailImage";
@@ -18,6 +19,7 @@ const baseApi = process.env.REACT_APP_API_BASE_URL;
 const baseServer = process.env.REACT_APP_SERVER;
 
 export const ProductDetail = () => {
+  const [setDir] = useMediaQuery("(max-width: 1050px)");
   const { name } = useParams();
   const [product, setProduct] = useState([]);
   const [imageProduct, setImageProduct] = useState([]);
@@ -25,11 +27,13 @@ export const ProductDetail = () => {
   const [weight, setWeight] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [subtotal, setSubtotal] = useState(0);
+  const [category, setCategory] = useState();
   const url_detail = `${baseApi}/product/detail/${name}`;
 
   const getProduct = async () => {
     const response = await (await axios.get(url_detail)).data;
     setProduct(response);
+    setCategory(response.Product_Category.category);
     setImageProduct(response.Product_Images);
     const stock = response.Details.map((item) => item.stocks).reduce(
       (a, b) => a + b,
@@ -47,19 +51,24 @@ export const ProductDetail = () => {
     getProduct();
   }, []);
   return (
-    <Container maxW={"inherit"} h={"85vh"} color={"white"} px={"32"}>
-      <Grid
-        templateColumns="repeat(3, 1fr)"
-        gap={2}
-        templateRows={{ base: "repeat(3, 1fr)", md: 1 }}
+    <Container
+      maxW={"inherit"}
+      minH={"85vh"}
+      color={"white"}
+      px={{ base: "4", md: "32" }}
+    >
+      <Box
+        display={"flex"}
+        flexDirection={setDir ? "column" : "row"}
+        gap={{ base: "2", md: "4" }}
       >
-        <GridItem px={6} pt={2} gridRow={{ base: 1, md: 1 }}>
+        <Box px={6} pt={2} m={setDir ? "auto" : "0"}>
           <ProductDetailImage
             baseServer={baseServer}
             imageProduct={imageProduct}
           />
-        </GridItem>
-        <GridItem p={2} gridRow={{ base: 2, md: 1 }}>
+        </Box>
+        <Box p={2} px={6} w={setDir ? "100%" : "40%"}>
           <Box>
             <Text fontSize={"2xl"} fontWeight={"extrabold"}>
               {product?.name}
@@ -85,20 +94,20 @@ export const ProductDetail = () => {
               Category:{" "}
               <Text
                 as={Link}
-                to={`/product?search_query=${product?.category}`}
+                to={`/product?search_query=${category}`}
                 color={"rgb(213, 75, 121)"}
                 textTransform={"capitalize"}
                 fontWeight={"semibold"}
               >
-                {product?.category}
+                {category}
               </Text>
             </Text>
           </Box>
           <Box h={"242px"} overflow={"auto"}>
             <Text>{product?.desc}</Text>
           </Box>
-        </GridItem>
-        <GridItem px={"16"} pt={4} gridRow={{ base: 3, md: 1 }}>
+        </Box>
+        <Box px={"6"} pt={4}>
           <SectionAddCart
             quantity={quantity}
             setQuantity={setQuantity}
@@ -107,9 +116,10 @@ export const ProductDetail = () => {
             product={product}
             baseApi={baseApi}
             baseServer={baseServer}
+            imageProduct={imageProduct}
           />
-        </GridItem>
-      </Grid>
+        </Box>
+      </Box>
     </Container>
   );
 };

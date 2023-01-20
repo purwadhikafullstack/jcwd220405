@@ -26,6 +26,7 @@ import { ProfilePage } from "./pages/ProfilePage/ProfilePage";
 import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { OrderListPage } from "./pages/OrderListPage";
+import { CheckoutPage } from "./pages/CheckoutPage/CheckoutPage";
 
 import Axios from "axios";
 import { useEffect } from "react";
@@ -84,7 +85,7 @@ function App() {
 
   useEffect(() => {
     keepLogin();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     testApi();
@@ -113,7 +114,14 @@ function App() {
             </ProtectingRoute>
           }
         />
-
+        <Route
+          path="/cart/checkout"
+          element={
+            <ProtectingRoute>
+              <CheckoutPage />
+            </ProtectingRoute>
+          }
+        />
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/verification/:token" element={<VerificationPage />} />
         <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />

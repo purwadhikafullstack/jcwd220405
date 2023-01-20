@@ -1,3 +1,4 @@
+const fs = require("fs");
 const db = require("../../models");
 const user = db.User;
 const { Op } = require("sequelize");
@@ -5,6 +6,7 @@ const transporter = require("../helpers/transporter");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const key = process.env.OKAI_SECRET;
+const handlebars = require("handlebars");
 
 module.exports = {
   register: async (req, res) => {
@@ -16,12 +18,20 @@ module.exports = {
         raw: true,
       });
       if (isEmailExist) throw "Email have been used";
+
       const token = jwt.sign({ id: email }, key);
+
+      const tempEmail = fs.readFileSync("./src/template/email.html", "utf-8");
+      const tempCompile = handlebars.compile(tempEmail);
+      const tempResult = tempCompile({
+        link: `http://localhost:3000/verification/${token}`,
+      });
+
       await transporter.sendMail({
         from: "Admin",
         to: email,
         subject: "Verification Email",
-        html: `<a href="http://localhost:3000/verification/${token}" target ="_blank"> Click here to verify </a>`,
+        html: tempResult,
       });
 
       await user.create({
@@ -143,7 +153,7 @@ module.exports = {
         raw: true,
       });
 
-      if (!isEmailExist) throw "Email incorrect";
+      if (!isEmailExist) throw "Email incorrect/not found";
 
       const token = jwt.sign({ id: email }, key);
       await transporter.sendMail({
