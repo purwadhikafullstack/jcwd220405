@@ -81,7 +81,7 @@ export const OrderListPage = () => {
         </Text>
         <Divider />
       </Box>
-      {orderList.length ? (
+      {orderList?.length ? (
         <Box
           // display={"flex"}
           // justifyContent={"space-between"}

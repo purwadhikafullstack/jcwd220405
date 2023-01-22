@@ -65,6 +65,13 @@ module.exports = {
         raw: true,
       });
 
+      if (
+        duplicateProductCart?.quantity >= 5 ||
+        duplicateProductCart?.quantity + quantity > 5
+      ) {
+        throw "Max purchases 5";
+      }
+
       if (duplicateProductCart) {
         await Cart.update(
           { quantity: duplicateProductCart.quantity + +quantity, price: price },

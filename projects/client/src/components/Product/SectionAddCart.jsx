@@ -3,7 +3,6 @@ import {
   Box,
   Button,
   Card,
-  CardBody,
   Divider,
   Image,
   Modal,
@@ -35,6 +34,7 @@ export const SectionAddCart = ({
   product,
   baseApi,
   baseServer,
+  imageProduct,
 }) => {
   const { id, is_verified } = useSelector((state) => state.userSlice.value);
   const toast = useToast();
@@ -84,17 +84,23 @@ export const SectionAddCart = ({
 
       const cart = await (await axios.get(`${baseApi}/cart/${id}`)).data;
       dispatch(cartUser(cart.result));
-      return toast({
+
+      toast({
         title: `Successfully Added`,
         status: "success",
         position: "top",
         isClosable: true,
       });
 
-      // error
-      // return onOpen();
+      return onOpen();
     } catch (error) {
       console.error(error);
+      return toast({
+        title: `${error.response.data}`,
+        status: "error",
+        position: "top",
+        isClosable: true,
+      });
     }
   };
 
@@ -108,7 +114,7 @@ export const SectionAddCart = ({
       >
         <Text>Set the quantity</Text>
         <Divider my={"3"} />
-        <Box display={"flex"} gap={2} alignItems={"center"} mb={"5"}>
+        <Box display={"flex"} gap={2} alignItems={"center"}>
           <Box width={"45%"} hidden={totalStock ? false : true}>
             <NumberInput
               size={"md"}
@@ -120,10 +126,8 @@ export const SectionAddCart = ({
               <NumberInputField
                 accept="num"
                 onChange={(e) => {
-                  setQuantity(+e.target.value);
                   if (e.target.value === "") {
-                    setQuantity(0);
-                    return 0;
+                    return setQuantity(0);
                   }
                   if (e.target.value < 1) {
                     return setQuantity(1);
@@ -131,6 +135,7 @@ export const SectionAddCart = ({
                   if (e.target.value > 5) {
                     return setQuantity(5);
                   }
+                  setQuantity(+e.target.value);
                 }}
               />
               <NumberInputStepper>
@@ -138,7 +143,7 @@ export const SectionAddCart = ({
                   bg="rgb(213, 75, 121)"
                   children="+"
                   onClick={() => {
-                    if (quantity !== totalStock) setQuantity(quantity + 1);
+                    if (quantity < 5) setQuantity(quantity + 1);
                   }}
                 />
                 <NumberDecrementStepper
@@ -157,6 +162,9 @@ export const SectionAddCart = ({
               {totalStock}
             </Text>
           </Text>
+        </Box>
+        <Box mb={"5"} color={"rgba(123,123,123,.69)"}>
+          <Text>max : 5</Text>
         </Box>
         <Box display={"flex"} justifyContent={"space-between"} mb={"4"}>
           <Text color={"gray"}>Subtotal</Text>
@@ -177,7 +185,7 @@ export const SectionAddCart = ({
           >
             + Cart
           </Button>
-          {/* <Modal isOpen={isOpen} onClose={onClose} size="3xl">
+          <Modal isOpen={isOpen} onClose={onClose} size="3xl">
             <ModalOverlay />
             <ModalContent>
               <ModalHeader m={"auto"}>Successfully Added</ModalHeader>
@@ -202,7 +210,11 @@ export const SectionAddCart = ({
                           borderRadius={"xl"}
                           width="full"
                           height="full"
-                          src={`${baseServer}${product?.Product_Images[0].image}`}
+                          src={
+                            imageProduct
+                              ? `${baseServer}${imageProduct[0]?.image}`
+                              : ""
+                          }
                           alt="Product"
                         />
                       </Box>
@@ -222,7 +234,7 @@ export const SectionAddCart = ({
                 </Card>
               </ModalBody>
             </ModalContent>
-          </Modal> */}
+          </Modal>
         </Box>
       </Box>
     </>

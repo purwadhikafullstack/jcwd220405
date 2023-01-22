@@ -20,24 +20,19 @@ import {
   Select,
 } from "@chakra-ui/react";
 
-export const EditModal = ({ warehouse, setReload, admin }) => {
+export const AddWarehouse = ({ getWarehouse, admin }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen} background={"#C146ED"}>Edit</Button>
+      <Button onClick={onOpen}>Add</Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Warehouse</ModalHeader>
+          <ModalHeader>Add Warehouse</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <EditForm
-              warehouse={warehouse}
-              setReload={setReload}
-              close={onClose}
-              admin={admin}
-            />
+            <AddForm close={onClose} admin={admin} getWarehouse={getWarehouse} />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -45,8 +40,8 @@ export const EditModal = ({ warehouse, setReload, admin }) => {
   );
 };
 
-const EditForm = ({ warehouse, close, setReload, admin }) => {
-  const url = `http://localhost:8000/api/admin/edit_warehouse/${warehouse.id}`;
+const AddForm = ({ close, getWarehouse, admin }) => {
+  const url = "http://localhost:8000/api/admin/add_warehouse";
 
   const warehouse_name = useRef("");
   const province = useRef("");
@@ -54,19 +49,18 @@ const EditForm = ({ warehouse, close, setReload, admin }) => {
   const postal_code = useRef("");
   const UserId = useRef("");
 
-  console.log(admin);
-  const editWarehouse = async () => {
+  const addWarehouse = async () => {
     try {
-      const editData = {
+      const data = {
         warehouse_name: warehouse_name.current.value,
         province: province.current.value,
         city: city.current.value,
         postal_code: postal_code.current.value,
         UserId: UserId.current.value,
       };
-      // console.log(editData);
-      Axios.patch(url, editData);
-      setReload(true);
+      // console.log(data);
+      await Axios.post(url, data);
+      getWarehouse()
       close();
     } catch (err) {
       console.log(err);
@@ -77,20 +71,15 @@ const EditForm = ({ warehouse, close, setReload, admin }) => {
     <Box>
       <FormControl>
         <FormLabel>Warehouse Name</FormLabel>
-        <Input defaultValue={warehouse.warehouse_name} ref={warehouse_name} />
+        <Input ref={warehouse_name} />
         <FormLabel>Province</FormLabel>
-        <Input defaultValue={warehouse.province} ref={province} />
+        <Input ref={province} />
         <FormLabel>City</FormLabel>
-        <Input defaultValue={warehouse.city} ref={city} />
+        <Input ref={city} />
         <FormLabel>Postal Code</FormLabel>
-        <Input
-          type={"number"}
-          defaultValue={warehouse.postal_code}
-          ref={postal_code}
-        />
+        <Input type={"number"} ref={postal_code} />
         <FormLabel>Admin Id</FormLabel>
-        {/* <Input defaultValue={warehouse.UserId} ref={UserId} /> */}
-        <Select ref={UserId} defaultValue={warehouse.UserId} >
+        <Select ref={UserId}>
           {admin.map((item, index) => {
             return (
               <option value={item.id} key={index}>
@@ -100,7 +89,7 @@ const EditForm = ({ warehouse, close, setReload, admin }) => {
           })}
         </Select>
         <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={editWarehouse}>
+          <Button colorScheme="blue" mr={3} onClick={addWarehouse}>
             Submit
           </Button>
           <Button colorScheme="blue" mr={3} onClick={close}>

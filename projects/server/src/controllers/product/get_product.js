@@ -1,7 +1,7 @@
 const db = require("../../../models");
 const { Op } = require("sequelize");
 const Product = db.Product;
-const Warehouse = db.Warehouse;
+const productCategory = db.Product_Category;
 const productImage = db.Product_Image;
 const productWarehouses = db.Product_Warehouses;
 const Sequelize = require("sequelize");
@@ -36,21 +36,21 @@ module.exports = {
                 ],
               },
             },
-            {
-              category: {
-                [Op.like]: "%" + search + "%",
-              },
-              price: {
-                [Op.and]: [
-                  {
-                    [Op.gte]: price_min,
-                  },
-                  {
-                    [Op.lte]: price_max,
-                  },
-                ],
-              },
-            },
+            // {
+            //   category: {
+            //     [Op.like]: "%" + search + "%",
+            //   },
+            //   price: {
+            //     [Op.and]: [
+            //       {
+            //         [Op.gte]: price_min,
+            //       },
+            //       {
+            //         [Op.lte]: price_max,
+            //       },
+            //     ],
+            //   },
+            // },
           ],
         },
       });
@@ -65,6 +65,11 @@ module.exports = {
             required: true,
           },
           {
+            model: productCategory,
+            attributes: ["category"],
+            required: true,
+          },
+          {
             model: productWarehouses,
             as: "Details",
             required: true,
@@ -76,7 +81,6 @@ module.exports = {
           "desc",
           "price",
           "weight",
-          "category",
           [Sequelize.fn("SUM", Sequelize.col("stocks")), "product_stocks"],
         ],
         group: ["ProductId"],
@@ -97,21 +101,22 @@ module.exports = {
                 ],
               },
             },
-            {
-              category: {
-                [Op.like]: "%" + search + "%",
-              },
-              price: {
-                [Op.and]: [
-                  {
-                    [Op.gte]: price_min,
-                  },
-                  {
-                    [Op.lte]: price_max,
-                  },
-                ],
-              },
-            },
+            // {
+            //   category: {
+            //     [Op.like]: "%" + search + "%",
+            //   },
+            //   price: {
+            //     [Op.and]: [
+            //       {
+            //         [Op.gte]: price_min,
+            //       },
+            //       {
+            //         [Op.lte]: price_max,
+            //       },
+            //     ],
+            //   },
+            // },
+            //
           ],
         },
         offset: offset,
@@ -141,6 +146,11 @@ module.exports = {
             attributes: {
               exclude: ["createdAt", "updatedAt"],
             },
+            required: true,
+          },
+          {
+            model: productCategory,
+            attributes: ["category"],
             required: true,
           },
           {
