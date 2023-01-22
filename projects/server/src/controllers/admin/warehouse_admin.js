@@ -7,13 +7,15 @@ module.exports = {
     try {
       const { sort, direction, pagination } = req.query;
 
+      const pages = Math.ceil((await warehouse.count()) / 10);
+
       const result = await warehouse.findAll({
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
         limit: 10,
-        offset: pagination ? +pagination : 0,
+        offset: pagination ? +pagination * 10 : 0,
         raw: true,
       });
-      res.status(200).send(result);
+      res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -23,6 +25,16 @@ module.exports = {
     try {
       const { search, sort, direction, pagination } = req.query;
 
+      const pages = Math.ceil(
+        (await warehouse.count({
+          where: {
+            warehouse_name: {
+              [Op.like]: search ? `%${search}%` : "",
+            },
+          },
+        })) / 10
+      );
+
       const result = await warehouse.findAll({
         where: {
           warehouse_name: {
@@ -31,11 +43,11 @@ module.exports = {
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
         limit: 5,
-        offset: pagination ? +pagination : 0,
+        offset: pagination ? +pagination * 10 : 0,
         raw: true,
       });
 
-      res.status(200).send(result);
+      res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
     }

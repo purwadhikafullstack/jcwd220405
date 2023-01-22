@@ -10,28 +10,38 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
   Select,
   Textarea,
+  Center,
+  IconButton,
 } from "@chakra-ui/react";
+
+// icons
+import { CgMathPlus } from "react-icons/cg";
+import { RxCheck, RxCross1 } from "react-icons/rx";
 
 export const AddProduct = ({ getProducts, category }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen}>Add</Button>
+      <Button
+        onClick={onOpen}
+        leftIcon={<CgMathPlus />}
+        bg={"#7dc67f"}
+        _hover={{ bg: "#abdbad" }}
+      >
+        New Product
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Product</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader textAlign={"center"}>Add Product</ModalHeader>
           <ModalBody>
             <AddForm
               close={onClose}
@@ -63,7 +73,6 @@ const AddForm = ({ close, category_name, getProducts }) => {
         weight: +weight.current.value,
         ProductCategoryId: +ProductCategoryId.current.value,
       };
-      // console.log(data);
       await Axios.post(url, data);
       getProducts();
       close();
@@ -94,14 +103,20 @@ const AddForm = ({ close, category_name, getProducts }) => {
             );
           })}
         </Select>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={addProduct}>
-            Submit
-          </Button>
-          <Button colorScheme="blue" mr={3} onClick={close}>
-            Close
-          </Button>
-        </ModalFooter>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={addProduct}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
       </FormControl>
     </Box>
   );

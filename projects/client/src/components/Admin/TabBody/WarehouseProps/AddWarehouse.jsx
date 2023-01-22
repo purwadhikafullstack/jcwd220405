@@ -10,29 +10,43 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
   Select,
+  Center,
+  IconButton,
 } from "@chakra-ui/react";
+
+// icons
+import { CgMathPlus } from "react-icons/cg";
+import { RxCheck, RxCross1 } from "react-icons/rx";
 
 export const AddWarehouse = ({ getWarehouse, admin }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen}>Add</Button>
+      <Button
+        onClick={onOpen}
+        leftIcon={<CgMathPlus />}
+        bg={"#7dc67f"}
+        _hover={{ bg: "#abdbad" }}
+      >
+        New Warehouse
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Warehouse</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader textAlign={"center"}>Add Warehouse</ModalHeader>
           <ModalBody>
-            <AddForm close={onClose} admin={admin} getWarehouse={getWarehouse} />
+            <AddForm
+              close={onClose}
+              admin={admin}
+              getWarehouse={getWarehouse}
+            />
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -60,7 +74,7 @@ const AddForm = ({ close, getWarehouse, admin }) => {
       };
       // console.log(data);
       await Axios.post(url, data);
-      getWarehouse()
+      getWarehouse();
       close();
     } catch (err) {
       console.log(err);
@@ -88,14 +102,20 @@ const AddForm = ({ close, getWarehouse, admin }) => {
             );
           })}
         </Select>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={addWarehouse}>
-            Submit
-          </Button>
-          <Button colorScheme="blue" mr={3} onClick={close}>
-            Close
-          </Button>
-        </ModalFooter>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={addWarehouse}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
       </FormControl>
     </Box>
   );

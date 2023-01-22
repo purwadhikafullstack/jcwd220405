@@ -1,10 +1,9 @@
 // react
 import Axios from "axios";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 // chakra
 import {
-  Button,
   Table,
   Thead,
   Tbody,
@@ -14,28 +13,71 @@ import {
   TableContainer,
   Flex,
   Box,
+  Center,
+  InputGroup,
+  Input,
+  InputRightElement,
+  IconButton,
+  Stack,
+  Skeleton,
+  Text,
 } from "@chakra-ui/react";
+
+// icons
+import { BiSearch } from "react-icons/bi";
+import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
+import { SlArrowRight, SlArrowLeft } from "react-icons/sl";
+import { RxReload } from "react-icons/rx";
 
 // props
 import { AddProduct } from "./ProductProps/AddProduct";
 import { EditProduct } from "./ProductProps/EditProduct";
 
 export const ProductList = () => {
-  const url = "http://localhost:8000/api/admin/";
+  const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();
+  const [sort, setSort] = useState();
+  const [direction, setDirection] = useState();
+  const [pagination, setPagination] = useState(0);
+  const [pages, setPages] = useState();
+  const [search, setSearch] = useState(``);
+
+  const searchValue = useRef(``);
+
+  const rupiahID = Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
 
   const getProducts = useCallback(async () => {
     try {
-      const result = await Axios.get(url + "all_products");
-      const categoryResult = await Axios.get(url + "all_category");
-      setProducts(result.data);
-      setCategory(categoryResult.data);
+      const productURL =
+        search === ``
+          ? url + `all_products?`
+          : url + `filter_product?search=${search}&`;
+      const sortURL = sort ? productURL + `sort=${sort}&` : productURL;
+      const directionURL = direction
+        ? sortURL + `direction=${direction}&`
+        : sortURL;
+      const paginationURL = pagination
+        ? directionURL + `pagination=${pagination}`
+        : directionURL;
+      const resultProducts = await Axios.get(paginationURL);
+      const resultCategories = await Axios.get(url + "all_category");
+      setProducts(resultProducts.data.result);
+      setPages(resultProducts.data.pages);
+      setCategory(resultCategories.data.result);
+
+      console.log(resultProducts.data.result)
+
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
-  }, []);
+  }, [url, direction, pagination, search, sort]);
 
   const deleteProduct = async (id) => {
     try {
@@ -51,77 +93,192 @@ export const ProductList = () => {
   }, [getProducts]);
 
   const tableHead = [
-    { name: "Id", origin: "id" },
-    { name: "Name", origin: "name" },
-    { name: "Desc", origin: "desc" },
-    { name: "Price", origin: "price" },
-    { name: "Weight", origin: "weight" },
-    { name: "Category", origin: "ProductCategoryId" },
+    { name: "Id", origin: "id", width: "50px" },
+    { name: "Name", origin: "name", width: "200px" },
+    { name: "Desc", origin: "desc", width: "600px" },
+    { name: "Price", origin: "price", width: "200px" },
+    { name: "Weight", origin: "weight", width: "150px" },
+    { name: "Category", origin: "ProductCategoryId", width: "150px" },
   ];
 
   return (
-    <Box>
-      <AddProduct getProducts={getProducts} category={category} />
-      <TableContainer>
-        <Table variant="simple">
+    <Box padding={{ base: "10px", lg: "0" }}>
+      <Center paddingBottom={"12px"}>
+        <Stack>
+          <Flex>
+            <Box paddingRight={"12px"}>
+              <InputGroup w={{ base: "200px", lg: "400px" }}>
+                <Input
+                  placeholder={"Search"}
+                  _focusVisible={{ border: "1px solid #b759b4" }}
+                  ref={searchValue}
+                />
+                <InputRightElement>
+                  <IconButton
+                    type={"submit"}
+                    aria-label="Search database"
+                    bg={"none"}
+                    opacity={"50%"}
+                    _hover={{ bg: "none", opacity: "100%" }}
+                    icon={<BiSearch />}
+                    onClick={() => {
+                      setSearch(searchValue.current.value);
+                    }}
+                  />
+                </InputRightElement>
+              </InputGroup>
+            </Box>
+            <IconButton
+              icon={<RxReload />}
+              onClick={() => {
+                getProducts();
+              }}
+            />
+          </Flex>
+          <Center>
+            <AddProduct getProducts={getProducts} category={category} />
+          </Center>
+        </Stack>
+      </Center>
+      <TableContainer borderRadius={"10px"}>
+        <Table>
           <Thead>
             <Tr>
               {tableHead.map((item, index) => {
                 return (
                   <Th
                     key={index}
-                    border={"1px solid black"}
-                    // onClick={() => {
-                    //   setSort(item.origin);
-                    //   setPagination(0);
-                    //   setPage(0);
-                    // }}
+                    bg={"#b759b4"}
+                    textAlign={"center"}
+                    color={"white"}
+                    width={item.width}
+                    borderY={"none"}
                   >
-                    {item.name}
+                    <Center>
+                      <Flex gap={"5px"}>
+                        <Center>{item.name}</Center>
+                        <Stack>
+                          <IconButton
+                            icon={<BsArrowUp />}
+                            size={"xs"}
+                            color={"black"}
+                            onClick={() => {
+                              setSort(item.origin);
+                              setPagination(0);
+                              setDirection("ASC");
+                            }}
+                            bg={"none"}
+                          />
+                          <IconButton
+                            icon={<BsArrowDown />}
+                            size={"xs"}
+                            color={"black"}
+                            onClick={() => {
+                              setSort(item.origin);
+                              setPagination(0);
+                              setDirection("DESC");
+                            }}
+                            bg={"none"}
+                          />
+                        </Stack>
+                      </Flex>
+                    </Center>
                   </Th>
                 );
               })}
-              <Th textAlign={"center"} border={"1px solid black"}>
+              <Th
+                bg={"#b759b4"}
+                textAlign={"center"}
+                color={"white"}
+                w={"200px"}
+                borderY={"none"}
+              >
                 Action
               </Th>
             </Tr>
           </Thead>
-          {products?.map((item, index) => {
-            return (
-              <Tbody key={index}>
-                <Tr>
-                  <Td w={"50px"}>{item.id}</Td>
-                  <Td maxW={"300px"} whiteSpace={"pre-wrap"}>
-                    {item.name}
-                  </Td>
-                  <Td maxW={"300px"} whiteSpace={"pre-wrap"}>
-                    {item.desc}
-                  </Td>
-                  <Td>{item.price}</Td>
-                  <Td>{item.weight}</Td>
-                  <Td>{item?.Product_Category?.category}</Td>
-                  <Td>
-                    <Flex
-                      gap={"20px"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-                      <EditProduct getProducts={getProducts} category={category} item={item}  />
-                      <Button
-                        onClick={() => {
-                          deleteProduct(item.id);
-                        }}
+          {products ? (
+            products?.map((item, index) => {
+              return (
+                <Tbody key={index} bg={"#efdbef"} _hover={{ bg: "#e9cde8" }}>
+                  <Tr>
+                    <Td>{item.id}</Td>
+                    <Td whiteSpace={"pre-wrap"}>{item.name}</Td>
+                    <Td whiteSpace={"pre-wrap"}>{item.desc}</Td>
+                    <Td textAlign={"center"}>{rupiahID.format(item.price)}</Td>
+                    <Td textAlign={"center"}>{item.weight}g</Td>
+                    <Td textAlign={"center"}>
+                      {item?.Product_Category?.category}
+                    </Td>
+                    {console.log(item?.Product_Category?.category)}
+                    <Td>
+                      <Flex
+                        gap={"20px"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
                       >
-                        Delete
-                      </Button>
-                    </Flex>
-                  </Td>
-                </Tr>
-              </Tbody>
-            );
-          })}
+                        <EditProduct
+                          getProducts={getProducts}
+                          category={category}
+                          item={item}
+                        />
+                        <IconButton
+                          onClick={() => {
+                            deleteProduct(item.id);
+                          }}
+                          bg={"none"}
+                          color={"#ff4d4d"}
+                          icon={<BsFillTrashFill />}
+                        />
+                      </Flex>
+                    </Td>
+                  </Tr>
+                </Tbody>
+              );
+            })
+          ) : (
+            <Tbody>
+              <Tr>
+                {tableHead.map((item, index) => {
+                  return (
+                    <Td key={index}>
+                      <Skeleton h={"10px"} />
+                    </Td>
+                  );
+                })}
+                <Td>
+                  <Skeleton h={"10px"} />
+                </Td>
+              </Tr>
+            </Tbody>
+          )}
         </Table>
       </TableContainer>
+      <Center paddingY={"10px"}>
+        {pagination <= 0 ? (
+          <IconButton icon={<SlArrowLeft />} disabled />
+        ) : (
+          <IconButton
+            onClick={() => {
+              setPagination(pagination - 1);
+            }}
+            icon={<SlArrowLeft />}
+          />
+        )}
+        <Text paddingX={"10px"}>
+          {pagination + 1} of {pages}
+        </Text>
+        {pagination < pages - 1 ? (
+          <IconButton
+            icon={<SlArrowRight />}
+            onClick={() => {
+              setPagination(pagination + 1);
+            }}
+          />
+        ) : (
+          <IconButton icon={<SlArrowRight />} disabled />
+        )}
+      </Center>
     </Box>
   );
 };

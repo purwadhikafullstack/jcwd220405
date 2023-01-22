@@ -54,22 +54,20 @@ module.exports = {
     try {
       const { sort, direction, pagination } = req.query;
 
+      const pages = Math.ceil((await product.count()) / 10);
+
       const result = await product.findAll({
         include: [
           {
             model: category,
-            // attributes: {
-            //   exclude: ["createdAt", "updatedAt"],
-            // },
           },
         ],
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
         limit: 10,
-        offset: pagination ? +pagination : 0,
-        // raw: true,
+        offset: pagination ? (+pagination * 10) : 0,
       });
 
-      res.status(200).send(result);
+      res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -79,19 +77,33 @@ module.exports = {
     try {
       const { search, sort, direction, pagination } = req.query;
 
-      //   const result = await product.findAll({
-      //     where: {
-      //       warehouse_name: {
-      //         [Op.like]: search ? `%${search}%` : "",
-      //       },
-      //     },
-      //     order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-      //     limit: 5,
-      //     offset: pagination ? +pagination : 0,
-      //     raw: true,
-      //   });
+      const pages = Math.ceil(
+        (await product.count({
+          where: {
+            name: {
+              [Op.like]: `%${search}%`,
+            },
+          },
+        })) / 10
+      );
 
-      res.status(200).send("result");
+      const result = await product.findAll({
+        where: {
+          name: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        include: [
+          {
+            model: category,
+          },
+        ],
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? (+pagination * 10) : 0,
+      });
+
+      res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
