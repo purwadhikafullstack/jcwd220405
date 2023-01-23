@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       Warehouse.belongsToMany(models.Product, {
         through: "Product_Warehouses",
       });
+      Warehouse.hasMany(models.Transaction_Product_Warehouses);
     }
   }
   Warehouse.init(

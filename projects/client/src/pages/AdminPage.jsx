@@ -110,7 +110,7 @@ export const AdminPage = () => {
                 <MenuItem
                   onClick={() => {
                     onLogout();
-                    navigate("/")
+                    navigate("/");
                   }}
                 >
                   Sign out
@@ -177,7 +177,14 @@ export const AdminPage = () => {
   };
 
   const DrawerItems = () => {
-    const items = ["Users", "Warehouses", "Products", "Categories", "Reports"];
+    const items = [
+      "Users",
+      "Warehouses",
+      "Products",
+      "Categories",
+      "Order",
+      "Reports",
+    ];
 
     return (
       <Box>
@@ -193,7 +200,7 @@ export const AdminPage = () => {
           {items.map((item, index) => {
             return (
               <Button
-              key={index}
+                key={index}
                 borderRadius={0}
                 color={"white"}
                 bg={"none"}
