@@ -75,7 +75,7 @@ export const AddressModal = () => {
 
   return (
     <>
-      <Button onClick={onOpen} color="white" bg={"#D54B79"} m="auto" mb={5}>
+      <Button onClick={onOpen} color="black" bg={"#D54B79"} m="auto" mb={5}>
         Other address
       </Button>
       <Modal
