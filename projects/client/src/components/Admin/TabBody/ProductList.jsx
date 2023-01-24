@@ -21,6 +21,7 @@ import {
   Stack,
   Skeleton,
   Text,
+  Select,
 } from "@chakra-ui/react";
 
 // icons
@@ -38,13 +39,16 @@ export const ProductList = () => {
 
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();
-  const [sort, setSort] = useState();
-  const [direction, setDirection] = useState();
+  const [warehouses, setWarehouses] = useState();
+  const [warehouse, setWarehouse] = useState("All Stocks");
+  const [sort, setSort] = useState("id");
+  const [direction, setDirection] = useState("ASC");
   const [pagination, setPagination] = useState(0);
   const [pages, setPages] = useState();
   const [search, setSearch] = useState(``);
 
   const searchValue = useRef(``);
+  const warehouseValue = useRef(``);
 
   const rupiahID = Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -54,30 +58,35 @@ export const ProductList = () => {
   const getProducts = useCallback(async () => {
     try {
       const productURL =
-        search === ``
-          ? url + `all_products?`
-          : url + `filter_product?search=${search}&`;
-      const sortURL = sort ? productURL + `sort=${sort}&` : productURL;
-      const directionURL = direction
-        ? sortURL + `direction=${direction}&`
-        : sortURL;
-      const paginationURL = pagination
-        ? directionURL + `pagination=${pagination}`
-        : directionURL;
-      const resultProducts = await Axios.get(paginationURL);
+        warehouse === `All Stocks`
+          ? /* search */
+            url +
+            // `all_products?sort=${sort}&direction=${direction}&pagination=${pagination}`
+            `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
+          : // : url +
+            // `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
+            /* search
+          ? */ url +
+            `filter_warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
+      // : url + `warehouse_products?warehouse=${warehouse}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
+
+      // console.log(productURL);
+
+      const resultProducts = await Axios.get(productURL);
       const resultCategories = await Axios.get(url + "all_category");
+      const resultWarehouse = await Axios.get(url + "all_warehouse");
+
       setProducts(resultProducts.data.result);
       setPages(resultProducts.data.pages);
       setCategory(resultCategories.data.result);
-
-      console.log(resultProducts.data.result)
+      setWarehouses(resultWarehouse.data.result);
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
-  }, [url, direction, pagination, search, sort]);
+  }, [url, direction, pagination, search, sort, warehouse]);
 
   const deleteProduct = async (id) => {
     try {
@@ -95,10 +104,11 @@ export const ProductList = () => {
   const tableHead = [
     { name: "Id", origin: "id", width: "50px" },
     { name: "Name", origin: "name", width: "200px" },
-    { name: "Desc", origin: "desc", width: "600px" },
+    { name: "Desc", origin: "desc", width: "500px" },
     { name: "Price", origin: "price", width: "200px" },
     { name: "Weight", origin: "weight", width: "150px" },
     { name: "Category", origin: "ProductCategoryId", width: "150px" },
+    { name: "Stocks", origin: "total_stocks", width: "150px" },
   ];
 
   return (
@@ -106,7 +116,7 @@ export const ProductList = () => {
       <Center paddingBottom={"12px"}>
         <Stack>
           <Flex>
-            <Box paddingRight={"12px"}>
+            <Box paddingRight={"5px"}>
               <InputGroup w={{ base: "200px", lg: "400px" }}>
                 <Input
                   placeholder={"Search"}
@@ -123,6 +133,9 @@ export const ProductList = () => {
                     icon={<BiSearch />}
                     onClick={() => {
                       setSearch(searchValue.current.value);
+                      setSort("id");
+                      setPagination(0);
+                      setDirection("ASC");
                     }}
                   />
                 </InputRightElement>
@@ -131,12 +144,38 @@ export const ProductList = () => {
             <IconButton
               icon={<RxReload />}
               onClick={() => {
-                getProducts();
+                setSearch("");
+                setSort("id");
+                setPagination(0);
+                setDirection("ASC");
               }}
             />
           </Flex>
           <Center>
-            <AddProduct getProducts={getProducts} category={category} />
+            <AddProduct
+              warehouses={warehouses}
+              getProducts={getProducts}
+              category={category}
+            />
+            <Select
+              ref={warehouseValue}
+              onChange={() => {
+                setWarehouse(warehouseValue.current.value);
+                setSort("id");
+                setPagination(0);
+                setDirection("ASC");
+              }}
+              paddingLeft={"5px"}
+            >
+              <option>All Stocks</option>
+              {warehouses?.map((item, index) => {
+                return (
+                  <option value={item.id} key={index}>
+                    {item.warehouse_name} Stocks
+                  </option>
+                );
+              })}
+            </Select>
           </Center>
         </Stack>
       </Center>
@@ -151,7 +190,7 @@ export const ProductList = () => {
                     bg={"#b759b4"}
                     textAlign={"center"}
                     color={"white"}
-                    width={item.width}
+                    w={item.width}
                     borderY={"none"}
                   >
                     <Center>
@@ -208,9 +247,9 @@ export const ProductList = () => {
                     <Td textAlign={"center"}>{rupiahID.format(item.price)}</Td>
                     <Td textAlign={"center"}>{item.weight}g</Td>
                     <Td textAlign={"center"}>
-                      {item?.Product_Category?.category}
+                      {item.Product_Category?.category}
                     </Td>
-                    {console.log(item?.Product_Category?.category)}
+                    <Td textAlign={"center"}>{+item.total_stocks}</Td>
                     <Td>
                       <Flex
                         gap={"20px"}
@@ -220,6 +259,7 @@ export const ProductList = () => {
                         <EditProduct
                           getProducts={getProducts}
                           category={category}
+                          warehouse={+warehouse}
                           item={item}
                         />
                         <IconButton

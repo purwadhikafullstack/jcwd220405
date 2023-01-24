@@ -25,7 +25,7 @@ import {
 import { CgMathPlus } from "react-icons/cg";
 import { RxCheck, RxCross1 } from "react-icons/rx";
 
-export const AddProduct = ({ getProducts, category }) => {
+export const AddProduct = ({ getProducts, category, warehouses }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -47,6 +47,7 @@ export const AddProduct = ({ getProducts, category }) => {
               close={onClose}
               category_name={category}
               getProducts={getProducts}
+              warehouses={warehouses}
             />
           </ModalBody>
         </ModalContent>
@@ -55,14 +56,16 @@ export const AddProduct = ({ getProducts, category }) => {
   );
 };
 
-const AddForm = ({ close, category_name, getProducts }) => {
-  const url = "http://localhost:8000/api/admin/add_product";
+const AddForm = ({ close, category_name, getProducts, warehouses }) => {
+  const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
   const name = useRef("");
   const desc = useRef("");
   const price = useRef("");
   const weight = useRef("");
   const ProductCategoryId = useRef("");
+
+  // console.log(warehouses);
 
   const addProduct = async () => {
     try {
@@ -73,7 +76,18 @@ const AddForm = ({ close, category_name, getProducts }) => {
         weight: +weight.current.value,
         ProductCategoryId: +ProductCategoryId.current.value,
       };
-      await Axios.post(url, data);
+      const result = await Axios.post(url + "add_product", data);
+
+      await warehouses.map(async(warehouse) => {
+        const stocks = {
+          stocks: 0,
+          ProductId: result.data.id,
+          WarehouseId: warehouse.id,
+        };
+
+        return await Axios.post(url + `add_stocks`, stocks);
+      });
+
       getProducts();
       close();
     } catch (err) {
@@ -89,12 +103,11 @@ const AddForm = ({ close, category_name, getProducts }) => {
         <FormLabel>Description</FormLabel>
         <Textarea ref={desc} />
         <FormLabel>Price</FormLabel>
-        <Input ref={price} />
+        <Input type={"number"} ref={price} />
         <FormLabel>Weight</FormLabel>
-        <Input ref={weight} />
+        <Input type={"number"} ref={weight} />
         <FormLabel>Category</FormLabel>
         <Select ref={ProductCategoryId}>
-          {/* <option value={null}>- SELECT -</option> */}
           {category_name?.map((item, index) => {
             return (
               <option value={item.id} key={index}>

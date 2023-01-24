@@ -74,7 +74,6 @@ const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
         };
         await Axios.patch(url, editData);
         getWarehouse();
-        // console.log("test")
       }
 
       close();

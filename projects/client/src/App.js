@@ -4,7 +4,7 @@ import "./App.css";
 // react
 import Axios from "axios";
 import { useEffect, useCallback } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 // components
 import { Layout } from "./components/Layout";

@@ -62,17 +62,17 @@ module.exports = {
             attributes: {
               exclude: ["createdAt", "updatedAt"],
             },
-            required: true,
+            // required: true,
           },
           {
             model: productCategory,
             attributes: ["category"],
-            required: true,
+            // required: true,
           },
           {
             model: productWarehouses,
             as: "Details",
-            required: true,
+            // required: true,
           },
         ],
         attributes: [
