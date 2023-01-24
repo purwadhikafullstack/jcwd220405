@@ -6,7 +6,7 @@ const initialState = {
     email: "",
     name: "",
     is_verified: 0,
-    role: 1,
+    role: 0,
   },
 };
 

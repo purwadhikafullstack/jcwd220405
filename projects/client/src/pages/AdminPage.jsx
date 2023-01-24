@@ -177,10 +177,14 @@ export const AdminPage = () => {
   };
 
   const DrawerItems = () => {
-    const items =
-      role === 3
-        ? ["Users", "Warehouses", "Products", "Categories", "Reports"]
-        : ["Products", "Categories", "Reports"];
+    const items = [
+      "Users",
+      "Warehouses",
+      "Products",
+      "Categories",
+      "Order",
+      "Reports",
+    ];
 
     return (
       <Box>

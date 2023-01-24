@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       Product.hasMany(models.Product_Warehouses, { as: "Details" });
       Product.belongsTo(models.Product_Category);
+      Product.hasMany(models.Transaction_Product_Warehouses);
     }
   }
   Product.init(
