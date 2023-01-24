@@ -63,6 +63,7 @@ function App() {
           email: result.data.email,
           name: result.data.name,
           is_verified: result.data.is_verified,
+          role: result.data.role,
         })
       );
 

@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      Product_Warehouses.belongsToMany(models.Transaction, {
-        through: "Transaction_Product_Warehouses",
-      });
+      // Product_Warehouses.belongsToMany(models.Transaction, {
+      //   through: "Transaction_Product_Warehouses",
+      // });
       Product_Warehouses.belongsTo(models.Product);
       Product_Warehouses.belongsTo(models.Warehouse);
     }
