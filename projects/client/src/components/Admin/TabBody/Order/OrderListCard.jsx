@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { GrSend } from "react-icons/gr";
 
-export const OrderListCard = ({ orderList, crossTitle }) => {
+export const OrderListCard = ({ orderList, crossTitle, rejectOrder }) => {
   return (
     <>
       <Box>
@@ -20,7 +20,9 @@ export const OrderListCard = ({ orderList, crossTitle }) => {
       {orderList?.length ? (
         <Box>
           {orderList?.map((item) => {
+            console.log(item);
             return item?.Transaction_Product_Warehouses?.map((item2, index) => {
+              console.log(item2);
               return (
                 <Box key={index} mb={"4"}>
                   <Box border={"2px"} borderRadius={"md"} py={"1"}>
@@ -37,7 +39,13 @@ export const OrderListCard = ({ orderList, crossTitle }) => {
                         </Text>
                       </Box>
                       <Box>
-                        <Text>{item?.Order_Status?.status}</Text>
+                        <Tooltip label={item?.Order_Status?.status}>
+                          <Text>
+                            {item?.OrderStatusId === 2
+                              ? crossTitle(item?.Order_Status?.status, 9, -6)
+                              : crossTitle(item?.Order_Status?.status, 0)}
+                          </Text>
+                        </Tooltip>
                       </Box>
                     </Box>
                     <Box
@@ -74,7 +82,7 @@ export const OrderListCard = ({ orderList, crossTitle }) => {
                           <Box>
                             <Tooltip hasArrow label={item2?.Product?.name}>
                               <Text fontWeight="bold">
-                                {crossTitle(item2?.Product?.name, 44)}
+                                {crossTitle(item2?.Product?.name, 0, 44)}
                               </Text>
                             </Tooltip>
                           </Box>
@@ -117,6 +125,7 @@ export const OrderListCard = ({ orderList, crossTitle }) => {
                             transform: "scale(1.1)",
                           }}
                           hidden={item?.OrderStatusId === 2 ? false : true}
+                          onClick={() => alert("c")}
                         >
                           Confirm
                         </Button>
@@ -132,9 +141,12 @@ export const OrderListCard = ({ orderList, crossTitle }) => {
                             border: "2px",
                             borderColor: "rgba(55,5,55,.96)",
                           }}
-                          hidden={item?.OrderStatusId <= 3 ? false : true}
+                          hidden={item?.OrderStatusId === 2 ? false : true}
+                          onClick={() =>
+                            rejectOrder(item.id, item.OrderStatusId)
+                          }
                         >
-                          Cancel
+                          Reject
                         </Button>
                       </Box>
                     </Box>

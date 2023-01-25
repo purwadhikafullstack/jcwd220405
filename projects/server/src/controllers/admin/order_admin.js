@@ -5,6 +5,7 @@ const Warehouse = db.Warehouse;
 const orderStatus = db.Order_Status;
 const User = db.User;
 const Product = db.Product;
+const ProductWarehouses = db.Product_Warehouses;
 const { Op } = require("sequelize");
 
 module.exports = {
@@ -110,6 +111,46 @@ module.exports = {
         raw: true,
       });
       res.status(200).send({ message: "Warehouse List", result: allWarehouse });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  rejectUserOrder: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.query;
+      if (status === "2") {
+        await Transaction.update({ OrderStatusId: 1 }, { where: { id: id } });
+        return res.status(201).send({ message: "Success Reject Order" });
+      }
+      return res.status(200).send({ message: "Reject Order" });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  confirmUserOrder: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.query;
+      const { quantity, WarehouseId, ProductId } = req.body;
+
+      const findStock = await ProductWarehouses.findOne({
+        where: { ProductId: ProductId, WarehouseId: WarehouseId },
+        raw: true,
+      });
+
+      if (status === "2") {
+        if (quantity <= findStock.stocks) {
+          await Transaction.update({ OrderStatusId: 3 }, { where: { id: id } });
+          return res.status(201).send({ message: "Success Confirm Order" });
+        } else {
+          console.log("buat cari warehouse");
+          return res.status(201).send({ message: "Confirm Order" });
+        }
+      }
+      return res.status(200).send({ message: "Confirm Order" });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

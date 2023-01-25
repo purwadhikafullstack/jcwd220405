@@ -5,6 +5,7 @@ import { OrderListCard } from "./OrderListCard";
 
 import { Box, Select } from "@chakra-ui/react";
 import { OrderListPagination } from "./OrderListPagination";
+import swal from "sweetalert";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -30,6 +31,23 @@ export const OrderList = () => {
       console.error(error);
     }
   }, [wrId, id, role, page]);
+
+  const rejectOrder = async (order, status) => {
+    try {
+      const once = await swal("Reject this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        await axios.post(
+          `${baseApi}/admin/order-cancel/${order}?status=${status}`
+        );
+        setTimeout(() => getOrderList(), 1000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const warehouseList = useCallback(async () => {
     try {
@@ -57,9 +75,9 @@ export const OrderList = () => {
     warehouseList();
   }, [getOrderList, warehouseList]);
 
-  const crossTitle = (str, num) => {
-    if (str?.length > num) {
-      return str.slice(0, num) + "...";
+  const crossTitle = (str, start, end) => {
+    if (str?.length > end) {
+      return str.slice(start, end) + "...";
     }
     return str;
   };
@@ -77,6 +95,7 @@ export const OrderList = () => {
             placeholder={wrId ? "Reset" : "--Select Warehouse--"}
             onChange={(e) => {
               setWrId(e.target.value);
+              setPage(1);
             }}
           >
             {renderWarehouse()}
@@ -84,7 +103,11 @@ export const OrderList = () => {
         </Box>
       </Box>
       <Box>
-        <OrderListCard orderList={orderList} crossTitle={crossTitle} />
+        <OrderListCard
+          orderList={orderList}
+          crossTitle={crossTitle}
+          rejectOrder={rejectOrder}
+        />
       </Box>
       <Box
         p={"4"}
