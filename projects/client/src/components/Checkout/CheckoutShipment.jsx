@@ -1,28 +1,6 @@
-import {
-  Box,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  Center,
-  ModalCloseButton,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  ModalBody,
-  Text,
-  useToast,
-  Container,
-  Heading,
-} from "@chakra-ui/react";
+import React from "react";
+import { Box, Container, Heading } from "@chakra-ui/react";
 import { Shipment } from "./Shipment";
-
-import Axios from "axios";
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 export const CheckoutShipment = () => {
   return (

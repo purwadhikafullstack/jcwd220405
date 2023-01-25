@@ -41,7 +41,6 @@ export const AddressModal = () => {
           `${baseApi}/address/${id}?search_query=${query ? query : ""}`
         )
       ).data;
-      console.log(address);
       setAddress(result);
     } catch (err) {
       console.log(err);

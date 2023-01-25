@@ -47,6 +47,7 @@ const {
 } = require("./routers");
 const { getProduct } = require("./routers/product");
 const { cart } = require("./routers/cart");
+const { shipment } = require("./routers/checkout");
 
 const { userComp, warehouseComp, productComp, categoryComp, userOrderList, stocksComp } =
   admin;
@@ -58,6 +59,7 @@ app.use("/api", userAddress);
 app.use("/api", getProduct);
 app.use("/api", orderList);
 app.use("/api", cart);
+app.use("/api", shipment);
 
 // admin
 
