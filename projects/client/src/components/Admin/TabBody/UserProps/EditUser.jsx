@@ -22,75 +22,92 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
+  IconButton,
+  Center,
 } from "@chakra-ui/react";
 
-export const EditUser = ({ user, setReload }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
-    // console.log(user);
-  
-    return (
-      <Box>
-        <Button onClick={onOpen}>Edit</Button>
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Modal Title</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <EditForm user={user} setReload={setReload} close={onClose} />
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-      </Box>
-    );
-  };
-  
-  const EditForm = ({ user, close, setReload }) => {
-    const url = `http://localhost:8000/api/admin/edit_user/${user.id}`;
-  
-    const email = useRef("");
-    const name = useRef("");
-    const role = useRef("");
-  
-    const editUser = async () => {
-      try {
+// icons
+import { BsFillGearFill } from "react-icons/bs";
+import { RxCheck, RxCross1 } from "react-icons/rx";
+
+export const EditUser = ({ user, getUsers }) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <Box>
+      <IconButton icon={<BsFillGearFill />} bg={"none"} onClick={onOpen} />
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader textAlign={"center"}>Edit User</ModalHeader>
+          <ModalBody>
+            <EditForm user={user} getUsers={getUsers} close={onClose} />
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
+  );
+};
+
+const EditForm = ({ user, close, getUsers }) => {
+  const url = `http://localhost:8000/api/admin/edit_user/${user.id}`;
+
+  const email = useRef("");
+  const name = useRef("");
+  const role = useRef("");
+
+  const editUser = async () => {
+    try {
+      if (
+        email.current.value !== user.email ||
+        name.current.value !== user.name ||
+        +role.current.value !== user.role
+      ) {
         const editData = {
           email: email.current.value,
           name: name.current.value,
-          role: parseInt(role.current.value),
+          role: +role.current.value,
         };
-        Axios.patch(url, editData);
-        setReload(true);
-        close();
-      } catch (err) {
-        console.log(err);
+        await Axios.patch(url, editData);
+        getUsers();
       }
-    };
-  
-    return (
-      <Box>
-        <FormControl>
-          <FormLabel>Email</FormLabel>
-          <Input type="email" defaultValue={user.email} ref={email} />
-          <FormLabel>Name</FormLabel>
-          <Input defaultValue={user.name} ref={name} />
-          <FormLabel>Role</FormLabel>
-          <NumberInput defaultValue={user.role} min={1} max={3}>
-            <NumberInputField ref={role} />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
-          <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={editUser}>
-              Submit
-            </Button>
-            <Button colorScheme="blue" mr={3} onClick={close}>
-              Close
-            </Button>
-          </ModalFooter>
-        </FormControl>
-      </Box>
-    );
+
+      close();
+    } catch (err) {
+      console.log(err);
+    }
   };
+
+  return (
+    <Box>
+      <FormControl>
+        <FormLabel>Email</FormLabel>
+        <Input type="email" defaultValue={user.email} ref={email} />
+        <FormLabel>Name</FormLabel>
+        <Input defaultValue={user.name} ref={name} />
+        <FormLabel>Role</FormLabel>
+        <NumberInput defaultValue={user.role} min={1} max={3}>
+          <NumberInputField ref={role} />
+          <NumberInputStepper>
+            <NumberIncrementStepper />
+            <NumberDecrementStepper />
+          </NumberInputStepper>
+        </NumberInput>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={editUser}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
+      </FormControl>
+    </Box>
+  );
+};

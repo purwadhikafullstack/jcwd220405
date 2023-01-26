@@ -18,8 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     {
       received_name: { type: DataTypes.STRING, allowNull: false },
       province: { type: DataTypes.STRING, allowNull: false },
+      province_id: { type: DataTypes.STRING, allowNull: true },
       city_type: { type: DataTypes.STRING, allowNull: false },
       city: { type: DataTypes.STRING, allowNull: false },
+      city_id: { type: DataTypes.STRING, allowNull: true },
       postal_code: { type: DataTypes.STRING, allowNull: false },
       full_address: { type: DataTypes.STRING, allowNull: false },
       status: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: 0 },

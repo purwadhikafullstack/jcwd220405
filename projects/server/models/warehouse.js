@@ -16,13 +16,16 @@ module.exports = (sequelize, DataTypes) => {
       Warehouse.belongsToMany(models.Product, {
         through: "Product_Warehouses",
       });
+      Warehouse.hasMany(models.Transaction_Product_Warehouses);
     }
   }
   Warehouse.init(
     {
       warehouse_name: DataTypes.STRING,
       province: DataTypes.STRING,
+      province_id: { type: DataTypes.STRING, allowNull: true },
       city: DataTypes.STRING,
+      city_id: { type: DataTypes.STRING, allowNull: true },
       postal_code: DataTypes.INTEGER,
     },
     {

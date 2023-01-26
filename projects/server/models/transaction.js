@@ -12,9 +12,10 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(models.Order_Status);
       Transaction.belongsTo(models.Journal);
       Transaction.belongsTo(models.Cart);
-      Transaction.belongsToMany(models.Product_Warehouses, {
-        through: "Transaction_Product_Warehouses",
-      });
+      // Transaction.belongsToMany(models.Product_Warehouses, {
+      //   through: "Transaction_Product_Warehouses",
+      // });
+      Transaction.hasMany(models.Transaction_Product_Warehouses);
       Transaction.belongsTo(models.User, {
         foreignKey: "IdUser",
       });

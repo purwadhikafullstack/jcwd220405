@@ -74,7 +74,7 @@ export const OrderListPage = () => {
   }, [id]);
 
   return (
-    <Container maxW={"100%"}>
+    <Container maxW={"80%"}>
       <Box ml={10} mt={20}>
         <Text fontSize="4xl" color={"white"}>
           Order List
@@ -114,7 +114,7 @@ export const OrderListPage = () => {
                     h={35}
                   >
                     <IoBagHandleOutline size={"25px"} />
-                    <Text ml={3}>{item.invoice}</Text>
+                    <Text ml={3}>{item?.invoice}</Text>
                     <Spacer />
 
                     <Box
@@ -127,15 +127,16 @@ export const OrderListPage = () => {
                       pb={1}
                       px={1}
                     >
-                      <Text>{item.Order_Status.status}</Text>
+                      <Text>{item?.Order_Status?.status}</Text>
                     </Box>
                   </Box>
                   <Card direction={"row"} variant="ghost">
                     <Box w={"130px"} h={"150px"}>
                       <Image
                         src={
-                          item.Cart.Product.Product_Images[0].image
-                            ? port + item.Cart.Product.Product_Images[0].image
+                          item?.Cart?.Product?.Product_Images[0]?.image
+                            ? port +
+                              item?.Cart?.Product?.Product_Images[0]?.image
                             : gameboy
                         }
                         h="inherit"
@@ -148,9 +149,9 @@ export const OrderListPage = () => {
 
                     <CardBody my={0}>
                       <Stack>
-                        <Heading size={"md"}>{item.Cart.Product.name}</Heading>
+                        <Heading size={"md"}>{item?.Cart.Product.name}</Heading>
                         <Text py={2}>
-                          {item.Cart.quantity} X {item.Cart.price}
+                          {item?.Cart?.quantity} X {item?.Cart?.price}
                         </Text>
                       </Stack>
                     </CardBody>
@@ -165,13 +166,13 @@ export const OrderListPage = () => {
                     <CardBody my={0}>
                       <Stack>
                         <Text>Total Belanja</Text>
-                        <Text>Rp {item.total_price}</Text>
+                        <Text>Rp {item?.total_price}</Text>
                       </Stack>
                     </CardBody>
                   </Card>
                   <CardFooter p={0} pb={3} pr={3}>
                     <Spacer />
-                    {item.OrderStatusId > 1 ? (
+                    {item?.OrderStatusId > 1 ? (
                       <Button variant={"ghost"}></Button>
                     ) : (
                       <>

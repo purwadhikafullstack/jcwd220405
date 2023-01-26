@@ -46,9 +46,50 @@ module.exports = {
   },
   allCategory: async (req, res) => {
     try {
-      const result = await product_category.findAll();
+      const { sort, direction, pagination } = req.query;
 
-      res.status(200).send(result);
+      const pages = Math.ceil((await product_category.count()) / 10);
+
+      const result = await product_category.findAll({
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+        raw: true,
+      });
+
+      res.status(200).send({ result, pages });
+    } catch (err) {
+      res.status(400).send(err);
+      console.log(err);
+    }
+  },
+  filterCategory: async (req, res) => {
+    try {
+      const { search, sort, direction, pagination } = req.query;
+
+      const pages = Math.ceil(
+        (await product_category.count({
+          where: {
+            category: {
+              [Op.like]: `%${search}%`,
+            },
+          },
+        })) / 10
+      );
+
+      const result = await product_category.findAll({
+        where: {
+          category: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+        raw: true,
+      });
+
+      res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);

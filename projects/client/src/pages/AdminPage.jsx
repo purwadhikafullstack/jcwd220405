@@ -42,8 +42,9 @@ import { AdminBody } from "../components/Admin/AdminBody";
 export const AdminPage = () => {
   const [context, setContext] = useState(0);
 
+  const { name, role } = useSelector((state) => state.userSlice.value);
+
   const dispatch = useDispatch();
-  const { name } = useSelector((state) => state.userSlice.value);
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -110,7 +111,7 @@ export const AdminPage = () => {
                 <MenuItem
                   onClick={() => {
                     onLogout();
-                    navigate("/")
+                    navigate("/");
                   }}
                 >
                   Sign out
@@ -131,7 +132,6 @@ export const AdminPage = () => {
           <Box
             transition="3s ease"
             bg={"#351734"}
-            // borderRight={"1px solid white"}
             w={{ base: 40, md: 60 }}
             pos={"fixed"}
             h={"full"}
@@ -177,7 +177,14 @@ export const AdminPage = () => {
   };
 
   const DrawerItems = () => {
-    const items = ["Users", "Warehouses", "Products", "Categories", "Reports"];
+    const items = [
+      "Users",
+      "Warehouses",
+      "Products",
+      "Categories",
+      "Order",
+      "Reports",
+    ];
 
     return (
       <Box>
@@ -193,7 +200,7 @@ export const AdminPage = () => {
           {items.map((item, index) => {
             return (
               <Button
-              key={index}
+                key={index}
                 borderRadius={0}
                 color={"white"}
                 bg={"none"}
@@ -215,7 +222,7 @@ export const AdminPage = () => {
     <Box bg={"white"}>
       <NavbarAdmin />
       <Box>
-        <AdminBody tabNum={context} />
+        <AdminBody tabNum={context} role={role} />
       </Box>
     </Box>
   );

@@ -34,7 +34,6 @@ export const CheckoutAddress = () => {
     try {
       const result = await (await Axios.get(`${baseApi}/address/${id}`)).data;
       setAddress(result);
-      console.log(address);
     } catch (err) {
       console.log(err);
     }

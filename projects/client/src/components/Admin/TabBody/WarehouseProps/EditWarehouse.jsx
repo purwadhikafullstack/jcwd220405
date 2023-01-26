@@ -5,32 +5,34 @@ import { useRef } from "react";
 // chakra
 import {
   Box,
-  Button,
+  Center,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
   Select,
+  IconButton,
 } from "@chakra-ui/react";
+
+// icons
+import { BsFillGearFill } from "react-icons/bs";
+import { RxCheck, RxCross1 } from "react-icons/rx";
 
 export const EditWarehouse = ({ warehouse, getWarehouse, admin }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen} background={"#C146ED"}>Edit</Button>
+      <IconButton icon={<BsFillGearFill />} bg={"none"} onClick={onOpen} />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Warehouse</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader textAlign={"center"}>Edit Warehouse</ModalHeader>
           <ModalBody>
             <EditForm
               warehouse={warehouse}
@@ -47,7 +49,6 @@ export const EditWarehouse = ({ warehouse, getWarehouse, admin }) => {
 
 const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
   const url = `http://localhost:8000/api/admin/edit_warehouse/${warehouse.id}`;
-  console.log(warehouse)
 
   const warehouse_name = useRef("");
   const province = useRef("");
@@ -57,16 +58,24 @@ const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
 
   const editWarehouse = async () => {
     try {
-      const editData = {
-        warehouse_name: warehouse_name.current.value,
-        province: province.current.value,
-        city: city.current.value,
-        postal_code: postal_code.current.value,
-        UserId: UserId.current.value,
-      };
-      // console.log(editData);
-      await Axios.patch(url, editData);
-      getWarehouse();
+      if (
+        warehouse_name.current.value !== warehouse.warehouse_name ||
+        province.current.value !== warehouse.province ||
+        city.current.value !== warehouse.city ||
+        +postal_code.current.value !== warehouse.postal_code ||
+        +UserId.current.value !== warehouse.UserId
+      ) {
+        const editData = {
+          warehouse_name: warehouse_name.current.value,
+          province: province.current.value,
+          city: city.current.value,
+          postal_code: postal_code.current.value,
+          UserId: UserId.current.value,
+        };
+        await Axios.patch(url, editData);
+        getWarehouse();
+      }
+
       close();
     } catch (err) {
       console.log(err);
@@ -89,8 +98,7 @@ const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
           ref={postal_code}
         />
         <FormLabel>Admin Id</FormLabel>
-        {/* <Input defaultValue={warehouse.UserId} ref={UserId} /> */}
-        <Select ref={UserId} defaultValue={warehouse.UserId} >
+        <Select ref={UserId} defaultValue={warehouse.UserId}>
           {admin.map((item, index) => {
             return (
               <option value={item.id} key={index}>
@@ -99,14 +107,20 @@ const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
             );
           })}
         </Select>
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={editWarehouse}>
-            Submit
-          </Button>
-          <Button colorScheme="blue" mr={3} onClick={close}>
-            Close
-          </Button>
-        </ModalFooter>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={editWarehouse}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
       </FormControl>
     </Box>
   );
