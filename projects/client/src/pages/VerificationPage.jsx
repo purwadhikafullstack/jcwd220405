@@ -17,7 +17,7 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 import { ViewOffIcon, ViewIcon } from "@chakra-ui/icons";
-import witcher from "../assets/witcher.jpg";
+import SEGA from "../assets/SEGA.jpg";
 import Axios from "axios";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -72,7 +72,6 @@ export const VerificationPage = () => {
       .required("User Name is required")
       .min(4, "must contain at least 4 character")
       .max(20, "maximum 20 character"),
-
   });
 
   const OnSignUp = async (data) => {
@@ -104,7 +103,6 @@ export const VerificationPage = () => {
         password: data.password,
         confirmPassword: data.confirmPassword,
         userName: data.userName,
-
       });
       console.log(result);
       navigate("/");
@@ -147,7 +145,6 @@ export const VerificationPage = () => {
             password: "",
             confirmPassword: "",
             userName: "",
-
           }}
           validationSchema={signUpSchema}
           onSubmit={(value, action) => {
@@ -250,8 +247,8 @@ export const VerificationPage = () => {
         <Image
           alt={"Login Image"}
           bgSize="cover"
-          //   objectFit={"cover"}
-          src={witcher}
+          objectFit={"cover"}
+          src={SEGA}
         />
       </Flex>
     </Stack>

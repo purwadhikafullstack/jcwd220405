@@ -1,4 +1,4 @@
-import { Container, Box, Divider, Text, Button } from "@chakra-ui/react";
+import { Container, Box, Divider, Text, Button, Stack } from "@chakra-ui/react";
 import { AddressModal } from "./AddressModal";
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
@@ -28,9 +28,17 @@ export const AddressList = () => {
   return (
     <>
       <Box mt={8}>
-        <Text fontSize={"2xl"}>Shipping Address</Text>
-        <Divider mt={"1"} borderTop={"1px"} borderBottom={"2px"} />
-        <Box>
+        <Box
+          display={"flex"}
+          flexDirection={{ base: "column", md: "row" }}
+          gap={"4"}
+        >
+          <Stack border={"2px"} p={2}>
+            <Text fontSize={"2xl"}>Shipping Address</Text>
+            <Divider mt={"1"} borderTop={"1px"} borderBottom={"2px"} />
+          </Stack>
+        </Box>
+        <Box mt={5}>
           <Text fontSize={"xl"} mb={2} mt={2}>
             {address[0]?.received_name}
           </Text>

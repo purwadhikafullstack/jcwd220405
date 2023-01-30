@@ -19,6 +19,9 @@ module.exports = (sequelize, DataTypes) => {
       Transaction.belongsTo(models.User, {
         foreignKey: "IdUser",
       });
+      Transaction.belongsTo(models.Address_User, {
+        foreignKey: "IdAddress",
+      });
     }
   }
   Transaction.init(
@@ -26,6 +29,7 @@ module.exports = (sequelize, DataTypes) => {
       invoice: DataTypes.STRING,
       delivery_fee: DataTypes.INTEGER,
       total_price: DataTypes.INTEGER,
+      final_price: DataTypes.INTEGER,
     },
     {
       sequelize,

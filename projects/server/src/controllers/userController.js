@@ -155,12 +155,31 @@ module.exports = {
 
       if (!isEmailExist) throw "Email incorrect/not found";
 
+      const cekVerified = await user.findOne({
+        where: {
+          email: email,
+          is_verified: 1,
+        },
+      });
+
+      if (!cekVerified) throw "No User Found";
+
       const token = jwt.sign({ id: email }, key);
+
+      const tempEmail = fs.readFileSync(
+        "./src/template/password.html",
+        "utf-8"
+      );
+      const tempCompile = handlebars.compile(tempEmail);
+      const tempResult = tempCompile({
+        link: `http://localhost:3000/resetpassword/${token}`,
+      });
+
       await transporter.sendMail({
         from: "Admin",
         to: email,
         subject: "Reset Password Email",
-        html: `<a href="http://localhost:3000/resetpassword/${token}" target ="_blank"> Click here to reset your password </a>`,
+        html: tempResult,
       });
 
       res.status(200).send({

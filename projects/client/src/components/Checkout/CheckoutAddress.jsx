@@ -22,6 +22,7 @@ import Axios from "axios";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { CheckoutShipment } from "./CheckoutShipment";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -52,46 +53,52 @@ export const CheckoutAddress = () => {
   }, [id]);
 
   return (
-    <>
-      <Container
-        maxWidth={"80%"}
-        display={"flex"}
-        flexDirection={{ base: "column", md: "row" }}
-        bgGradient="linear(150.64deg, #3B0D2C 0%, rgba(74, 10, 71, 1) 16.61%, #2F0C39 61.16%, rgba(38, 8, 67, 1)  92.29%)"
-        color={"white"}
-        border={"2px"}
-        borderColor="gray.200"
-        borderRadius="lg"
-      >
-        <Box width={{ base: "100%", md: "70%" }} p={2}>
-          <Box
-            display={"flex"}
-            flexDirection={{ base: "column", md: "row" }}
-            gap={"4"}
-          >
-            <Heading color={"salmon"}>Checkout</Heading>
-          </Box>
-          {address?.length ? (
-            <AddressList />
-          ) : (
-            <Box mt={8}>
-              <Box>
-                <Text>
-                  You dont have an address yet, you can add address in your
-                  profile setting
-                </Text>
-                <Text>Or</Text>
-                <Text>click below!</Text>
-              </Box>
-              <Box mt={8} display="flex">
-                <Button color={"black"} onClick={onClick}>
-                  Click Here
-                </Button>
-              </Box>
-            </Box>
-          )}
+    <Container
+      justifyContent="center"
+      maxWidth={"80%"}
+      display={"flex"}
+      flexDirection={{ base: "column", md: "row" }}
+      // bgGradient="linear(150.64deg, #3B0D2C 0%, rgba(74, 10, 71, 1) 16.61%, #2F0C39 61.16%, rgba(38, 8, 67, 1)  92.29%)"
+      color={"white"}
+      // bg="#9400D3"
+      border={"2px"}
+      borderColor="gray.200"
+      borderRadius="lg"
+      borderBottomColor="transparent"
+      borderBottomRadius={0}
+    >
+      <Box width={{ base: "100%", md: "70%" }} p={2}>
+        <Box
+          display={"flex"}
+          flexDirection={{ base: "column", md: "row" }}
+          gap={"4"}
+          w={"inherit"}
+        >
+          <Heading color={"salmon"}>Checkout</Heading>
         </Box>
-      </Container>
-    </>
+        {address?.length ? (
+          <>
+            <AddressList />
+            {/* <CheckoutShipment /> */}
+          </>
+        ) : (
+          <Box mt={8}>
+            <Box>
+              <Text>
+                You dont have an address yet, you can add address in your
+                profile setting
+              </Text>
+              <Text>Or</Text>
+              <Text>click below!</Text>
+            </Box>
+            <Box mt={8} display="flex">
+              <Button color={"black"} onClick={onClick}>
+                Click Here
+              </Button>
+            </Box>
+          </Box>
+        )}
+      </Box>
+    </Container>
   );
 };

@@ -12,6 +12,9 @@ module.exports = (sequelize, DataTypes) => {
       Address_User.belongsTo(models.User, {
         foreignKey: "IdUser",
       });
+      Address_User.hasOne(models.Transaction, {
+        foreignKey: "IdAddress",
+      });
     }
   }
   Address_User.init(
