@@ -60,7 +60,9 @@ module.exports = {
   getCost: async (req, res) => {
     try {
       // const { user } = req.params;
+
       const { origin, destination, weight, courier, delivery_fee } = req.body;
+
 
       const cost = await axios.post(
         "https://api.rajaongkir.com/starter/cost",

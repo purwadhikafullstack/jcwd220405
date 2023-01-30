@@ -1,5 +1,7 @@
 import React from "react";
+
 import { Box, Container, Divider, Text, Stack } from "@chakra-ui/react";
+
 import { Shipment } from "./Shipment";
 
 export const CheckoutShipment = () => {
