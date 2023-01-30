@@ -3,7 +3,7 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import { OrderListCard } from "./OrderListCard";
 
-import { Box, Select } from "@chakra-ui/react";
+import { Box, Select, useToast } from "@chakra-ui/react";
 import { OrderListPagination } from "./OrderListPagination";
 import swal from "sweetalert";
 
@@ -16,6 +16,7 @@ export const OrderList = () => {
   const [wrId, setWrId] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
+  const toast = useToast();
 
   const getOrderList = useCallback(async () => {
     try {
@@ -42,7 +43,45 @@ export const OrderList = () => {
         await axios.post(
           `${baseApi}/admin/order-cancel/${order}?status=${status}`
         );
+        setTimeout(
+          () =>
+            toast({
+              title: `Success Reject Order`,
+              // variant: "solid",
+              status: "success",
+              isClosable: true,
+              position: "top",
+            }),
+          500
+        );
         setTimeout(() => getOrderList(), 1000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const confirmOrder = async (order) => {
+    try {
+      const once = await swal("Confirm this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        const temp = await axios.post(
+          `${baseApi}/admin/order-confirm/${order}`
+        );
+        setTimeout(
+          () =>
+            toast({
+              title: `${temp.data.message}`,
+              variant: "subtle",
+              isClosable: true,
+              position: "top",
+            }),
+          500
+        );
+        setTimeout(() => getOrderList(), 1000);
+        console.log(temp);
       }
     } catch (error) {
       console.error(error);
@@ -107,6 +146,7 @@ export const OrderList = () => {
           orderList={orderList}
           crossTitle={crossTitle}
           rejectOrder={rejectOrder}
+          confirmOrder={confirmOrder}
         />
       </Box>
       <Box

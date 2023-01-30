@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Transaction.belongsTo(models.Order_Status);
-      Transaction.belongsTo(models.Journal);
+      Transaction.hasOne(models.Journal);
       Transaction.belongsTo(models.Cart);
       // Transaction.belongsToMany(models.Product_Warehouses, {
       //   through: "Transaction_Product_Warehouses",

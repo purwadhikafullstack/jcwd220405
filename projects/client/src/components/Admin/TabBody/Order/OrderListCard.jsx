@@ -11,7 +11,12 @@ import {
 } from "@chakra-ui/react";
 import { GrSend } from "react-icons/gr";
 
-export const OrderListCard = ({ orderList, crossTitle, rejectOrder }) => {
+export const OrderListCard = ({
+  orderList,
+  crossTitle,
+  rejectOrder,
+  confirmOrder,
+}) => {
   return (
     <>
       <Box>
@@ -20,9 +25,7 @@ export const OrderListCard = ({ orderList, crossTitle, rejectOrder }) => {
       {orderList?.length ? (
         <Box>
           {orderList?.map((item) => {
-            console.log(item);
             return item?.Transaction_Product_Warehouses?.map((item2, index) => {
-              console.log(item2);
               return (
                 <Box key={index} mb={"4"}>
                   <Box border={"2px"} borderRadius={"md"} py={"1"}>
@@ -125,7 +128,7 @@ export const OrderListCard = ({ orderList, crossTitle, rejectOrder }) => {
                             transform: "scale(1.1)",
                           }}
                           hidden={item?.OrderStatusId === 2 ? false : true}
-                          onClick={() => alert("c")}
+                          onClick={() => confirmOrder(item.id)}
                         >
                           Confirm
                         </Button>
