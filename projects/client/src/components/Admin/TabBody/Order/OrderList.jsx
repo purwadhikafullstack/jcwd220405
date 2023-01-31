@@ -47,7 +47,6 @@ export const OrderList = () => {
           () =>
             toast({
               title: `Success Reject Order`,
-              // variant: "solid",
               status: "success",
               isClosable: true,
               position: "top",
@@ -67,13 +66,13 @@ export const OrderList = () => {
         buttons: true,
       });
       if (once) {
-        const temp = await axios.post(
+        const response = await axios.post(
           `${baseApi}/admin/order-confirm/${order}`
         );
         setTimeout(
           () =>
             toast({
-              title: `${temp.data.message}`,
+              title: `${response.data.message}`,
               variant: "subtle",
               isClosable: true,
               position: "top",
@@ -81,7 +80,58 @@ export const OrderList = () => {
           500
         );
         setTimeout(() => getOrderList(), 1000);
-        console.log(temp);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const sendOrder = async (order) => {
+    try {
+      const once = await swal("Send this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        const response = await axios.post(
+          `${baseApi}/admin/send-order/${order}`
+        );
+        setTimeout(
+          () =>
+            toast({
+              title: `${response.data.message}`,
+              status: "success",
+              isClosable: true,
+              position: "top",
+            }),
+          500
+        );
+        setTimeout(() => getOrderList(), 1000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const cancelOrder = async (order) => {
+    try {
+      const once = await swal("Cancel this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        const response = await axios.post(
+          `${baseApi}/admin/cancel-order/${order}`
+        );
+        setTimeout(
+          () =>
+            toast({
+              title: `${response.data.message}`,
+              status: "success",
+              isClosable: true,
+              position: "top",
+            }),
+          500
+        );
+        setTimeout(() => getOrderList(), 1000);
       }
     } catch (error) {
       console.error(error);
@@ -129,7 +179,7 @@ export const OrderList = () => {
         alignItems={"center"}
       >
         <Box>Order List</Box>
-        <Box hidden={role === "3" ? false : true}>
+        <Box hidden={role === 3 ? false : true}>
           <Select
             placeholder={wrId ? "Reset" : "--Select Warehouse--"}
             onChange={(e) => {
@@ -147,6 +197,8 @@ export const OrderList = () => {
           crossTitle={crossTitle}
           rejectOrder={rejectOrder}
           confirmOrder={confirmOrder}
+          sendOrder={sendOrder}
+          cancelOrder={cancelOrder}
         />
       </Box>
       <Box

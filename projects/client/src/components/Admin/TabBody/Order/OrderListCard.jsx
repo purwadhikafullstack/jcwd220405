@@ -16,6 +16,8 @@ export const OrderListCard = ({
   crossTitle,
   rejectOrder,
   confirmOrder,
+  sendOrder,
+  cancelOrder,
 }) => {
   return (
     <>
@@ -114,8 +116,32 @@ export const OrderListCard = ({
                             transform: "scale(1.1)",
                           }}
                           rightIcon={<GrSend />}
+                          onClick={() => sendOrder(item.id)}
                         >
                           Send
+                        </Button>
+                        <Button
+                          hidden={
+                            item?.OrderStatusId === 3 ||
+                            item?.OrderStatusId === 1
+                              ? false
+                              : true
+                          }
+                          variant={"outline"}
+                          border={"none"}
+                          bgColor={"rgba(55,5,55,.96)"}
+                          color={"white"}
+                          _active={{ bgColor: "transparent" }}
+                          _hover={{
+                            bgColor: "transparent",
+                            transform: "scale(1.1)",
+                            color: "black",
+                            border: "2px",
+                            borderColor: "rgba(55,5,55,.96)",
+                          }}
+                          onClick={() => cancelOrder(item.id)}
+                        >
+                          Cancel
                         </Button>
                         <Button
                           variant={"outline"}
@@ -125,7 +151,6 @@ export const OrderListCard = ({
                           _active={{ bgColor: "transparent" }}
                           _hover={{
                             bgColor: "transparent",
-                            transform: "scale(1.1)",
                           }}
                           hidden={item?.OrderStatusId === 2 ? false : true}
                           onClick={() => confirmOrder(item.id)}

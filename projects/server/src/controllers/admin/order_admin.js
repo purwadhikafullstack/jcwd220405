@@ -9,6 +9,8 @@ const ProductWarehouses = db.Product_Warehouses;
 const StockMutation = db.Stock_Mutation;
 const Journal = db.Journal;
 const { Op } = require("sequelize");
+const schedule = require("node-schedule");
+const moment = require("moment");
 
 module.exports = {
   allUserOrderList: async (req, res) => {
@@ -121,8 +123,18 @@ module.exports = {
   rejectUserOrder: async (req, res) => {
     try {
       const { id } = req.params;
-      const { status } = req.query;
-      if (status === "2") {
+
+      const userTransaction = await Transaction.findOne({
+        where: { id: id },
+        raw: true,
+      });
+      if (!userTransaction) {
+        return res.status(200).send({
+          message: `Transaction not found`,
+        });
+      }
+
+      if (userTransaction.OrderStatusId === 2) {
         await Transaction.update({ OrderStatusId: 1 }, { where: { id: id } });
         return res.status(201).send({ message: "Success Reject Order" });
       }
@@ -135,7 +147,6 @@ module.exports = {
   confirmUserOrder: async (req, res) => {
     try {
       const { id } = req.params;
-      console.log(id, "jalan");
 
       // cari transaction user
       const userTransaction = await Transaction.findOne({
@@ -267,6 +278,7 @@ module.exports = {
           const sortWarehouse = nearestWarehouses
             .sort((a, b) => a.range - b.range)
             .map((value) => value.warehouse.id);
+          console.log(sortWarehouse);
           // cari warehouse terdekat dari warehouse origin
 
           // ambil product stock dari warehouse terdekat
@@ -298,10 +310,15 @@ module.exports = {
               },
               raw: true,
             });
+            if (!fromWarehouse) {
+              index += 1;
+              continue;
+            }
             if (fromWarehouse.stocks === 0) {
               index += 1;
               continue;
             }
+            index += 1;
             await ProductWarehouses.update(
               { stocks: checkStock.stocks + fromWarehouse.stocks },
               {
@@ -395,6 +412,169 @@ module.exports = {
         }
       }
       return res.status(200).send({ message: "Confirm Order" });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  sendUserOrder: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const userTransaction = await Transaction.findOne({
+        where: { id: id },
+        raw: true,
+      });
+      if (!userTransaction) {
+        return res.status(200).send({
+          message: `Transaction not found`,
+        });
+      }
+
+      await Transaction.update(
+        {
+          OrderStatusId: 4,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+
+      const afterSend = moment().add(7, "days").format("YYYY-MM-DD HH:mm:ss");
+
+      schedule.scheduleJob(
+        afterSend,
+        async () =>
+          await Transaction.update(
+            {
+              OrderStatusId: 5,
+            },
+            {
+              where: {
+                id: id,
+              },
+            }
+          )
+      );
+
+      return res.status(201).send({ message: "Success Send Order" });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  cancelUserOrder: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const userTransaction = await Transaction.findOne({
+        where: { id: id },
+        include: { model: TransactionWarehouses },
+      });
+      if (!userTransaction) {
+        return res.status(200).send({
+          message: `Transaction not found`,
+        });
+      }
+
+      const quantity = userTransaction.Transaction_Product_Warehouses.map(
+        (item) => item.quantity
+      );
+      const WarehouseId = userTransaction.Transaction_Product_Warehouses.map(
+        (item) => item.WarehouseId
+      );
+      const ProductId = userTransaction.Transaction_Product_Warehouses.map(
+        (item) => item.ProductId
+      );
+
+      if (userTransaction.OrderStatusId === 1) {
+        await Transaction.update(
+          {
+            OrderStatusId: 6,
+          },
+          {
+            where: {
+              id: id,
+            },
+          }
+        );
+        return res.status(201).send({
+          status: userTransaction.OrderStatusId,
+          message: "Success Cancel Order",
+        });
+      }
+
+      if (userTransaction.OrderStatusId === 3) {
+        const re_stock = [];
+        const stock_before = [];
+        for (let i = 0; i < ProductId.length; i++) {
+          const findStock = await ProductWarehouses.findAll({
+            where: {
+              WarehouseId: WarehouseId[0],
+              ProductId: ProductId[i],
+            },
+          });
+          re_stock.push(findStock.map((item) => item.stocks + quantity[i]));
+          stock_before.push(findStock.map((item) => item.stocks));
+        }
+
+        // update stock / balikkin stock
+        for (let i = 0; i < ProductId.length; i++) {
+          await ProductWarehouses.update(
+            {
+              ProductId: ProductId[i],
+              stocks: re_stock[i],
+            },
+            {
+              where: {
+                WarehouseId: WarehouseId[0],
+                ProductId: ProductId[i],
+              },
+            }
+          );
+        }
+
+        const stock_after = [];
+        for (let i = 0; i < ProductId.length; i++) {
+          const findStock = await ProductWarehouses.findAll({
+            where: {
+              WarehouseId: WarehouseId[0],
+              ProductId: ProductId[i],
+            },
+          });
+          stock_after.push(findStock.map((item) => item.stocks));
+        }
+
+        await Transaction.update(
+          {
+            OrderStatusId: 6,
+          },
+          {
+            where: {
+              id: id,
+            },
+          }
+        );
+
+        for (let i = 0; i < ProductId.length; i++) {
+          await Journal.create({
+            stock_before: stock_before[i],
+            stock_after: stock_after[i],
+            desc: userTransaction.invoice + " - Cancel",
+            JournalTypeId: 2,
+            TransactionId: userTransaction.id,
+            ProductId: ProductId[i],
+          });
+        }
+
+        return res.status(201).send({
+          status: userTransaction.OrderStatusId,
+          message: "Success Cancel Order",
+        });
+      }
+      return res.status(201).send({ message: "Cancel Order" });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
