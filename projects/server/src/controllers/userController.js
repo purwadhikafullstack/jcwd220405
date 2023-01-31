@@ -1,5 +1,6 @@
 const fs = require("fs");
-const db = require("../../models");
+// const db = require("../../models");
+const db = require("../models");
 const user = db.User;
 const { Op } = require("sequelize");
 const transporter = require("../helpers/transporter");

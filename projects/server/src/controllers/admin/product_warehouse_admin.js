@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
-const db = require("../../../models");
+// const db = require("../../../models");
+const db = require("../../models");
 const productWarehouses = db.Product_Warehouses;
 
 module.exports = {

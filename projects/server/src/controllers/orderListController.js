@@ -1,4 +1,5 @@
-const db = require("../../models");
+// const db = require("../../models");
+const db = require("../models");
 const transaction = db.Transaction;
 const cart = db.Cart;
 const product = db.Product;

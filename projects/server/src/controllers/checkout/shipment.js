@@ -1,4 +1,5 @@
-const db = require("../../../models");
+// const db = require("../../../models");
+const db = require("../../models");
 const cart = db.Cart;
 const address = db.Address_User;
 const product = db.Product;
@@ -62,7 +63,6 @@ module.exports = {
       // const { user } = req.params;
 
       const { origin, destination, weight, courier, delivery_fee } = req.body;
-
 
       const cost = await axios.post(
         "https://api.rajaongkir.com/starter/cost",

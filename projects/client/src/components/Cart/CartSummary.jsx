@@ -1,7 +1,9 @@
 import { Box, Button, Divider, Text } from "@chakra-ui/react";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 export const CartSummary = ({ selectedCart, totalPriceCart }) => {
+  const navigate = useNavigate();
   return (
     <>
       <Text>Shopping Summary</Text>
@@ -27,7 +29,11 @@ export const CartSummary = ({ selectedCart, totalPriceCart }) => {
         </Box>
       </Box>
       <Box>
-        <Button colorScheme={"pink"} w={"100%"} onClick={() => alert("yyy")}>
+        <Button
+          colorScheme={"pink"}
+          w={"100%"}
+          onClick={() => navigate("/cart/checkout")}
+        >
           Buy ({selectedCart})
         </Button>
       </Box>

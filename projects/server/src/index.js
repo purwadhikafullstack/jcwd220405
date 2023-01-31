@@ -2,7 +2,8 @@ require("dotenv/config");
 const express = require("express");
 const cors = require("cors");
 const { join } = require("path");
-const db = require("../models");
+// const db = require("../models");
+const db = require("./models");
 const bearerToken = require("express-bearer-token");
 
 const PORT = process.env.PORT || 8000;
@@ -56,7 +57,6 @@ const {
   userOrderList,
   stocksComp,
 } = admin;
-
 
 // user
 app.use("/api", user);

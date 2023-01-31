@@ -1,4 +1,5 @@
-const db = require("../../../models");
+// const db = require("../../../models");
+const db = require("../../models");
 const { Op } = require("sequelize");
 const Product = db.Product;
 const productCategory = db.Product_Category;

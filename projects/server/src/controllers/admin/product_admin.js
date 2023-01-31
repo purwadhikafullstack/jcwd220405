@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
-const db = require("../../../models");
+// const db = require("../../../models");
+const db = require("../../models");
 const product = db.Product;
 const category = db.Product_Category;
 const productWarehouses = db.Product_Warehouses;
@@ -18,7 +19,7 @@ module.exports = {
         ProductCategoryId,
       });
 
-      res.status(200).send({msg: "Product Added", id: result.id});
+      res.status(200).send({ msg: "Product Added", id: result.id });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -79,7 +80,9 @@ module.exports = {
         subQuery: false,
       });
 
-      res.status(200).send({ pages: Math.ceil(count.length / 10), result: rows });
+      res
+        .status(200)
+        .send({ pages: Math.ceil(count.length / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -117,7 +120,9 @@ module.exports = {
         subQuery: false,
       });
 
-      res.status(200).send({ pages: Math.ceil(count.length / 10), result: rows });
+      res
+        .status(200)
+        .send({ pages: Math.ceil(count.length / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -144,7 +149,7 @@ module.exports = {
         attributes: {
           include: [
             // [Sequelize.fn("COUNT", Sequelize.col("stocks")), "total_stocks"],
-            [Sequelize.col("stocks"), "total_stocks"]
+            [Sequelize.col("stocks"), "total_stocks"],
           ],
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
@@ -185,7 +190,7 @@ module.exports = {
         attributes: {
           include: [
             // [Sequelize.fn("COUNT", Sequelize.col("stocks")), "total_stocks"],
-            [Sequelize.col("stocks"), "total_stocks"]
+            [Sequelize.col("stocks"), "total_stocks"],
           ],
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
