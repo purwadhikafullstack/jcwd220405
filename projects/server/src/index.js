@@ -56,6 +56,7 @@ const {
   categoryComp,
   userOrderList,
   stocksComp,
+  mutationComp
 } = admin;
 
 // user
@@ -76,7 +77,8 @@ app.use(
   productComp,
   categoryComp,
   userOrderList,
-  stocksComp
+  stocksComp,
+  mutationComp
 );
 
 // ===========================
@@ -119,6 +121,6 @@ app.listen(PORT, (err) => {
   } else {
     console.log(`APP RUNNING at ${PORT} ✅`);
     // db.sequelize.sync({ force: true });
-    // db.sequelize.sync({ alter: true });
+    db.sequelize.sync({ alter: true });
   }
 });

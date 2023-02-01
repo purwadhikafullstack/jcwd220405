@@ -182,7 +182,8 @@ export const AdminPage = () => {
       "Warehouses",
       "Products",
       "Categories",
-      "Order",
+      "Orders",
+      "Mutations",
       "Reports",
     ];
 
