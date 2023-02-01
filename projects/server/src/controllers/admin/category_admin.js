@@ -46,9 +46,21 @@ module.exports = {
   },
   allCategory: async (req, res) => {
     try {
-      const result = await product_category.findAll();
+      const { search, sort, direction, pagination } = req.query;
 
-      res.status(200).send(result);
+      const { count, rows } = await product_category.findAndCountAll({
+        where: {
+          category: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+        raw: true,
+      });
+
+      res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);

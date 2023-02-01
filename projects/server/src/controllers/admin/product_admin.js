@@ -1,14 +1,16 @@
+const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
 const db = require("../../../models");
 const product = db.Product;
 const category = db.Product_Category;
+const productWarehouses = db.Product_Warehouses;
 
 module.exports = {
-  AddProduct: async (req, res) => {
+  addProduct: async (req, res) => {
     try {
       const { name, desc, price, weight, ProductCategoryId } = req.body;
 
-      await product.create({
+      const result = await product.create({
         name,
         desc,
         price,
@@ -16,7 +18,7 @@ module.exports = {
         ProductCategoryId,
       });
 
-      res.status(200).send("Product Added");
+      res.status(200).send({msg: "Product Added", id: result.id});
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -52,46 +54,77 @@ module.exports = {
   },
   allProduct: async (req, res) => {
     try {
-      const { sort, direction, pagination } = req.query;
+      const { search, sort, direction, pagination } = req.query;
 
-      const result = await product.findAll({
+      const { count, rows } = await product.findAndCountAll({
+        where: {
+          name: {
+            [Op.like]: `%${search}%`,
+          },
+        },
         include: [
           {
             model: category,
-            // attributes: {
-            //   exclude: ["createdAt", "updatedAt"],
-            // },
+          },
+          {
+            model: productWarehouses,
+            as: "Details",
           },
         ],
+        attributes: {
+          exclude: ["WarehouseId", "stocks"],
+          include: [
+            [Sequelize.fn("SUM", Sequelize.col("stocks")), "total_stocks"],
+          ],
+        },
+        group: ["id"],
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
         limit: 10,
-        offset: pagination ? +pagination : 0,
-        // raw: true,
+        offset: pagination ? +pagination * 10 : 0,
+        subQuery: false,
       });
 
-      res.status(200).send(result);
+      res.status(200).send({ pages: Math.ceil(count.length / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
     }
   },
-  filterProduct: async (req, res) => {
+  filterWarehouseProduct: async (req, res) => {
     try {
-      const { search, sort, direction, pagination } = req.query;
+      const { search, sort, direction, pagination, warehouse } = req.query;
 
-      //   const result = await product.findAll({
-      //     where: {
-      //       warehouse_name: {
-      //         [Op.like]: search ? `%${search}%` : "",
-      //       },
-      //     },
-      //     order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-      //     limit: 5,
-      //     offset: pagination ? +pagination : 0,
-      //     raw: true,
-      //   });
+      const { count, rows } = await product.findAndCountAll({
+        where: {
+          name: {
+            [Op.like]: `%${search}%`,
+          },
+        },
+        include: [
+          {
+            model: category,
+          },
+          {
+            model: productWarehouses,
+            as: "Details",
+            where: {
+              WarehouseId: warehouse,
+            },
+            required: false,
+          },
+        ],
+        attributes: {
+          include: [
+            [Sequelize.col("stocks"), "total_stocks"]
+          ],
+        },
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+        subQuery: false,
+      });
 
-      res.status(200).send("result");
+      res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);

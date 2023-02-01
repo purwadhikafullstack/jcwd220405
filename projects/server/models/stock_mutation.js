@@ -19,10 +19,20 @@ module.exports = (sequelize, DataTypes) => {
   }
   Stock_Mutation.init(
     {
-      IdWarehouseTo: DataTypes.INTEGER,
-      quantity: DataTypes.INTEGER,
-      approval: DataTypes.BOOLEAN,
-      invoice: DataTypes.STRING,
+      IdWarehouseTo: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      approval: {
+        type: DataTypes.BOOLEAN,
+      },
+      invoice: {
+        type: DataTypes.INTEGER,
+      },
     },
     {
       sequelize,

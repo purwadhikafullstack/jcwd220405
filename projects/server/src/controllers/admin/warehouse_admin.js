@@ -5,37 +5,23 @@ const warehouse = db.Warehouse;
 module.exports = {
   allWarehouse: async (req, res) => {
     try {
-      const { sort, direction, pagination } = req.query;
-
-      const result = await warehouse.findAll({
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination : 0,
-        raw: true,
-      });
-      res.status(200).send(result);
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterWarehouse: async (req, res) => {
-    try {
       const { search, sort, direction, pagination } = req.query;
 
-      const result = await warehouse.findAll({
+      const { count, rows } = await warehouse.findAndCountAll({
         where: {
           warehouse_name: {
-            [Op.like]: search ? `%${search}%` : "",
+            [Op.like]:`%${search}%`,
           },
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 5,
-        offset: pagination ? +pagination : 0,
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
         raw: true,
       });
 
-      res.status(200).send(result);
+      const all = await warehouse.findAll()
+
+      res.status(200).send({ pages: Math.ceil(count / 10), result: rows, all });
     } catch (err) {
       res.status(400).send(err);
     }

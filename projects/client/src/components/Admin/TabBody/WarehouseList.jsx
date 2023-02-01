@@ -1,11 +1,10 @@
 // react
 import Axios from "axios";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 // chakra
 import {
   Box,
-  Button,
   Table,
   Thead,
   Tbody,
@@ -15,49 +14,67 @@ import {
   TableContainer,
   Flex,
   Center,
+  InputGroup,
+  Input,
+  InputRightElement,
+  IconButton,
+  Stack,
+  Skeleton,
+  Text,
 } from "@chakra-ui/react";
+
+// icons
+import { BiSearch } from "react-icons/bi";
+import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
+import { SlArrowRight, SlArrowLeft } from "react-icons/sl";
+import { RxReload } from "react-icons/rx";
 
 // props
 import { AddWarehouse } from "./WarehouseProps/AddWarehouse";
 import { EditWarehouse } from "./WarehouseProps/EditWarehouse";
 
 export const WarehouseList = () => {
-  const url = "http://localhost:8000/api/admin/";
+  const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
   const [warehouse, setWarehouse] = useState();
   const [admin, setAdmin] = useState();
-  const [sort, setSort] = useState();
-  const [direction, setDirection] = useState();
+  const [sort, setSort] = useState("id");
+  const [direction, setDirection] = useState("ASC");
   const [pagination, setPagination] = useState(0);
-  const [page, setPage] = useState(1);
+  const [pages, setPages] = useState();
+  const [search, setSearch] = useState(``);
+
+  const searchValue = useRef(``);
 
   const getWarehouse = useCallback(async () => {
     try {
-      const warehouseURL = url + "all_warehouse?";
-      const sortURL = sort ? warehouseURL + `sort=${sort}&` : warehouseURL;
-      const directionURL = direction
-        ? sortURL + `direction=${direction}&`
-        : sortURL;
-      const paginationURL = pagination
-        ? directionURL + `pagination=${pagination}`
-        : directionURL;
-      const resultWarehouse = await Axios.get(paginationURL);
-      setWarehouse(resultWarehouse.data);
+      const warehouseURL =
+      url +
+            `all_warehouse?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
+
+      const resultWarehouse = await Axios.get(warehouseURL);
+      setWarehouse(resultWarehouse.data.result);
+      setPages(resultWarehouse.data.pages);
+
+      console.log(warehouseURL)
+
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
-  }, [sort, direction, pagination]);
+  }, [sort, direction, pagination, search, url]);
 
-  const getAdmin = async () => {
+  const getAdmin = useCallback(async () => {
     try {
       const resultAdmin = await Axios.get(url + "warehouse_admin");
       setAdmin(resultAdmin.data);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [url]);
 
-  const deleteUser = async (id) => {
+  const deleteWarehouse = async (id) => {
     try {
       await Axios.delete(url + `delete_warehouse/${id}`);
       getWarehouse();
@@ -69,106 +86,190 @@ export const WarehouseList = () => {
   useEffect(() => {
     getWarehouse();
     getAdmin();
-  }, [getWarehouse]);
+  }, [getWarehouse, getAdmin]);
 
   const tableHead = [
-    { name: "Id", origin: "id" },
-    { name: "Warehouse Name", origin: "warehouse_name" },
-    { name: "Province", origin: "province" },
-    { name: "City", origin: "city" },
-    { name: "Postal Code", origin: "postal_code" },
-    { name: "Admin Id", origin: "UserId" },
+    { name: "Id", origin: "id", width: "100px" },
+    { name: "Warehouse Name", origin: "warehouse_name", width: "" },
+    { name: "Province", origin: "province", width: "250px" },
+    { name: "City", origin: "city", width: "150px" },
+    { name: "Postal Code", origin: "postal_code", width: "150px" },
+    { name: "Admin Id", origin: "UserId", width: "50px" },
   ];
 
   return (
-    <Box>
-      <AddWarehouse getWarehouse={getWarehouse} admin={admin} />
-      <TableContainer>
-        <Table variant={"striped"}>
+    <Box padding={{ base: "10px", lg: "0" }}>
+      <Center paddingBottom={"12px"}>
+        <Stack>
+          <Flex>
+            <Box paddingRight={"5px"}>
+              <InputGroup w={{ base: "200px", lg: "400px" }}>
+                <Input
+                  placeholder={"Search"}
+                  _focusVisible={{ border: "1px solid #b759b4" }}
+                  ref={searchValue}
+                />
+                <InputRightElement>
+                  <IconButton
+                    type={"submit"}
+                    aria-label="Search database"
+                    bg={"none"}
+                    opacity={"50%"}
+                    _hover={{ bg: "none", opacity: "100%" }}
+                    icon={<BiSearch />}
+                    onClick={() => {
+                      setSearch(searchValue.current.value);
+                    }}
+                  />
+                </InputRightElement>
+              </InputGroup>
+            </Box>
+            <IconButton
+              icon={<RxReload />}
+              onClick={() => {
+                getWarehouse();
+              }}
+            />
+          </Flex>
+          <Center>
+            <AddWarehouse getWarehouse={getWarehouse} admin={admin} />
+          </Center>
+        </Stack>
+      </Center>
+      <TableContainer borderRadius={"10px"}>
+        <Table>
           <Thead>
             <Tr>
               {tableHead.map((item, index) => {
                 return (
                   <Th
                     key={index}
+                    bg={"#b759b4"}
                     textAlign={"center"}
-                    border={"1px solid black"}
-                    onClick={() => {
-                      setSort(item.origin);
-                      setPagination(0);
-                      setPage(1);
-                    }}
+                    color={"white"}
+                    width={item.width}
+                    borderY={"none"}
                   >
-                    {item.name}
+                    <Center>
+                      <Flex gap={"5px"}>
+                        <Center>{item.name}</Center>
+                        <Stack>
+                          <IconButton
+                            icon={<BsArrowUp />}
+                            size={"xs"}
+                            color={"black"}
+                            onClick={() => {
+                              setSort(item.origin);
+                              setPagination(0);
+                              setDirection("ASC");
+                            }}
+                            bg={"none"}
+                          />
+                          <IconButton
+                            icon={<BsArrowDown />}
+                            size={"xs"}
+                            color={"black"}
+                            onClick={() => {
+                              setSort(item.origin);
+                              setPagination(0);
+                              setDirection("DESC");
+                            }}
+                            bg={"none"}
+                          />
+                        </Stack>
+                      </Flex>
+                    </Center>
                   </Th>
                 );
               })}
-              <Th textAlign={"center"} border={"1px solid black"}>
+              <Th
+                bg={"#b759b4"}
+                textAlign={"center"}
+                color={"white"}
+                width={"200px"}
+                borderY={"none"}
+              >
                 Action
               </Th>
             </Tr>
           </Thead>
-          {warehouse?.map((item, index) => {
-            return (
-              <Tbody key={index}>
-                <Tr>
-                  <Td width={"50px"}>{item.id}</Td>
-                  <Td>{item.warehouse_name}</Td>
-                  <Td width={"250px"}>{item.province}</Td>
-                  <Td width={"150px"}>{item.city}</Td>
-                  <Td width={"150px"}>{item.postal_code}</Td>
-                  <Td width={"50px"}>{item.UserId}</Td>
-                  <Td>
-                    <Flex
-                      gap={"20px"}
-                      justifyContent={"center"}
-                      alignItems={"center"}
-                    >
-                      <EditWarehouse
-                        warehouse={item}
-                        admin={admin}
-                        getWarehouse={getWarehouse}
-                      />
-                      <Button
-                        onClick={() => {
-                          deleteUser(item.id);
-                        }}
-                        background={"red"}
+          {warehouse ? (
+            warehouse?.map((item, index) => {
+              return (
+                <Tbody key={index} bg={"#efdbef"} _hover={{ bg: "#e9cde8" }}>
+                  <Tr>
+                    <Td textAlign={"center"}>{item.id}</Td>
+                    <Td>{item.warehouse_name}</Td>
+                    <Td textAlign={"center"}>{item.province}</Td>
+                    <Td textAlign={"center"}>{item.city}</Td>
+                    <Td textAlign={"center"}>{item.postal_code}</Td>
+                    <Td textAlign={"center"}>{item.UserId}</Td>
+                    <Td>
+                      <Flex
+                        gap={"20px"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
                       >
-                        Delete
-                      </Button>
-                    </Flex>
-                  </Td>
-                </Tr>
-              </Tbody>
-            );
-          })}
+                        <EditWarehouse
+                          warehouse={item}
+                          admin={admin}
+                          getWarehouse={getWarehouse}
+                        />
+                        <IconButton
+                          onClick={() => {
+                            deleteWarehouse(item.id);
+                          }}
+                          bg={"none"}
+                          color={"#ff4d4d"}
+                          icon={<BsFillTrashFill />}
+                        />
+                      </Flex>
+                    </Td>
+                  </Tr>
+                </Tbody>
+              );
+            })
+          ) : (
+            <Tbody>
+              <Tr>
+                {tableHead.map((item, index) => {
+                  return (
+                    <Td key={index}>
+                      <Skeleton h={"10px"} />
+                    </Td>
+                  );
+                })}
+                <Td>
+                  <Skeleton h={"10px"} />
+                </Td>
+              </Tr>
+            </Tbody>
+          )}
         </Table>
       </TableContainer>
-      <Center>
-        {page > 1 ? (
-          <Button
-            onClick={() => {
-              setPagination(pagination - 10);
-              setPage(page - 1);
-            }}
-          >
-            Previous
-          </Button>
+      <Center paddingY={"10px"}>
+        {pagination <= 0 ? (
+          <IconButton icon={<SlArrowLeft />} disabled />
         ) : (
-          <Button disabled>Previous</Button>
+          <IconButton
+            onClick={() => {
+              setPagination(pagination - 1);
+            }}
+            icon={<SlArrowLeft />}
+          />
         )}
-        {warehouse?.length === 10 ? (
-          <Button
+        <Text paddingX={"10px"}>
+          {pagination + 1} of {pages}
+        </Text>
+        {pagination < pages - 1 ? (
+          <IconButton
+            icon={<SlArrowRight />}
             onClick={() => {
-              setPagination(pagination + 10);
-              setPage(page + 1);
+              setPagination(pagination + 1);
             }}
-          >
-            Next
-          </Button>
+          />
         ) : (
-          <Button disabled>Next</Button>
+          <IconButton icon={<SlArrowRight />} disabled />
         )}
       </Center>
     </Box>

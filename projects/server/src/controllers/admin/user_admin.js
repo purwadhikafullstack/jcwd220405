@@ -5,37 +5,29 @@ const user = db.User;
 module.exports = {
   allUser: async (req, res) => {
     try {
-      const { sort, direction, pagination } = req.query;
-
-      const result = await user.findAll({
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination : 0,
-        raw: true,
-      });
-      res.status(200).send(result);
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterUser: async (req, res) => {
-    try {
       const { search, sort, direction, pagination } = req.query;
 
-      const result = await user.findAll({
+      const { count, rows } = await user.findAndCountAll({
         where: {
-          name: {
-            [Op.like]: `%${search}%`,
-          },
+          [Op.or]: [
+            {
+              name: {
+                [Op.like]: `%${search}%`,
+              },
+            },
+            {
+              email: {
+                [Op.like]: `%${search}%`,
+              },
+            },
+          ],
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 5,
-        offset: pagination ? +pagination : 0,
-        raw: true,
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
       });
 
-      res.status(200).send(result);
+      res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
     }
@@ -66,7 +58,7 @@ module.exports = {
       console.log(err);
     }
   },
-  WarehouseAdmin: async (req, res) => {
+  warehouseAdmin: async (req, res) => {
     try {
       const result = await user.findAll({
         where: {

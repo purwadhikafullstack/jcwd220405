@@ -42,8 +42,9 @@ import { AdminBody } from "../components/Admin/AdminBody";
 export const AdminPage = () => {
   const [context, setContext] = useState(0);
 
+  const { name, role } = useSelector((state) => state.userSlice.value);
+
   const dispatch = useDispatch();
-  const { name } = useSelector((state) => state.userSlice.value);
   const navigate = useNavigate();
 
   const onLogout = async () => {
@@ -131,7 +132,6 @@ export const AdminPage = () => {
           <Box
             transition="3s ease"
             bg={"#351734"}
-            // borderRight={"1px solid white"}
             w={{ base: 40, md: 60 }}
             pos={"fixed"}
             h={"full"}
@@ -182,7 +182,8 @@ export const AdminPage = () => {
       "Warehouses",
       "Products",
       "Categories",
-      "Order",
+      "Orders",
+      "Mutations",
       "Reports",
     ];
 
@@ -222,7 +223,7 @@ export const AdminPage = () => {
     <Box bg={"white"}>
       <NavbarAdmin />
       <Box>
-        <AdminBody tabNum={context} />
+        <AdminBody tabNum={context} role={role} />
       </Box>
     </Box>
   );

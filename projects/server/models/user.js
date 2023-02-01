@@ -35,7 +35,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       gender: DataTypes.STRING,
       is_verified: DataTypes.BOOLEAN,
-      role: DataTypes.STRING,
+      role: DataTypes.INTEGER,
     },
     {
       sequelize,

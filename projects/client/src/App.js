@@ -1,17 +1,14 @@
 // import logo from "./logo.svg";
 import "./App.css";
 
-// route
-import { Routes, Route, Navigate } from "react-router-dom";
+// react
+import Axios from "axios";
+import { useEffect, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
 
 // components
 import { Layout } from "./components/Layout";
 import { NavbarTest } from "./components/test";
-import { DrawerCompUser } from "./components/DrawerUser";
-// import { Footer } from "./components/Footer"
-// import { CarouselBanner } from "./components/CarouselBanner"
-// import { FeaturedCategories } from "./components/FeatCategories"
-// import { BreadCrumbsComp } from "./components/BreadCrumbs"
 import { ProtectingRoute } from "./components/ProtectingRoute";
 
 // pages
@@ -28,9 +25,6 @@ import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { OrderListPage } from "./pages/OrderListPage";
 import { CheckoutPage } from "./pages/CheckoutPage/CheckoutPage";
 
-import Axios from "axios";
-import { useEffect } from "react";
-
 //redux
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "./redux/userSlice";
@@ -43,19 +37,13 @@ function App() {
   const token = localStorage.getItem("token");
   const { id } = useSelector((state) => state.userSlice.value);
 
-  const keepLogin = async () => {
+  const keepLogin = useCallback( async () => {
     try {
       const result = await Axios.get(`${url}/user/keeplogin`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      // console.log(result.data);
-      // setRole(result.data.role);
-      console.log(result.data.role);
-
-      // setRole(result.data.role);
-      console.log(result.data.role);
 
       dispatch(
         login({
@@ -73,7 +61,7 @@ function App() {
       console.log(err);
       console.log(err.response.data);
     }
-  };
+  }, [dispatch, id, token]);
 
   const testApi = async () => {
     try {
@@ -85,14 +73,11 @@ function App() {
   };
 
   useEffect(() => {
-    keepLogin();
-  }, [id]);
-
-  useEffect(() => {
     testApi();
-    // keepLogin();
+    keepLogin();
     console.log("MOKOMDO HERE");
-  }, []);
+  }, [keepLogin]);
+
   return (
     <>
       <Routes>
@@ -123,6 +108,7 @@ function App() {
             </ProtectingRoute>
           }
         />
+        
         <Route path="/admin" element={<AdminPage />} />
         <Route path="/verification/:token" element={<VerificationPage />} />
         <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />

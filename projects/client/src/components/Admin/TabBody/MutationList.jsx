@@ -1,6 +1,7 @@
 // react
 import Axios from "axios";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
 
 // chakra
 import {
@@ -25,22 +26,24 @@ import {
 } from "@chakra-ui/react";
 
 // icons
-import { BiSearch } from "react-icons/bi";
-import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
+import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 import { SlArrowRight, SlArrowLeft } from "react-icons/sl";
 import { RxReload } from "react-icons/rx";
+import { RxCheck, RxCross1 } from "react-icons/rx";
+import { BiSearch } from "react-icons/bi";
 
 // props
-import { AddProduct } from "./ProductProps/AddProduct";
-import { EditProduct } from "./ProductProps/EditProduct";
+import { AddMutation } from "./MutationProps/AddMutation";
 
-export const ProductList = () => {
+export const MutationList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
-  const [products, setProducts] = useState();
-  const [category, setCategory] = useState();
+  const { id, role } = useSelector((state) => state.userSlice.value);
+
+  const [mutations, setMutations] = useState();
   const [warehouses, setWarehouses] = useState();
-  const [warehouse, setWarehouse] = useState("All Stocks");
+  const [warehouseId, setWarehouseId] = useState();
+  const [products, setProducts] = useState();
   const [sort, setSort] = useState("id");
   const [direction, setDirection] = useState("ASC");
   const [pagination, setPagination] = useState(0);
@@ -48,59 +51,63 @@ export const ProductList = () => {
   const [search, setSearch] = useState(``);
 
   const searchValue = useRef(``);
-  const warehouseValue = useRef(``);
 
-  const rupiahID = Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-  });
-
-  const getProducts = useCallback(async () => {
+  const getMutations = useCallback(async () => {
     try {
-      const productURL =
-        warehouse === `All Stocks`
-          ? url +
-            `all_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
-          : url +
-            `filter_warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
+      const mutationsURL =
+        url +
+        `all_mutations?search=${search}&role=${role}&userId=${id}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
-      const resultProducts = await Axios.get(productURL);
-      const resultCategories = await Axios.get(url + "all_category");
-      const resultWarehouse = await Axios.get(url + "all_warehouse");
+      const resultMutation = await Axios.get(mutationsURL);
 
-      setProducts(resultProducts.data.result);
-      setPages(resultProducts.data.pages);
-      setCategory(resultCategories.data.result);
-      setWarehouses(resultWarehouse.data.all);
+      setMutations(resultMutation.data.result);
+      setPages(resultMutation.data.pages);
+      setWarehouses(resultMutation.data.allWarehouse);
+      setProducts(resultMutation.data.allProducts);
+      setWarehouseId(resultMutation.data.warehouse);
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
-  }, [url, direction, pagination, search, sort, warehouse]);
+  }, [url, id, role, sort, direction, pagination, search]);
 
-  const deleteProduct = async (id) => {
-    try {
-      await Axios.delete(url + `delete_product/${id}`);
-      getProducts();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const approvalFunc = useCallback(
+    async (
+      ItemId,
+      WarehouseIdTo,
+      WarehouseIdFrom,
+      ProductId,
+      approvalValue
+    ) => {
+      try {
+        await Axios.patch(
+          url +
+            `approval_mutation/${ItemId}?WarehouseIdTo=${WarehouseIdTo}&WarehouseIdFrom=${WarehouseIdFrom}&ProductId=${ProductId}`,
+          { approval: approvalValue }
+        );
+        getMutations();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [url, getMutations]
+  );
 
   useEffect(() => {
-    getProducts();
-  }, [getProducts]);
+    getMutations();
+  }, [getMutations]);
 
   const tableHead = [
     { name: "Id", origin: "id", width: "50px" },
-    { name: "Name", origin: "name", width: "200px" },
-    { name: "Desc", origin: "desc", width: "500px" },
-    { name: "Price", origin: "price", width: "200px" },
-    { name: "Weight", origin: "weight", width: "150px" },
-    { name: "Category", origin: "ProductCategoryId", width: "150px" },
-    { name: "Stocks", origin: "total_stocks", width: "150px" },
+    { name: "Request Warehouse", origin: "IdWarehouseTo", width: "100px" },
+    { name: "Response Warehouse", origin: "IdWarehouseFrom", width: "100px" },
+    { name: "Product Id", origin: "ProductId", width: "150px" },
+    { name: "Quantity", origin: "quantity", width: "150px" },
+    { name: "Approval", origin: "approval", width: "200px" },
+    { name: "Invoice", origin: "invoice", width: "150px" },
+    { name: "Time", origin: "createdAt", width: "150px" },
   ];
 
   return (
@@ -108,10 +115,10 @@ export const ProductList = () => {
       <Center paddingBottom={"12px"}>
         <Stack>
           <Flex>
-            <Box paddingRight={"5px"}>
+          <Box paddingRight={"5px"}>
               <InputGroup w={{ base: "200px", lg: "400px" }}>
                 <Input
-                  placeholder={"Search"}
+                  placeholder={"Search Invoice"}
                   _focusVisible={{ border: "1px solid #b759b4" }}
                   ref={searchValue}
                 />
@@ -125,9 +132,6 @@ export const ProductList = () => {
                     icon={<BiSearch />}
                     onClick={() => {
                       setSearch(searchValue.current.value);
-                      setSort("id");
-                      setPagination(0);
-                      setDirection("ASC");
                     }}
                   />
                 </InputRightElement>
@@ -136,7 +140,6 @@ export const ProductList = () => {
             <IconButton
               icon={<RxReload />}
               onClick={() => {
-                setSearch("");
                 setSort("id");
                 setPagination(0);
                 setDirection("ASC");
@@ -144,30 +147,11 @@ export const ProductList = () => {
             />
           </Flex>
           <Center>
-            <AddProduct
+            <AddMutation
               warehouses={warehouses}
-              getProducts={getProducts}
-              category={category}
+              products={products}
+              warehouseId={warehouseId}
             />
-            <Select
-              ref={warehouseValue}
-              onChange={() => {
-                setWarehouse(warehouseValue.current.value);
-                setSort("id");
-                setPagination(0);
-                setDirection("ASC");
-              }}
-              paddingLeft={"5px"}
-            >
-              <option>All Stocks</option>
-              {warehouses?.map((item, index) => {
-                return (
-                  <option value={item.id} key={index}>
-                    {item.warehouse_name} Stocks
-                  </option>
-                );
-              })}
-            </Select>
           </Center>
         </Stack>
       </Center>
@@ -228,41 +212,81 @@ export const ProductList = () => {
               </Th>
             </Tr>
           </Thead>
-          {products ? (
-            products?.map((item, index) => {
+          {mutations ? (
+            mutations?.map((item, index) => {
+              let approval;
+
+              if (item.approval === null) {
+                approval = <Td textAlign={"center"}>Request</Td>;
+              } else if (item.approval === false) {
+                approval = (
+                  <Td textAlign={"center"} color={"red"}>
+                    Denied
+                  </Td>
+                );
+              } else if (item.approval === true) {
+                approval = (
+                  <Td textAlign={"center"} color={"green"}>
+                    Accepted
+                  </Td>
+                );
+              }
+
               return (
                 <Tbody key={index} bg={"#efdbef"} _hover={{ bg: "#e9cde8" }}>
                   <Tr>
-                    <Td>{item.id}</Td>
-                    <Td whiteSpace={"pre-wrap"}>{item.name}</Td>
-                    <Td whiteSpace={"pre-wrap"}>{item.desc}</Td>
-                    <Td textAlign={"center"}>{rupiahID.format(item.price)}</Td>
-                    <Td textAlign={"center"}>{item.weight}g</Td>
+                    <Td textAlign={"center"}>{item.id}</Td>
+                    <Td textAlign={"center"}>{item.IdWarehouseTo}</Td>
+                    <Td textAlign={"center"}>{item.IdWarehouseFrom}</Td>
+                    <Td textAlign={"center"}>{item.ProductId}</Td>
+                    <Td textAlign={"center"}>{item.quantity}</Td>
+                    {approval}
+                    <Td textAlign={"center"}>{item.invoice}</Td>
                     <Td textAlign={"center"}>
-                      {item.Product_Category?.category}
+                      <Stack>
+                        <Text>{item.createdAt.slice(0, 10)}</Text>
+                        <Text>{item.createdAt.slice(11, 19)}</Text>
+                      </Stack>
                     </Td>
-                    <Td textAlign={"center"}>{+item.total_stocks}</Td>
                     <Td>
-                      <Flex
-                        gap={"20px"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <EditProduct
-                          getProducts={getProducts}
-                          category={category}
-                          warehouse={+warehouse}
-                          item={item}
-                        />
-                        <IconButton
-                          onClick={() => {
-                            deleteProduct(item.id);
-                          }}
-                          bg={"none"}
-                          color={"#ff4d4d"}
-                          icon={<BsFillTrashFill />}
-                        />
-                      </Flex>
+                      {item.approval === null ? (
+                        <Flex
+                          gap={"20px"}
+                          justifyContent={"center"}
+                          alignItems={"center"}
+                        >
+                          <IconButton
+                            onClick={() => {
+                              approvalFunc(
+                                item.id,
+                                item.IdWarehouseTo,
+                                item.IdWarehouseFrom,
+                                item.ProductId,
+                                1
+                              );
+                            }}
+                            bg={"none"}
+                            fontSize={"3xl"}
+                            color={"green"}
+                            icon={<RxCheck />}
+                          />
+                          <IconButton
+                            onClick={() => {
+                              approvalFunc(
+                                item.id,
+                                item.IdWarehouseTo,
+                                item.IdWarehouseFrom,
+                                item.ProductId,
+                                0
+                              );
+                            }}
+                            bg={"none"}
+                            fontSize={"xl"}
+                            color={"#ff4d4d"}
+                            icon={<RxCross1 />}
+                          />
+                        </Flex>
+                      ) : null}
                     </Td>
                   </Tr>
                 </Tbody>

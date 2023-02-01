@@ -10,27 +10,36 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
-  Select,
+  Center,
+  IconButton,
 } from "@chakra-ui/react";
+
+// icons
+import { CgMathPlus } from "react-icons/cg";
+import { RxCheck, RxCross1 } from "react-icons/rx";
 
 export const AddCategory = ({ getCategory }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen}>Add</Button>
+      <Button
+        onClick={onOpen}
+        leftIcon={<CgMathPlus />}
+        bg={"#7dc67f"}
+        _hover={{ bg: "#abdbad" }}
+      >
+        New Category
+      </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Add Product</ModalHeader>
-          <ModalCloseButton />
+          <ModalHeader textAlign={"center"}>Add Product</ModalHeader>
           <ModalBody>
             <AddForm close={onClose} getCategory={getCategory} />
           </ModalBody>
@@ -41,7 +50,7 @@ export const AddCategory = ({ getCategory }) => {
 };
 
 const AddForm = ({ close, getCategory }) => {
-  const url = "http://localhost:8000/api/admin/add_category";
+  const url = process.env.REACT_APP_API_BASE_URL + "/admin/add_category";
 
   const category = useRef("");
 
@@ -50,7 +59,6 @@ const AddForm = ({ close, getCategory }) => {
       const data = {
         category: category.current.value,
       };
-      // console.log(data);
       await Axios.post(url, data);
       getCategory();
       close();
@@ -64,14 +72,20 @@ const AddForm = ({ close, getCategory }) => {
       <FormControl>
         <FormLabel>Category Name</FormLabel>
         <Input ref={category} />
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={addCategory}>
-            Submit
-          </Button>
-          <Button colorScheme="blue" mr={3} onClick={close}>
-            Close
-          </Button>
-        </ModalFooter>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={addCategory}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
       </FormControl>
     </Box>
   );

@@ -5,30 +5,34 @@ import { useRef } from "react";
 // chakra
 import {
   Box,
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
   Input,
+  IconButton,
+  Center,
 } from "@chakra-ui/react";
+
+// icons
+import { BsFillGearFill } from "react-icons/bs";
+import { RxCheck, RxCross1 } from "react-icons/rx";
 
 export const EditCategory = ({ category, getCategory }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
     <Box>
-      <Button onClick={onOpen}>Edit</Button>
+      <IconButton icon={<BsFillGearFill />} bg={"none"} onClick={onOpen} />
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Edit Category</ModalHeader>
+          <ModalHeader textAlign={"center"}>Edit Category</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <EditForm
@@ -50,11 +54,14 @@ const EditForm = ({ close, categoryValue, getCategory }) => {
 
   const editCategory = async () => {
     try {
-      const editData = {
-        category: category_name.current.value,
-      };
-      await Axios.patch(url, editData);
-      getCategory();
+      if (category_name.current.value !== categoryValue.category) {
+        const editData = {
+          category: category_name.current.value,
+        };
+        await Axios.patch(url, editData);
+        getCategory();
+      }
+
       close();
     } catch (err) {
       console.log(err);
@@ -66,14 +73,20 @@ const EditForm = ({ close, categoryValue, getCategory }) => {
       <FormControl>
         <FormLabel>Category</FormLabel>
         <Input defaultValue={categoryValue.category} ref={category_name} />
-        <ModalFooter>
-          <Button colorScheme="blue" mr={3} onClick={editCategory}>
-            Submit
-          </Button>
-          <Button colorScheme="blue" mr={3} onClick={close}>
-            Close
-          </Button>
-        </ModalFooter>
+        <Center paddingTop={"10px"} gap={"10px"}>
+          <IconButton
+            icon={<RxCheck />}
+            fontSize={"3xl"}
+            color={"green"}
+            onClick={editCategory}
+          />
+          <IconButton
+            icon={<RxCross1 />}
+            fontSize={"xl"}
+            color={"red"}
+            onClick={close}
+          />
+        </Center>
       </FormControl>
     </Box>
   );
