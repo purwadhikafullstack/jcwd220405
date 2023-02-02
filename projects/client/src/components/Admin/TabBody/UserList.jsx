@@ -60,8 +60,8 @@ export const UserList = () => {
       const resultUsers = await Axios.get(paginationURL);
       setUsers(resultUsers.data.result);
       setPages(resultUsers.data.pages);
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
@@ -81,32 +81,16 @@ export const UserList = () => {
   }, [getUsers]);
 
   const tableHead = [
-    {
-      name: "Id",
-      origin: "id",
-      width: "100px",
-    },
-    {
-      name: "Email",
-      origin: "email",
-      width: "",
-    },
-    {
-      name: "Name",
-      origin: "name",
-      width: "700px",
-    },
-    {
-      name: "Role",
-      origin: "role",
-      width: "50px",
-    },
+    { name: "Id", origin: "id", width: "100px" },
+    { name: "Email", origin: "email", width: "" },
+    { name: "Name", origin: "name", width: "700px" },
+    { name: "Role", origin: "role", width: "50px" },
   ];
 
   return (
-    <Box padding={{base: "10px", lg: "0"}}>
+    <Box padding={{ base: "10px", lg: "0" }}>
       <Center paddingBottom={"12px"}>
-        <Box paddingRight={"12px"}>
+        <Box paddingRight={"5px"}>
           <InputGroup w={{ base: "200px", lg: "400px" }}>
             <Input
               placeholder={"Search"}

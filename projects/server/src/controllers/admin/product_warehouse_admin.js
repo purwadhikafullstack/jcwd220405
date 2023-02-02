@@ -1,7 +1,7 @@
-const Sequelize = require("sequelize");
 // const db = require("../../../models");
 const db = require("../../models");
 const productWarehouses = db.Product_Warehouses;
+const journal = db.Journal;
 
 module.exports = {
   addStocks: async (req, res) => {
@@ -14,7 +14,7 @@ module.exports = {
         WarehouseId,
       });
 
-      res.status(200).send("Stocks Updated");
+      res.status(200).send("Stocks Added");
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
@@ -42,6 +42,23 @@ module.exports = {
       const { stocks } = req.body;
       const { ProductId, WarehouseId } = req.query;
 
+      const productWarehouse = await productWarehouses.findOne({
+        where: {
+          ProductId,
+          WarehouseId,
+        },
+        raw: true,
+      });
+
+      await journal.create({
+        stock_before: productWarehouse.stocks,
+        stock_after: stocks,
+        desc: "Stock Update",
+        JournalTypeId: stocks > productWarehouse.stocks ? 6 : 5,
+        ProductId,
+        WarehouseId,
+      });
+
       await productWarehouses.update(
         {
           stocks,
@@ -60,37 +77,4 @@ module.exports = {
       console.log(err);
     }
   },
-  //   totalStocks: async (req, res) => {
-  //     try {
-  //       const result = await productWarehouses.findAll({
-  //         group: "ProductId",
-  //         attributes: {
-  //           exclude: ["WarehouseId", "stocks"],
-  //           include: [
-  //             [Sequelize.fn("SUM", Sequelize.col("stocks")), "total_stocks"],
-  //           ],
-  //         },
-  //         raw: true,
-  //       });
-
-  //       res.status(200).send(result);
-  //     } catch (err) {
-  //       res.status(400).send(err);
-  //       console.log(err);
-  //     }
-  //   },
-  //   warehouseStocks: async (req, res) => {
-  //     try {
-  //       const result = await productWarehouses.findAll({
-  //         where: {
-  //           WarehouseId: req.params.id,
-  //         },
-  //       });
-
-  //       res.status(200).send(result);
-  //     } catch (err) {
-  //       res.status(400).send(err);
-  //       console.log(err);
-  //     }
-  //   },
 };

@@ -59,18 +59,10 @@ export const ProductList = () => {
     try {
       const productURL =
         warehouse === `All Stocks`
-          ? /* search */
-            url +
-            // `all_products?sort=${sort}&direction=${direction}&pagination=${pagination}`
+          ? url +
             `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
-          : // : url +
-            // `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
-            /* search
-          ? */ url +
+          : url +
             `filter_warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-      // : url + `warehouse_products?warehouse=${warehouse}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-
-      // console.log(productURL);
 
       const resultProducts = await Axios.get(productURL);
       const resultCategories = await Axios.get(url + "all_category");

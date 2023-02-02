@@ -84,7 +84,6 @@ const EditForm = ({ close, category_name, getProducts, item, warehouse }) => {
         +ProductCategoryId.current.value !== item.Product_Category.id
       ) {
         await Axios.patch(url + `edit_product/${item.id}`, editData);
-        console.log("test")
       }
 
       if (

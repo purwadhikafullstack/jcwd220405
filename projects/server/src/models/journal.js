@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       Journal.belongsTo(models.Journal_Type);
       Journal.belongsTo(models.Stock_Mutation);
       Journal.belongsTo(models.Product);
+      Journal.belongsTo(models.Warehouse);
     }
   }
   Journal.init(

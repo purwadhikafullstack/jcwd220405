@@ -93,7 +93,7 @@ export const CategoryList = () => {
       <Center paddingBottom={"12px"}>
         <Stack>
           <Flex>
-            <Box paddingRight={"12px"}>
+            <Box paddingRight={"5px"}>
               <InputGroup w={{ base: "200px", lg: "400px" }}>
                 <Input
                   placeholder={"Search"}

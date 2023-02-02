@@ -5,6 +5,7 @@ const mutation = db.Stock_Mutation;
 const warehouse = db.Warehouse;
 const productWarehouses = db.Product_Warehouses;
 const product = db.Product;
+const journal = db.Journal;
 
 module.exports = {
   allMutation: async (req, res) => {
@@ -194,6 +195,26 @@ module.exports = {
           }
         );
 
+        await journal.create({
+          stock_before: stocksFrom,
+          stock_after: +stocksFrom - +quantity,
+          desc: "Mutation Update",
+          StockMutationId: req.params.id,
+          JournalTypeId: 3,
+          ProductId,
+          WarehouseId: WarehouseIdFrom,
+        });
+
+        await journal.create({
+          stock_before: stocksTo,
+          stock_after: +stocksTo + +quantity,
+          desc: "Mutation Update",
+          StockMutationId: req.params.id,
+          JournalTypeId: 4,
+          ProductId,
+          WarehouseId: WarehouseIdTo,
+        });
+
         res.status(200).send("Request Accepted");
       }
     } catch (err) {
@@ -201,5 +222,4 @@ module.exports = {
       console.log(err);
     }
   },
-  // requestListMutation: async (req, res)
 };

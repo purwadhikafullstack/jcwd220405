@@ -56,7 +56,8 @@ const {
   categoryComp,
   userOrderList,
   stocksComp,
-  mutationComp
+  mutationComp,
+  journalComp,
 } = admin;
 
 // user
@@ -78,7 +79,8 @@ app.use(
   categoryComp,
   userOrderList,
   stocksComp,
-  mutationComp
+  mutationComp,
+  journalComp
 );
 
 // ===========================
