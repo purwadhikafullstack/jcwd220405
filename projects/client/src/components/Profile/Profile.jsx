@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 import {
@@ -14,22 +14,23 @@ import {
   useMediaQuery,
 } from "@chakra-ui/react";
 
-import {
-  SettingName,
-  SettingBirthDate,
-  SettingGender,
-  SettingPhoto,
-  SettingPassword,
-  SettingEmail,
-} from "./ProfileSettings";
 import { useSelector } from "react-redux";
+
+import {
+  ProfileSettingName,
+  ProfileSettingBirthDate,
+  ProfileSettingGender,
+} from "./ProfileSettingBio";
+import { ProfileSettingPassword } from "./ProfileSettingPassword";
+import { ProfileSettingPhoto } from "./ProfileSettingPhoto";
+import { ProfileSettingEmail } from "./ProfileSettingEmail";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
 export const Profile = () => {
   const [isLoading, setLoading] = useState(false);
   const toast = useToast();
-  const [settingRow] = useMediaQuery("(max-width: 909px)");
+  const [settingDir] = useMediaQuery("(max-width: 909px)");
   const [user, setUser] = useState([]);
   const [name, setName] = useState("");
   const [birthDate, setbirthDate] = useState("");
@@ -38,9 +39,8 @@ export const Profile = () => {
   const [image, setImage] = useState("");
   const { id } = useSelector((state) => state.userSlice.value);
 
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     try {
-      // masih nembak lewat params, niatnya ambil user dari redux
       const response = await (await axios.get(`${baseApi}/user/${id}`)).data;
       setUser(response);
       setName(response.name);
@@ -50,11 +50,12 @@ export const Profile = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id]);
 
   const settingUser = async (e) => {
     e.preventDefault();
     try {
+      // perlu refresh page?
       setLoading(true);
       if (!birthDate) {
         setLoading(false);
@@ -88,14 +89,14 @@ export const Profile = () => {
         birthDate,
         gender,
       });
-      setTimeout(() => setLoading(false), 2500);
+      setTimeout(() => setLoading(false), 2000);
       toast({
         position: "top",
-        title: "Berhasil",
+        title: "Success",
         status: "success",
         isClosable: true,
       });
-      setTimeout(() => getUser(), 3000);
+      setTimeout(() => getUser(), 2500);
     } catch (error) {
       console.error(error);
     }
@@ -142,9 +143,9 @@ export const Profile = () => {
           }),
         2000
       );
-      setTimeout(() => setLoading(false), 2500);
+      setTimeout(() => setLoading(false), 2000);
       setImage("");
-      setTimeout(() => window.location.reload(), 4000);
+      setTimeout(() => window.location.reload(), 2500);
     } catch (error) {
       console.error(error);
     }
@@ -156,25 +157,31 @@ export const Profile = () => {
 
   useEffect(() => {
     getUser();
-  }, [id]);
+  }, [getUser]);
   return (
-    <Flex gap={7} direction={settingRow ? "column" : "row"}>
+    <Flex gap={7} direction={settingDir ? "column" : "row"}>
       <Box flex={"1"}>
         <Card boxShadow="0 0 3px white" mb={10} color={"inherit"}>
           <CardBody>
-            <Image
-              src={`${process.env.REACT_APP_SERVER}${user?.picture}`}
-              alt="profile-image"
-              border={"1px"}
-              borderColor={"rgba(1,2,3,1)"}
-              borderRadius="lg"
-              w={300}
-              h={300}
-              m="auto"
-              objectFit={"cover"}
-            />
+            <a
+              target={"_blank"}
+              href={`${process.env.REACT_APP_SERVER}${user?.picture}`}
+              rel="noopener noreferrer"
+            >
+              <Image
+                src={`${process.env.REACT_APP_SERVER}${user?.picture}`}
+                alt="profile-image"
+                border={"1px"}
+                borderColor={"rgba(1,2,3,1)"}
+                borderRadius="lg"
+                w={300}
+                h={300}
+                m="auto"
+                objectFit={"cover"}
+              />
+            </a>
             <Stack mt="6" spacing="3" border={"2px"} borderRadius={"md"} p="5">
-              <SettingPhoto
+              <ProfileSettingPhoto
                 user={user}
                 handleChoose={handleChoose}
                 handleUpload={handleUpload}
@@ -190,7 +197,7 @@ export const Profile = () => {
           </CardBody>
         </Card>
         <Stack>
-          <SettingPassword user={user} baseApi={baseApi} toast={toast} />
+          <ProfileSettingPassword user={user} baseApi={baseApi} toast={toast} />
         </Stack>
       </Box>
       <Box
@@ -216,7 +223,11 @@ export const Profile = () => {
                       ? minString(name, 13)
                       : minString(user?.name, 13)}
                   </Text>
-                  <SettingName user={user} name={name} setName={setName} />
+                  <ProfileSettingName
+                    user={user}
+                    name={name}
+                    setName={setName}
+                  />
                 </Box>
               </Flex>
               <Flex mb={6}>
@@ -230,7 +241,7 @@ export const Profile = () => {
                       : user?.birthDate}
                     {!birthDate ? "hh-bb-tttt" : ""}
                   </Text>
-                  <SettingBirthDate
+                  <ProfileSettingBirthDate
                     user={user}
                     birthDate={birthDate}
                     setbirthDate={setbirthDate}
@@ -243,7 +254,7 @@ export const Profile = () => {
                 </Box>
                 <Box flex="0.7" display={"flex"} gap={4}>
                   <Text>{user?.gender !== gender ? gender : user?.gender}</Text>
-                  <SettingGender
+                  <ProfileSettingGender
                     user={user}
                     gender={gender}
                     setGender={setGender}
@@ -284,7 +295,7 @@ export const Profile = () => {
                     ? minString(email, 11)
                     : minString(user?.email, 11)}
                 </Text>
-                <SettingEmail
+                <ProfileSettingEmail
                   user={user}
                   email={email}
                   baseApi={baseApi}

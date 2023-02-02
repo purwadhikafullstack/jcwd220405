@@ -37,9 +37,7 @@ function App() {
   const token = localStorage.getItem("token");
   const { id } = useSelector((state) => state.userSlice.value);
 
-
   const keepLogin = useCallback(async () => {
-
     try {
       const result = await Axios.get(`${url}/user/keeplogin`, {
         headers: {
@@ -85,13 +83,24 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="/profile/settings" element={<ProfilePage />} />
-          <Route
-            path="/profile/settings/address"
-            element={<ProfileAddressPage />}
-          />
           <Route path="/order-list" element={<OrderListPage />} />
         </Route>
+        <Route
+          path="/profile/settings"
+          element={
+            <ProtectingRoute>
+              <ProfilePage />
+            </ProtectingRoute>
+          }
+        />
+        <Route
+          path="/profile/settings/address"
+          element={
+            <ProtectingRoute>
+              <ProfileAddressPage />
+            </ProtectingRoute>
+          }
+        />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/product/:name" element={<DetailProductPage />} />
         <Route
