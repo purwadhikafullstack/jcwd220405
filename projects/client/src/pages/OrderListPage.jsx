@@ -24,6 +24,7 @@ import {
   Divider,
   Container,
 } from "@chakra-ui/react";
+import { PaymentProof } from "../components/Button/PaymentButton";
 import { IoBagHandleOutline } from "react-icons/io5";
 import gameboy from "../assets/gameboy.jpg";
 import mokomdo from "../assets/mokomdo-simplified2.png";
@@ -85,7 +86,8 @@ export const OrderListPage = () => {
         <Box
           // display={"flex"}
           // justifyContent={"space-between"}
-          bg="#FFF0F5"
+          // bg="#FFF0F5"
+          bgGradient="linear(150.64deg, #3B0D2C 0%, rgba(74, 10, 71, 1) 16.61%, #2F0C39 61.16%, rgba(38, 8, 67, 1)  92.29%)"
           p={10}
           m={10}
           borderRadius={10}
@@ -94,7 +96,7 @@ export const OrderListPage = () => {
         >
           <Flex direction={"column-reverse"}>
             {orderList?.map((item, index) => {
-              console.log(item);
+              // console.log(item);
               return (
                 <Card
                   key={index}
@@ -103,6 +105,7 @@ export const OrderListPage = () => {
                   borderRadius={10}
                   borderColor={"rgba(231, 56, 145,.234)"}
                   maxH={"100%"}
+                  bgColor="white"
                 >
                   <Box
                     mb={2}
@@ -149,8 +152,10 @@ export const OrderListPage = () => {
 
                     <CardBody my={0}>
                       <Stack>
-                        <Heading size={"md"}>{item?.Cart.Product.name}</Heading>
-                        <Text py={2}>
+                        <Heading size={"md"} color="white">
+                          {item?.Cart?.Product?.name}
+                        </Heading>
+                        <Text py={2} color="white">
                           {item?.Cart?.quantity} X {item?.Cart?.price}
                         </Text>
                       </Stack>
@@ -164,25 +169,44 @@ export const OrderListPage = () => {
                       height={"40"}
                     />
                     <CardBody my={0}>
-                      <Stack>
+                      <Stack color="white">
                         <Text>Total Belanja</Text>
                         <Text>Rp {item?.total_price}</Text>
                       </Stack>
                     </CardBody>
                   </Card>
                   <CardFooter p={0} pb={3} pr={3}>
-                    <Spacer />
                     {item?.OrderStatusId > 1 ? (
-                      <Button variant={"ghost"}></Button>
+                      <>
+                        <Button
+                          variant={"solid"}
+                          bg="#D54B79"
+                          color={"black"}
+                          isDisabled
+                        >
+                          Uploaded
+                        </Button>
+                        <Spacer />
+                        <Button
+                          variant={"solid"}
+                          bg="#D54B79"
+                          color={"black"}
+                          isDisabled
+                        >
+                          Cancel Order
+                        </Button>
+                      </>
                     ) : (
                       <>
+                        <PaymentProof id={item?.id} />
+                        <Spacer />
                         <Button
                           variant={"solid"}
                           bg="#D54B79"
                           color={"black"}
                           onClick={onOpen}
                         >
-                          Batalkan Pesanan
+                          Cancel Order
                         </Button>
                         <Modal isOpen={isOpen} onClose={onClose}>
                           <ModalOverlay />

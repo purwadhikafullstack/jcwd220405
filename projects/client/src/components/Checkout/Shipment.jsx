@@ -20,9 +20,6 @@ import {
 import gameboy from "../../assets/gameboy.jpg";
 import { ShoppingSummary } from "./ShoppingSummary";
 
-
-
-
 //react + redux + axios
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
@@ -30,7 +27,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useRef } from "react";
 import { useCallback } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 //base api
 const port = process.env.REACT_APP_SERVER;
@@ -38,7 +35,7 @@ const baseApi = process.env.REACT_APP_API_BASE_URL;
 
 //page
 export const Shipment = () => {
-
+  const navigate = useNavigate();
   const { id } = useSelector((state) => state.userSlice.value);
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [detail, setDetail] = useState([]); //result cart
@@ -74,7 +71,7 @@ export const Shipment = () => {
         ?.map((item) => item?.quantity * item?.Product?.weight)
         .reduce((a, b) => a + b, 0);
       setTotalWeight(sumWeight);
-      
+
       const sumPriceTotal = result
         ?.map((item) => item?.quantity * item?.price)
         .reduce((a, b) => a + b, 0);
@@ -138,10 +135,19 @@ export const Shipment = () => {
           container: "my-swal",
         },
       });
+      navigate("/order-list");
     } catch (err) {
       console.log(err);
     }
-  }, [cartID, deliveryFee, productPricetotal, id, finalPrice, userAddressID]);
+  }, [
+    cartID,
+    deliveryFee,
+    productPricetotal,
+    id,
+    finalPrice,
+    userAddressID,
+    navigate,
+  ]);
 
   useEffect(() => {
     getCost();
