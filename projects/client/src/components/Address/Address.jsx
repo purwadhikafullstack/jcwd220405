@@ -14,7 +14,9 @@ import { IoSearch, IoCheckmarkOutline } from "react-icons/io5";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import { AddAddress, DeleteAddress, EditAddress } from "./AddressSettings";
+import { AddAddress } from "./AddAddress";
+import { EditAddress } from "./EditAddress";
+import { DeleteAddress } from "./DeleteAddress";
 import { useSelector } from "react-redux";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
@@ -30,7 +32,6 @@ export const Address = () => {
 
   const getAddressUser = async () => {
     try {
-      // masih nembak lewat params, niatnya ambil user dari redux
       const response = await (
         await axios.get(
           `${baseApi}/address/${id}?search_query=${query ? query : ""}`
@@ -44,7 +45,6 @@ export const Address = () => {
 
   const selectAddress = async (item) => {
     try {
-      // masih nembak lewat params, niatnya ambil user dari redux
       await axios.post(`${baseApi}/address/s/${id}`, { id: item.id });
       setTimeout(
         () =>

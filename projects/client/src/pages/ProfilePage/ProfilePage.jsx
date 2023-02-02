@@ -8,7 +8,7 @@ export const ProfilePage = () => {
   return (
     <>
       <NavbarComp />
-      <Container maxW={"100%"} p={5} color={"white"}>
+      <Container minH={"89.5vh"} maxW={"100%"} p={5} color={"white"}>
         <Container maxW="container.lg">
           <Container
             maxW={"100%"}
@@ -22,7 +22,6 @@ export const ProfilePage = () => {
             <NavProfile />
           </Container>
           <Container
-            minH={"89.5vh"}
             maxW="container.lg"
             border="2px"
             borderColor="gray.200"

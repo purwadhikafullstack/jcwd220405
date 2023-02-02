@@ -20,7 +20,9 @@ import React, { useState, useEffect } from "react";
 import Axios from "axios";
 import { useSelector } from "react-redux";
 import { IoCheckmarkOutline } from "react-icons/io5";
-import { AddAddress } from "../Address/AddressSettings";
+
+// address gw fix dulu ya mas, nb: AS
+// import { AddAddress } from "../Address/AddressSettings";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -118,7 +120,8 @@ export const AddressModal = () => {
               </InputGroup>
               <Box mt={5}>
                 <Center>
-                  <AddAddress />
+                  {/* address gw fix dulu ya mas, nb: AS */}
+                  {/* <AddAddress /> */}
                 </Center>
               </Box>
             </Box>
