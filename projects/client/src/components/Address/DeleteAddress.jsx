@@ -8,28 +8,12 @@ import {
   ModalCloseButton,
   Button,
   useDisclosure,
-  FormControl,
-  FormLabel,
-  Input,
-  Divider,
-  FormHelperText,
-  Checkbox,
   Text,
-  Flex,
-  Select,
-  InputGroup,
-  Textarea,
   useToast,
-  Box,
 } from "@chakra-ui/react";
-import swal from "sweetalert";
 
 import { useState } from "react";
-import { Formik, ErrorMessage, Form, Field } from "formik";
-import * as Yup from "yup";
 import axios from "axios";
-
-const geoapifyKey = process.env.REACT_APP_GEOAPIFY_KEY;
 
 export const DeleteAddress = ({ item, getAddressUser, baseApi, id }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -39,7 +23,6 @@ export const DeleteAddress = ({ item, getAddressUser, baseApi, id }) => {
   const deleteAddress = async (item) => {
     try {
       setLoading(true);
-      // masih nembak lewat params, niatnya ambil user dari redux
       await axios.post(`${baseApi}/address/d/${id}`, { id: item.id });
       setTimeout(
         () =>
@@ -53,7 +36,7 @@ export const DeleteAddress = ({ item, getAddressUser, baseApi, id }) => {
       );
       setTimeout(() => setLoading(false), 2500);
       setTimeout(() => onClose(), 2500);
-      setTimeout(() => getAddressUser(), 3500);
+      setTimeout(() => getAddressUser(), 3000);
     } catch (error) {
       console.log(error);
       setLoading(false);

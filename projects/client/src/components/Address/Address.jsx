@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { IoSearch, IoCheckmarkOutline } from "react-icons/io5";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 import { AddAddress } from "./AddAddress";
@@ -24,24 +24,26 @@ const baseApi = process.env.REACT_APP_API_BASE_URL;
 export const Address = () => {
   const toast = useToast();
   const [address, setAddress] = useState([]);
+  const [name, setName] = useState("");
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const { id } = useSelector((state) => state.userSlice.value);
 
   const handleQuery = () => setQuery(search);
 
-  const getAddressUser = async () => {
+  const getAddressUser = useCallback(async () => {
     try {
       const response = await (
         await axios.get(
           `${baseApi}/address/${id}?search_query=${query ? query : ""}`
         )
       ).data;
-      setAddress(response);
+      setAddress(response?.result);
+      setName(response?.name);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [id, query]);
 
   const selectAddress = async (item) => {
     try {
@@ -66,7 +68,7 @@ export const Address = () => {
 
   useEffect(() => {
     getAddressUser();
-  }, [query, id]);
+  }, [getAddressUser]);
   return (
     <>
       <Flex
@@ -91,14 +93,19 @@ export const Address = () => {
                   handleQuery();
                 }
               }}
+              isDisabled={
+                !address?.length && query
+                  ? false
+                  : !address?.length
+                  ? true
+                  : false
+              }
             />
-
             <InputRightAddon bgColor={"#E73891"} border={"##E73891"} w={"10%"}>
               <Button
                 bgColor={"transparent"}
                 pos={"absolute"}
-                right={{ base: "-.6em", md: "-.8em" }}
-                // right={"-.7em"}
+                right={{ sm: "-.4em", base: "-.6em", md: "-.8em" }}
                 variant={"unstyled"}
                 onClick={handleQuery}
                 disabled={search ? false : true}
@@ -114,6 +121,7 @@ export const Address = () => {
             baseApi={baseApi}
             search={query}
             id={id}
+            name={name}
           />
         </Box>
       </Flex>
@@ -163,7 +171,9 @@ export const Address = () => {
                     >
                       {item.received_name}
                     </Text>
-                    <Text>{item.full_address}</Text>
+                    <Text>
+                      {item.full_address}, {item?.city}
+                    </Text>
                   </Box>
                   <Box pt={"3.5"}>
                     {item.status ? (
