@@ -129,7 +129,12 @@ module.exports = {
           name: req.params.name,
         },
       });
-      res.status(200).send(response);
+      const stock = response.Details.map((item) => item.stocks).reduce(
+        (a, b) => a + b,
+        0
+      );
+      const weight = response.weight >= 1000 ? response.weight / 1000 : "";
+      res.status(200).send({ result: response, stock: stock, weight: weight });
     } catch (err) {
       console.log(err);
       res.status(404).send(err);

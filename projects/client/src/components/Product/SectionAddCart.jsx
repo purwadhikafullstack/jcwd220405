@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { cartUser } from "../../redux/cartSlice";
+
 import {
   Box,
   Button,
@@ -20,11 +25,6 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { cartUser } from "../../redux/cartSlice";
 
 export const SectionAddCart = ({
   totalStock,

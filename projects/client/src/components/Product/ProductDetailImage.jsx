@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Image } from "@chakra-ui/react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -11,7 +10,7 @@ import "./SwiperStyle.css";
 export const ProductDetailImage = ({ imageProduct, baseServer }) => {
   return (
     <>
-      <Box w="369px" borderRadius="md">
+      <Box w={{ base: "248px", md: "369px" }} borderRadius="md">
         <Swiper
           slidesPerView={1}
           spaceBetween={30}
@@ -28,7 +27,7 @@ export const ProductDetailImage = ({ imageProduct, baseServer }) => {
               <SwiperSlide key={index}>
                 <Image
                   src={
-                    item.image
+                    item?.image
                       ? `${baseServer}${item.image}`
                       : `${baseServer}/public/product/default-product.png`
                   }
