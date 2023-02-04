@@ -66,7 +66,7 @@ export const Profile = () => {
           isClosable: true,
         });
       }
-      if (name.length < 4) {
+      if (name?.length < 4) {
         setLoading(false);
         return toast({
           position: "top",
@@ -75,7 +75,7 @@ export const Profile = () => {
           isClosable: true,
         });
       }
-      if (name.length > 25) {
+      if (name?.length > 25) {
         setLoading(false);
         return toast({
           position: "top",

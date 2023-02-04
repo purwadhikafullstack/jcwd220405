@@ -96,7 +96,7 @@ export const ProfileSettingPassword = ({ user, baseApi, toast }) => {
       setTimeout(() => {
         dispatch(logout());
         localStorage.removeItem("token");
-      }, 3000);
+      }, 2500);
     } catch (error) {
       console.log(error);
       toast({

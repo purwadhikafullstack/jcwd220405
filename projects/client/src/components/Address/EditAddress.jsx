@@ -188,9 +188,9 @@ export const EditAddress = ({ baseApi, item, id }) => {
           <Divider />
           <Formik
             initialValues={{
-              received_name: item.received_name,
-              postal_code: item.postal_code,
-              full_address: item.full_address,
+              received_name: item?.received_name,
+              postal_code: item?.postal_code,
+              full_address: item?.full_address,
             }}
             validationSchema={addressValid}
             onSubmit={(value) => {
@@ -262,9 +262,9 @@ export const EditAddress = ({ baseApi, item, id }) => {
                             colorScheme={"pink"}
                             mt={2}
                             onChange={() => handleStatus()}
-                            defaultChecked={item.status ? true : false}
-                            disabled={item.status ? true : false}
-                            title={item.status ? "This main address" : "Main"}
+                            defaultChecked={item?.status ? true : false}
+                            disabled={item?.status ? true : false}
+                            title={item?.status ? "This main address" : "Main"}
                           >
                             Make it the Main Address
                           </Checkbox>

@@ -22,12 +22,10 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Formik, ErrorMessage, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
-import { useEffect } from "react";
-import { useCallback } from "react";
 
 export const AddAddress = ({ address, baseApi, search, id, name }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();

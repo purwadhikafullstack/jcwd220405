@@ -133,11 +133,11 @@ export const Address = () => {
               borderRadius={"md"}
               border={"2px"}
               borderColor={
-                item.status ? "rgba(231, 56, 145,.69)" : "transparent"
+                item?.status ? "rgba(231, 56, 145,.69)" : "transparent"
               }
-              bgColor={item.status ? "rgba(231, 56, 145,.234)" : ""}
+              bgColor={item?.status ? "rgba(231, 56, 145,.234)" : ""}
               bgGradient={
-                item.status
+                item?.status
                   ? ""
                   : "linear(to-r, rgba(231, 56, 145, 0.33) 55.88%, rgba(233, 54, 188, 0.44) 100%)"
               }
@@ -157,7 +157,7 @@ export const Address = () => {
                   variant={"outline"}
                   colorScheme={"gray"}
                   pt={1}
-                  hidden={item.status ? false : true}
+                  hidden={item?.status ? false : true}
                 >
                   Main
                 </Badge>
@@ -169,14 +169,14 @@ export const Address = () => {
                       fontWeight={"semibold"}
                       fontSize={{ base: "16px", md: "20px" }}
                     >
-                      {item.received_name}
+                      {item?.received_name}
                     </Text>
                     <Text>
-                      {item.full_address}, {item?.city}
+                      {item?.full_address}, {item?.city}
                     </Text>
                   </Box>
                   <Box pt={"3.5"}>
-                    {item.status ? (
+                    {item?.status ? (
                       <IoCheckmarkOutline
                         transform="scale(2.2)"
                         color="rgba(231, 56, 145,1)"
@@ -203,7 +203,7 @@ export const Address = () => {
                 <Text
                   as={"span"}
                   color="gray.500"
-                  hidden={item.status ? true : false}
+                  hidden={item?.status ? true : false}
                 >
                   {"|"}
                 </Text>

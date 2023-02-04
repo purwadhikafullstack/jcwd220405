@@ -26,7 +26,7 @@ export const ProfileSettingName = ({ user, name, setName }) => {
   return (
     <>
       <Text as={Link} color="#D54B79" onClick={onOpen}>
-        {user.name ? "Change" : "Add"}
+        {user?.name ? "Change" : "Add"}
       </Text>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "md" }}>
         <ModalOverlay />
@@ -52,7 +52,7 @@ export const ProfileSettingName = ({ user, name, setName }) => {
             <Button
               m={"auto"}
               onClick={onClose}
-              disabled={name === user.name || !name ? true : false}
+              disabled={name === user?.name || !name ? true : false}
             >
               Save
             </Button>
@@ -69,7 +69,7 @@ export const ProfileSettingBirthDate = ({ user, birthDate, setbirthDate }) => {
   return (
     <>
       <Text as={Link} color="#D54B79" onClick={onOpen}>
-        {user.birthDate ? "Change" : "Add"}
+        {user?.birthDate ? "Change" : "Add"}
       </Text>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "md" }}>
         <ModalOverlay />
@@ -93,7 +93,7 @@ export const ProfileSettingBirthDate = ({ user, birthDate, setbirthDate }) => {
             <Button
               m={"auto"}
               type={"submit"}
-              disabled={birthDate === user.birthDate ? true : false}
+              disabled={birthDate === user?.birthDate ? true : false}
               onClick={onClose}
             >
               Save
@@ -111,7 +111,7 @@ export const ProfileSettingGender = ({ user, gender, setGender }) => {
   return (
     <>
       <Text as={Link} color="#D54B79" onClick={onOpen}>
-        {user.gender ? "Change" : "Add"}
+        {user?.gender ? "Change" : "Add"}
       </Text>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "md" }}>
         <ModalOverlay />
@@ -140,7 +140,7 @@ export const ProfileSettingGender = ({ user, gender, setGender }) => {
             <Button
               m={"auto"}
               type={"submit"}
-              disabled={gender === user.gender ? true : false}
+              disabled={gender === user?.gender ? true : false}
               onClick={onClose}
             >
               Save

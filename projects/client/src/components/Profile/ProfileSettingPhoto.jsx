@@ -43,7 +43,7 @@ export const ProfileSettingPhoto = ({
         _hover={{ color: "black", bg: "white" }}
         onClick={onOpen}
       >
-        {user.picture ? "Change Photo" : "Select Photo"}
+        {user?.picture ? "Change Photo" : "Select Photo"}
       </Button>
       <Modal isOpen={isOpen} onClose={onClose} size={{ base: "sm", md: "md" }}>
         <ModalOverlay onClick={() => setImage("")} />

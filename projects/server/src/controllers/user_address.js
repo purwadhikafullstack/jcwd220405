@@ -2,7 +2,9 @@ const db = require("../models");
 const User = db.User;
 const address = db.Address_User;
 const { Op } = require("sequelize");
+
 const axios = require("axios");
+
 const { GEOAPIFY_KEY, RAJA_ONGKIR, RAJA_ONGKIR_URL } = process.env;
 
 module.exports = {
@@ -119,8 +121,8 @@ module.exports = {
         )
       ).data;
 
-      const lat = forwardAddress?.results[0].lat;
-      const lng = forwardAddress?.results[0].lon;
+      const lat = forwardAddress?.results[0]?.lat;
+      const lng = forwardAddress?.results[0]?.lon;
 
       if (length > 4) throw "The address can only be 5";
 
@@ -193,8 +195,8 @@ module.exports = {
         )
       ).data;
 
-      const lat = forwardAddress?.results[0].lat;
-      const lng = forwardAddress?.results[0].lon;
+      const lat = forwardAddress?.results[0]?.lat;
+      const lng = forwardAddress?.results[0]?.lon;
       if (status)
         await address.update({ status: false }, { where: { IdUser: user } });
       await address.update(

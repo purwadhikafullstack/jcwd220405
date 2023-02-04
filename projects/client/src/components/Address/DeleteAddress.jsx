@@ -46,7 +46,7 @@ export const DeleteAddress = ({ item, getAddressUser, baseApi, id }) => {
     <>
       <Text
         cursor={"pointer"}
-        hidden={item.status ? true : false}
+        hidden={item?.status ? true : false}
         onClick={onOpen}
       >
         Delete

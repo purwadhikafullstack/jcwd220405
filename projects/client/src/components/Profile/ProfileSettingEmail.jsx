@@ -120,7 +120,7 @@ export const ProfileSettingEmail = ({ user, baseApi, toast }) => {
         textAlign={"center"}
       >
         <Badge color="#D54B79" alignSelf={"center"} variant={"outline"}>
-          {user.is_verified ? "Verified" : "Unverified"}
+          {user?.is_verified ? "Verified" : "Unverified"}
         </Badge>
         <ReVerifyButton user={user} baseApi={baseApi} toast={toast} />
         <Text
@@ -139,7 +139,7 @@ export const ProfileSettingEmail = ({ user, baseApi, toast }) => {
         onClose={onClose}
         size={{ base: "sm", md: "md" }}
       >
-        <ModalOverlay onClick={() => console.log("ovly")} />
+        <ModalOverlay />
         <ModalContent>
           <ModalHeader m={"auto"}>Change Email</ModalHeader>
           <ModalCloseButton
