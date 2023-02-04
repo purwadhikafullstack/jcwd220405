@@ -33,6 +33,7 @@ export const CartSummary = ({ selectedCart, totalPriceCart }) => {
           colorScheme={"pink"}
           w={"100%"}
           onClick={() => navigate("/cart/checkout")}
+          isDisabled={selectedCart ? false : true}
         >
           Buy ({selectedCart})
         </Button>

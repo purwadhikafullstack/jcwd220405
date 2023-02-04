@@ -1,11 +1,11 @@
-// const db = require("../../../models");
 const db = require("../../models");
 const { Op } = require("sequelize");
+const Sequelize = require("sequelize");
+
 const Product = db.Product;
 const productCategory = db.Product_Category;
 const productImage = db.Product_Image;
 const productWarehouses = db.Product_Warehouses;
-const Sequelize = require("sequelize");
 
 module.exports = {
   allProduct: async (req, res) => {
@@ -37,21 +37,6 @@ module.exports = {
                 ],
               },
             },
-            // {
-            //   category: {
-            //     [Op.like]: "%" + search + "%",
-            //   },
-            //   price: {
-            //     [Op.and]: [
-            //       {
-            //         [Op.gte]: price_min,
-            //       },
-            //       {
-            //         [Op.lte]: price_max,
-            //       },
-            //     ],
-            //   },
-            // },
           ],
         },
       });
@@ -63,17 +48,13 @@ module.exports = {
             attributes: {
               exclude: ["createdAt", "updatedAt"],
             },
-            // required: true,
           },
           {
             model: productCategory,
-            attributes: ["category"],
-            // required: true,
           },
           {
             model: productWarehouses,
             as: "Details",
-            // required: true,
           },
         ],
         attributes: [
@@ -102,22 +83,6 @@ module.exports = {
                 ],
               },
             },
-            // {
-            //   category: {
-            //     [Op.like]: "%" + search + "%",
-            //   },
-            //   price: {
-            //     [Op.and]: [
-            //       {
-            //         [Op.gte]: price_min,
-            //       },
-            //       {
-            //         [Op.lte]: price_max,
-            //       },
-            //     ],
-            //   },
-            // },
-            //
           ],
         },
         offset: offset,

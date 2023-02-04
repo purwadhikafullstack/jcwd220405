@@ -79,7 +79,7 @@ export const ProductDetail = () => {
               _hover={{ fontStyle: "italic" }}
               color={"rgb(213, 75, 121)"}
             >
-              {`Rp${product.price?.toLocaleString()}`}
+              {`Rp${product?.price?.toLocaleString()}`}
             </Text>
           </Box>
           <Divider my={"3"} />
