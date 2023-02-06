@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -12,34 +12,25 @@ import { CartSummary } from "./CartSummary";
 
 export const Cart = ({ baseServer, baseApi }) => {
   const [cart, setCart] = useState([]);
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState([]);
   const [selectedCart, setSelectedCart] = useState(0);
   const [totalPriceCart, setTotalPriceCart] = useState(0);
   const { id } = useSelector((state) => state.userSlice.value);
   const dispatch = useDispatch();
   const toast = useToast();
 
-  const getCart = async () => {
+  const getCart = useCallback(async () => {
     try {
       const response = await (await axios.get(`${baseApi}/cart/${id}`)).data;
       setCart(response.result);
       dispatch(cartUser(response.result));
-      const qty = response.result.map((item) => item.quantity);
-      setQuantity(qty);
-      const selectedItem = response.result
-        .filter((item) => item.status === true)
-        .map((item) => item.quantity)
-        .reduce((a, b) => a + b, 0);
-      const totalPrice = response.result
-        .filter((item) => item.status === true)
-        .map((item) => item.price * item.quantity)
-        .reduce((a, b) => a + b, 0);
-      setSelectedCart(selectedItem);
-      setTotalPriceCart(totalPrice);
+      setQuantity(response.qty);
+      setSelectedCart(response.selectedItem);
+      setTotalPriceCart(response.totalPrice);
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [baseApi, id, dispatch]);
 
   const deleteCart = async (item) => {
     try {
@@ -76,6 +67,12 @@ export const Cart = ({ baseServer, baseApi }) => {
       getCart();
     } catch (error) {
       console.error(error);
+      return toast({
+        title: `${error.response.data}`,
+        status: "error",
+        position: "top",
+        isClosable: true,
+      });
     }
   };
 
@@ -93,12 +90,12 @@ export const Cart = ({ baseServer, baseApi }) => {
 
   useEffect(() => {
     getCart();
-  }, [id]);
+  }, [getCart]);
 
   return (
     <>
       <Container
-        maxWidth={"80%"}
+        maxWidth={{ base: "100%", md: "80%" }}
         display={"flex"}
         flexDirection={{ base: "column", md: "row" }}
       >
@@ -118,9 +115,12 @@ export const Cart = ({ baseServer, baseApi }) => {
           <Box>
             <Divider mt={"4"} borderTop={"4px"} borderBottom={"2px"} />
           </Box>
+          <Box mt={"4"} hidden={cart?.length ? true : false}>
+            <Heading size={"md"}>Your cart is empty</Heading>
+          </Box>
         </Box>
         <Box
-          width={{ base: "90%", md: "30%" }}
+          width={{ base: "100%", md: "30%" }}
           p={4}
           margin={{ base: "auto", md: "0" }}
         >
@@ -132,6 +132,7 @@ export const Cart = ({ baseServer, baseApi }) => {
             display={"flex"}
             flexDirection={"column"}
             gap={4}
+            mb={"8"}
           >
             <CartSummary
               selectedCart={selectedCart}

@@ -22,6 +22,7 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
+  Tooltip,
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
@@ -80,6 +81,7 @@ export const SectionAddCart = ({
         quantity: quantity,
         price: product.price,
         IdProduct: product.id,
+        totalStock,
       });
 
       const cart = await (await axios.get(`${baseApi}/cart/${id}`)).data;
@@ -115,25 +117,27 @@ export const SectionAddCart = ({
         <Text>Set the quantity</Text>
         <Divider my={"3"} />
         <Box display={"flex"} gap={2} alignItems={"center"}>
-          <Box width={"45%"} hidden={totalStock ? false : true}>
+          <Box width={"45%"}>
             <NumberInput
               size={"md"}
               defaultValue={quantity}
               min={1}
-              max={5}
+              max={totalStock}
               borderColor={"gray"}
+              isDisabled={totalStock ? false : true}
             >
               <NumberInputField
                 accept="num"
                 onChange={(e) => {
-                  if (e.target.value === "") {
+                  const regex = /^\d+$/;
+                  if (!regex.test(e.target.value)) {
                     return setQuantity(0);
                   }
                   if (e.target.value < 1) {
                     return setQuantity(1);
                   }
-                  if (e.target.value > 5) {
-                    return setQuantity(5);
+                  if (e.target.value > totalStock) {
+                    return setQuantity(totalStock);
                   }
                   setQuantity(+e.target.value);
                 }}
@@ -143,7 +147,7 @@ export const SectionAddCart = ({
                   bg="rgb(213, 75, 121)"
                   children="+"
                   onClick={() => {
-                    if (quantity < 5) setQuantity(quantity + 1);
+                    if (quantity < totalStock) setQuantity(quantity + 1);
                   }}
                 />
                 <NumberDecrementStepper
@@ -163,28 +167,26 @@ export const SectionAddCart = ({
             </Text>
           </Text>
         </Box>
-        <Box mb={"5"} color={"rgba(123,123,123,.69)"}>
-          <Text>max : 5</Text>
-        </Box>
         <Box display={"flex"} justifyContent={"space-between"} mb={"4"}>
           <Text color={"gray"}>Subtotal</Text>
           <Text fontWeight="bold" color={"rgb(213, 75, 121)"}>
-            {totalStock ? `Rp${(subtotal * quantity).toLocaleString()}` : "-"}
+            {totalStock ? `Rp${(subtotal * quantity)?.toLocaleString()}` : "-"}
           </Text>
         </Box>
         <Box>
-          <Button
-            w={"100%"}
-            colorScheme={"pink"}
-            onClick={() => {
-              AddCart(product);
-              setLimit(limit + 1);
-            }}
-            disabled={totalStock ? false : true}
-            title={totalStock ? "" : "Out of Stock"}
-          >
-            + Cart
-          </Button>
+          <Tooltip label={totalStock ? "" : "Out of Stock"}>
+            <Button
+              w={"100%"}
+              colorScheme={"pink"}
+              onClick={() => {
+                AddCart(product);
+                setLimit(limit + 1);
+              }}
+              disabled={totalStock ? false : true}
+            >
+              + Cart
+            </Button>
+          </Tooltip>
           <Modal isOpen={isOpen} onClose={onClose} size="3xl">
             <ModalOverlay />
             <ModalContent>

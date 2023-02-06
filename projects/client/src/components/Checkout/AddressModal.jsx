@@ -120,7 +120,7 @@ export const AddressModal = () => {
                   }}
                 />
               </InputGroup>
-              <Box mt={5}>
+              <Box mt={5} color={"white"}>
                 <Center>
                   {/* address gw fix dulu ya mas, nb: AS */}
                   <AddAddress

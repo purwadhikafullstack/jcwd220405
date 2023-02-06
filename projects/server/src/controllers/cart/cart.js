@@ -1,10 +1,10 @@
-// const db = require("../../../models");
 const db = require("../../models");
+const Sequelize = require("sequelize");
+
 const Cart = db.Cart;
 const Product = db.Product;
 const productImage = db.Product_Image;
 const productWarehouses = db.Product_Warehouses;
-const Sequelize = require("sequelize");
 
 module.exports = {
   userCart: async (req, res) => {
@@ -31,25 +31,41 @@ module.exports = {
               {
                 model: productWarehouses,
                 as: "Details",
-                attributes: [
-                  "stocks",
-                  "ProductId",
-                  "WarehouseId",
-                  [
-                    Sequelize.fn("SUM", Sequelize.col("stocks")),
-                    "total_stocks",
-                  ],
-                ],
                 required: true,
               },
             ],
           },
         ],
+        attributes: [
+          "id",
+          "quantity",
+          "price",
+          "status",
+          "createdAt",
+          "updatedAt",
+          "IdUser",
+          "IdProduct",
+          [Sequelize.fn("SUM", Sequelize.col("stocks")), "total_stocks"],
+        ],
         order: [["createdAt", "DESC"]],
       });
+
+      const qty = listCart.map((item) => item.quantity);
+      const selectedItem = listCart
+        .filter((item) => item.status === true)
+        .map((item) => item.quantity)
+        .reduce((a, b) => a + b, 0);
+      const totalPrice = listCart
+        .filter((item) => item.status === true)
+        .map((item) => item.price * item.quantity)
+        .reduce((a, b) => a + b, 0);
+
       res.status(200).send({
         message: "Cart User",
         result: listCart,
+        qty,
+        selectedItem,
+        totalPrice,
       });
     } catch (error) {
       console.log(error);
@@ -59,18 +75,21 @@ module.exports = {
   userAddToCart: async (req, res) => {
     try {
       const { user } = req.params;
-      const { quantity, price, IdProduct } = req.body;
+      const { quantity, price, IdProduct, totalStock } = req.body;
 
       const duplicateProductCart = await Cart.findOne({
         where: { IdUser: user, IdProduct: IdProduct },
         raw: true,
       });
 
+      if (!duplicateProductCart && quantity > totalStock) {
+        throw `Max purchases ${totalStock}`;
+      }
       if (
-        duplicateProductCart?.quantity >= 5 ||
-        duplicateProductCart?.quantity + quantity > 5
+        duplicateProductCart?.quantity >= totalStock ||
+        duplicateProductCart?.quantity + quantity > totalStock
       ) {
-        throw "Max purchases 5";
+        throw `Max purchases ${totalStock}`;
       }
 
       if (duplicateProductCart) {
@@ -123,10 +142,28 @@ module.exports = {
 
       const cartUser = await Cart.findOne({
         where: { IdUser: user, id: IdCart },
-        raw: true,
+        include: [
+          {
+            model: Product,
+            include: [
+              {
+                model: productWarehouses,
+                as: "Details",
+              },
+            ],
+          },
+        ],
       });
 
+      const productStock = cartUser.Product.Details.map(
+        (item) => item.stocks
+      ).reduce((a, b) => a + b, 0);
+
+      if (+qty > productStock) throw `Max purchases ${productStock}`;
+
       if (action === "+") {
+        if (cartUser.quantity + 1 > productStock)
+          throw `Max purchases ${productStock}`;
         await Cart.update(
           { quantity: cartUser.quantity + 1 },
           {

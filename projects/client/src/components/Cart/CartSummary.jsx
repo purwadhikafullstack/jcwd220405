@@ -1,5 +1,4 @@
 import { Box, Button, Divider, Text } from "@chakra-ui/react";
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 export const CartSummary = ({ selectedCart, totalPriceCart }) => {
@@ -13,7 +12,7 @@ export const CartSummary = ({ selectedCart, totalPriceCart }) => {
         </Box>
         <Box>
           <Text>
-            {totalPriceCart ? `Rp${totalPriceCart.toLocaleString()}` : "Rp0"}
+            {totalPriceCart ? `Rp${totalPriceCart?.toLocaleString()}` : "Rp0"}
           </Text>
         </Box>
       </Box>
@@ -24,7 +23,7 @@ export const CartSummary = ({ selectedCart, totalPriceCart }) => {
         </Box>
         <Box>
           <Text>
-            {totalPriceCart ? `Rp${totalPriceCart.toLocaleString()}` : "-"}
+            {totalPriceCart ? `Rp${totalPriceCart?.toLocaleString()}` : "-"}
           </Text>
         </Box>
       </Box>

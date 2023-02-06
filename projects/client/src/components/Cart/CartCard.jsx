@@ -1,5 +1,3 @@
-import React from "react";
-
 import {
   Box,
   Button,
@@ -9,6 +7,7 @@ import {
   Checkbox,
   Divider,
   Input,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { RiDeleteBinLine } from "react-icons/ri";
 
@@ -21,8 +20,15 @@ export const CartCard = ({
   deleteCart,
   updateCart,
   quantity,
-  setQuantity,
 }) => {
+  const [setSize] = useMediaQuery("(max-width: 369px)");
+
+  const crossTitle = (str, num) => {
+    if (str?.length > num) {
+      return str.slice(0, num) + "...";
+    }
+    return str;
+  };
   return (
     <>
       {cart?.map((item, index) => {
@@ -39,36 +45,35 @@ export const CartCard = ({
               </Box>
               <Box
                 as={Link}
-                to={`/product/${item.Product.name}`}
+                to={`/product/${item?.Product?.name}`}
                 display={"flex"}
                 alignItems={"center"}
                 gap={"4"}
               >
                 <Box
-                  minW="100px"
-                  minH="100px"
+                  minW={setSize ? "50px" : "100px"}
+                  minH={setSize ? "50px" : "100px"}
                   overflow="hidden"
                   borderWidth="1px"
                 >
                   <Image
                     objectFit="cover"
-                    width="100px"
-                    height="100px"
-                    src={`${baseServer}${item?.Product.Product_Images[0].image}`}
+                    width={setSize ? "50px" : "100px"}
+                    height={setSize ? "50px" : "100px"}
+                    src={`${baseServer}${item?.Product?.Product_Images[0]?.image}`}
                   />
                 </Box>
                 <Box>
                   <Box>
                     <Text color={"rgb(213, 75, 121)"} fontWeight={"semibold"}>
-                      {item?.Product.name}
+                      {setSize
+                        ? crossTitle(item?.Product?.name, 22)
+                        : item?.Product?.name}
                     </Text>
                   </Box>
                   <Box>
                     <Text fontWeight="bold">
-                      {item?.Product.price.toLocaleString("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                      })}
+                      Rp{item?.Product?.price?.toLocaleString()}
                     </Text>
                   </Box>
                 </Box>
@@ -101,7 +106,6 @@ export const CartCard = ({
                     variant={"unstyled"}
                     onClick={() => {
                       updateCart(item, "-");
-                      setQuantity(quantity[index] - 1);
                     }}
                     disabled={quantity[index] <= 1 ? true : false}
                   >
@@ -112,14 +116,13 @@ export const CartCard = ({
                   <Input
                     type={"number"}
                     min={1}
-                    max={5}
+                    max={item?.total_stocks}
                     variant="flushed"
-                    // defaultValue={quantity[index]}
                     value={quantity[index]}
                     textAlign={"center"}
                     onChange={(e) => {
-                      if (e.target.value > 5) {
-                        updateCart(item, "", 5);
+                      if (e.target.value > +item?.total_stocks) {
+                        updateCart(item, "", +item?.total_stocks);
                         return 0;
                       }
                       if (e.target.value < 1) {
@@ -144,9 +147,10 @@ export const CartCard = ({
                     variant={"unstyled"}
                     onClick={() => {
                       updateCart(item, "+");
-                      setQuantity(quantity[index] + 1);
                     }}
-                    disabled={quantity[index] >= 5 ? true : false}
+                    disabled={
+                      quantity[index] >= +item?.total_stocks ? true : false
+                    }
                   >
                     +
                   </Button>

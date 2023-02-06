@@ -47,7 +47,7 @@ export const ProductDetail = () => {
         flexDirection={setDir ? "column" : "row"}
         gap={{ base: "2", md: "4" }}
       >
-        <Box px={6} pt={2} m={setDir ? "auto" : "0"}>
+        <Box pt={2} m={setDir ? "auto" : "0"}>
           <ProductDetailImage
             baseServer={baseServer}
             imageProduct={imageProduct}
@@ -92,7 +92,7 @@ export const ProductDetail = () => {
             <Text>{product?.desc}</Text>
           </Box>
         </Box>
-        <Box px={"6"} pt={4}>
+        <Box px={"6"} pt={4} mb={{ base: "14", md: "" }}>
           <SectionAddCart
             quantity={quantity}
             setQuantity={setQuantity}
