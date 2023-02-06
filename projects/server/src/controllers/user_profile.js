@@ -84,6 +84,7 @@ module.exports = {
       const tempCompile = handlebars.compile(tempEmail);
       const tempResult = tempCompile({
         link: FEURL_BASE,
+        button_link: `${FEURL_BASE}/profile/settings`,
         email: checkUser.email,
         otp: OTP,
       });
