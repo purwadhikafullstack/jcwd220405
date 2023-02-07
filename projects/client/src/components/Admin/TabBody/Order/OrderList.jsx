@@ -38,16 +38,14 @@ export const OrderList = () => {
     }
   }, [wrId, id, role, page, statusId]);
 
-  const rejectOrder = async (order, status) => {
+  const rejectOrder = async (order) => {
     try {
       const once = await swal("Reject this order?", {
         dangerMode: true,
         buttons: true,
       });
       if (once) {
-        await axios.post(
-          `${baseApi}/admin/order-cancel/${order}?status=${status}`
-        );
+        await axios.post(`${baseApi}/admin/order-reject/${order}`);
         setTimeout(
           () =>
             toast({
@@ -79,7 +77,7 @@ export const OrderList = () => {
           () =>
             toast({
               title: `${response.data.message}`,
-              variant: "subtle",
+              status: "success",
               isClosable: true,
               position: "top",
             }),

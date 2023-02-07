@@ -155,12 +155,7 @@ export const OrderListCard = ({
                             Send
                           </Button>
                           <Button
-                            hidden={
-                              item?.OrderStatusId === 3 ||
-                              item?.OrderStatusId === 1
-                                ? false
-                                : true
-                            }
+                            hidden={item?.OrderStatusId === 3 ? false : true}
                             variant={"outline"}
                             border={"none"}
                             bgColor={"rgba(55,5,55,.96)"}
@@ -204,9 +199,7 @@ export const OrderListCard = ({
                               borderColor: "rgba(55,5,55,.96)",
                             }}
                             hidden={item?.OrderStatusId === 2 ? false : true}
-                            onClick={() =>
-                              rejectOrder(item.id, item.OrderStatusId)
-                            }
+                            onClick={() => rejectOrder(item.id)}
                           >
                             Reject
                           </Button>

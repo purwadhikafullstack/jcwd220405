@@ -14,6 +14,12 @@ const Journal = db.Journal;
 
 const schedule = require("node-schedule");
 const moment = require("moment");
+const fs = require("fs");
+const transporter = require("../../helpers/transporter");
+const handlebars = require("handlebars");
+const path = require("path");
+
+const { FEURL_BASE } = process.env;
 
 module.exports = {
   allUserOrderList: async (req, res) => {
@@ -175,8 +181,33 @@ module.exports = {
         });
       }
 
+      const user = await User.findOne({
+        where: { id: userTransaction.IdUser },
+        attributes: ["email"],
+        raw: true,
+      });
+
       if (userTransaction.OrderStatusId === 2) {
         await Transaction.update({ OrderStatusId: 1 }, { where: { id: id } });
+
+        const tempEmail = fs.readFileSync(
+          path.resolve(__dirname, "../template/order-reject.html"),
+          "utf-8"
+        );
+        const tempCompile = handlebars.compile(tempEmail);
+        const tempResult = tempCompile({
+          link: `${FEURL_BASE}/order-list`,
+          transactionInformation: userTransaction,
+          price: userTransaction.final_price.toLocaleString(),
+          email: user.email,
+        });
+
+        await transporter.sendMail({
+          from: "Admin",
+          to: user.email,
+          subject: `Order Rejected`,
+          html: tempResult,
+        });
         return res.status(201).send({ message: "Success Reject Order" });
       }
       return res.status(200).send({ message: "Reject Order" });
@@ -199,260 +230,325 @@ module.exports = {
           message: `Transaction not found`,
         });
       }
-
-      const detailUserTransaction = await TransactionWarehouses.findOne({
-        where: { TransactionId: id },
-        raw: true,
-      });
-      // cari transaction user
-
-      // check stock di satu warehouse apakah ada
-      const checkStock = await ProductWarehouses.findOne({
-        where: {
-          ProductId: detailUserTransaction.ProductId,
-          WarehouseId: detailUserTransaction.WarehouseId,
-        },
-        raw: true,
-      });
-
-      if (!checkStock) {
+      if (!userTransaction.payment_proof) {
         return res.status(200).send({
-          message: `This warehouse doesn't have a product`,
+          message: `Payment Proof not found`,
         });
       }
 
+      // change status
+      await Transaction.update(
+        {
+          OrderStatusId: 3,
+        },
+        {
+          where: {
+            id: id,
+          },
+        }
+      );
+
+      const transactionItems = await TransactionWarehouses.findAll({
+        where: {
+          TransactionId: id,
+        },
+        raw: true,
+      });
+      const itemId = transactionItems.map((item) => item.id);
+      const productId = transactionItems.map((item) => item.ProductId);
+      const warehouseId = transactionItems.map((item) => item.WarehouseId);
+      const quantity = transactionItems.map((item) => item.quantity);
+
       const originWarehouse = await Warehouse.findOne({
-        where: { id: detailUserTransaction.WarehouseId },
+        where: { id: warehouseId[0] },
         raw: true,
       });
 
       const originLat = originWarehouse.lat;
       const originLng = originWarehouse.lng;
-      // check stock di satu warehouse apakah ada
 
-      if (userTransaction.OrderStatusId === 2) {
-        if (detailUserTransaction.quantity <= checkStock.stocks) {
-          await Transaction.update({ OrderStatusId: 3 }, { where: { id: id } });
-          await ProductWarehouses.update(
-            { stocks: checkStock.stocks - detailUserTransaction.quantity },
-            {
-              where: {
-                ProductId: detailUserTransaction.ProductId,
-                WarehouseId: detailUserTransaction.WarehouseId,
-              },
-            }
-          );
-          await Journal.create({
-            stock_before: checkStock.stocks,
-            stock_after: checkStock.stocks - detailUserTransaction.quantity,
-            desc: userTransaction.invoice,
-            JournalTypeId: 1,
-            ProductId: detailUserTransaction.ProductId,
-            TransactionId: id,
-          });
-          return res.status(201).send({ message: "Success Confirm Order" });
-        } else {
-          console.log("buat cari warehouse terdekat dari warehouse origin");
-          // check total product di semua warehouse
-          const productInWarehouse = await ProductWarehouses.findAll({
-            where: {
-              ProductId: detailUserTransaction.ProductId,
-              // stocks: { [Op.gt]: 0 },
-            },
-            raw: true,
-          });
-
-          const totalStockProductInWarehouse = productInWarehouse
-            .map((item) => item.stocks)
-            .reduce((a, b) => a + b, 0);
-
-          if (totalStockProductInWarehouse < detailUserTransaction.quantity) {
-            return res.status(200).send({
-              message: `Product out of stock`,
-            });
-          }
-          // check total product di semua warehouse
-
-          // cari warehouse terdekat dari warehouse origin
-          function toRad(value) {
-            return (value * Math.PI) / 180;
-          }
-          function calCrow(lat1, lon1, lat2, lon2) {
-            var R = 6371; // km
-            var dLat = toRad(lat2 - lat1);
-            var dLon = toRad(lon2 - lon1);
-            var lat1 = toRad(lat1);
-            var lat2 = toRad(lat2);
-
-            var a =
-              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.sin(dLon / 2) *
-                Math.sin(dLon / 2) *
-                Math.cos(lat1) *
-                Math.cos(lat2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            var d = R * c;
-            return d;
-          }
-
-          const listWarehouse = await Warehouse.findAll({ raw: true });
-
-          const nearestWarehouses = [];
-          for (let i = 0; i < listWarehouse.length; i++) {
-            const nearestWarehouse = calCrow(
-              originLat,
-              originLng,
-              listWarehouse[i].lat,
-              listWarehouse[i].lng
-            );
-
-            if (listWarehouse[i].id === originWarehouse.id) {
-              continue;
-            }
-
-            nearestWarehouses.push({
-              warehouse: listWarehouse[i],
-              range: nearestWarehouse,
-            });
-          }
-
-          const sortWarehouse = nearestWarehouses
-            .sort((a, b) => a.range - b.range)
-            .map((value) => value.warehouse.id);
-          console.log(sortWarehouse);
-          // cari warehouse terdekat dari warehouse origin
-
-          // ambil product stock dari warehouse terdekat
-          const readyOnWarehouse = [];
-          for (let i = 0; i < productInWarehouse.length; i++) {
-            for (let j = 0; j < sortWarehouse.length; j++) {
-              if (
-                productInWarehouse.map((item) => item.WarehouseId)[i] ===
-                sortWarehouse[j]
-              ) {
-                readyOnWarehouse.push(productInWarehouse[i]);
-              }
-            }
-          }
-          const time = new Date();
-          let index = 0;
-          for (let i = 0; i < sortWarehouse.length; i++) {
-            const fromWarehouse = await ProductWarehouses.findOne({
-              where: {
-                ProductId: detailUserTransaction.ProductId,
-                WarehouseId: sortWarehouse[index],
-              },
-              raw: true,
-            });
-            const isReady = await ProductWarehouses.findOne({
-              where: {
-                ProductId: detailUserTransaction.ProductId,
-                WarehouseId: detailUserTransaction.WarehouseId,
-              },
-              raw: true,
-            });
-            if (!fromWarehouse) {
-              index += 1;
-              continue;
-            }
-            if (fromWarehouse.stocks === 0) {
-              index += 1;
-              continue;
-            }
-            index += 1;
-            await ProductWarehouses.update(
-              { stocks: checkStock.stocks + fromWarehouse.stocks },
-              {
-                where: {
-                  ProductId: detailUserTransaction.ProductId,
-                  WarehouseId: detailUserTransaction.WarehouseId,
-                },
-              }
-            );
-            const Stock_Mutation = await StockMutation.create({
-              IdWarehouseTo: originWarehouse.id,
-              IdWarehouseFrom: fromWarehouse.WarehouseId,
-              quantity: fromWarehouse.stocks,
-              approval: true,
-              invoice:
-                time.getDate() +
-                (time.getMonth() + 1) +
-                time.getFullYear() +
-                time.getHours() +
-                time.getMinutes() +
-                time.getSeconds(),
-              ProductId: detailUserTransaction.ProductId,
-            });
-            await ProductWarehouses.update(
-              { stocks: fromWarehouse.stocks - fromWarehouse.stocks },
-              {
-                where: {
-                  ProductId: fromWarehouse.ProductId,
-                  WarehouseId: fromWarehouse.WarehouseId,
-                },
-              }
-            );
-            // jurnal yang minta stock
-            await Journal.create({
-              stock_before: isReady.stocks,
-              stock_after: isReady.stocks + fromWarehouse.stocks,
-              desc: Stock_Mutation.invoice,
-              JournalTypeId: 2,
-              ProductId: detailUserTransaction.ProductId,
-              StockMutationId: Stock_Mutation.id,
-            });
-            // jurnal yang minta stock
-
-            // jurnal yang kasih stock
-            await Journal.create({
-              stock_before: fromWarehouse.stocks,
-              stock_after: fromWarehouse.stocks - fromWarehouse.stocks,
-              desc: Stock_Mutation.invoice,
-              JournalTypeId: 3,
-              ProductId: detailUserTransaction.ProductId,
-              StockMutationId: Stock_Mutation.id,
-            });
-            // jurnal yang kasih stock
-
-            const allReady = await ProductWarehouses.findOne({
-              where: {
-                ProductId: detailUserTransaction.ProductId,
-                WarehouseId: detailUserTransaction.WarehouseId,
-              },
-              raw: true,
-            });
-            if (allReady.stocks >= detailUserTransaction.quantity) {
-              await Transaction.update(
-                { OrderStatusId: 3 },
-                { where: { id: id } }
-              );
-              await ProductWarehouses.update(
-                { stocks: allReady.stocks - detailUserTransaction.quantity },
-                {
-                  where: {
-                    ProductId: detailUserTransaction.ProductId,
-                    WarehouseId: detailUserTransaction.WarehouseId,
-                  },
-                }
-              );
-              // jurnal transaction
-              await Journal.create({
-                stock_before: allReady.stocks,
-                stock_after: allReady.stocks - detailUserTransaction.quantity,
-                desc: userTransaction.invoice,
-                JournalTypeId: 1,
-                ProductId: detailUserTransaction.ProductId,
-                TransactionId: id,
-              });
-              // jurnal transaction
-              return res.status(201).send({ message: "Success Confirm Order" });
-            }
-          }
-
-          return res.status(200).send({ message: "Search Warehouse Done" });
-        }
+      // Cari total stock dari tiap produk
+      const totalStock = [];
+      for (let i = 0; i < productId.length; i++) {
+        const findStock = await ProductWarehouses.findAll({
+          where: {
+            WarehouseId: warehouseId[i],
+            ProductId: productId[i],
+          },
+          raw: true,
+        });
+        totalStock.push(findStock[0].stocks);
       }
-      return res.status(200).send({ message: "Confirm Order" });
+
+      // cari produk quantity yg lebih dari total stok
+      const arr = [];
+      for (let i = 0; i < totalStock.length; i++) {
+        let result = 0;
+        result = totalStock[i] - quantity[i];
+        arr.push(result);
+      }
+
+      // di jadiin array
+      const arr1 = arr.map((item, i) => {
+        return {
+          ItemId: itemId[i],
+          productId: productId[i],
+          quantity: quantity[i],
+          stocks: item,
+        };
+      });
+
+      // filter barang yg total stock nya kurang dari 0
+      const stockMutation = arr1.filter((item) => {
+        return item.stocks < 0;
+      });
+
+      // di jadikan bilangan positif
+      const difference = stockMutation.map((item) => item.stocks * -1);
+
+      // ambil id product
+      const ProductMutationId = stockMutation.map((item) => item.productId);
+
+      // ambil id transaction item
+      const findTransactionItem = stockMutation.map((item) => item.ItemId);
+
+      // // mencari warehouse terdekat
+      const findClosestWarehouse = await Warehouse.findAll({ raw: true });
+
+      function toRad(Value) {
+        return (Value * Math.PI) / 180;
+      }
+
+      function calcCrow(lat1, lon1, lat2, lon2) {
+        var R = 6371; // km
+        var dLat = toRad(lat2 - lat1);
+        var dLon = toRad(lon2 - lon1);
+        var lat1 = toRad(lat1);
+        var lat2 = toRad(lat2);
+
+        var a =
+          Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+          Math.sin(dLon / 2) *
+            Math.sin(dLon / 2) *
+            Math.cos(lat1) *
+            Math.cos(lat2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        var d = R * c;
+        return d;
+      }
+
+      const chooseOne = [];
+      for (let i = 0; i < findClosestWarehouse.length; i++) {
+        const nearestWarehouse = calcCrow(
+          originLat,
+          originLng,
+          findClosestWarehouse[i].lat,
+          findClosestWarehouse[i].lng
+        );
+
+        if (findClosestWarehouse[i].id === originWarehouse.id) {
+          continue;
+        }
+
+        chooseOne.push({
+          warehouse: findClosestWarehouse[i],
+          range: nearestWarehouse,
+        });
+      }
+
+      const sortWarehouse = chooseOne
+        .sort((a, b) => a.range - b.range)
+        .map((value) => value.warehouse.id);
+
+      // ambil product stock dari warehouse terdekat
+      const minusStock = [];
+      const closesStock = [];
+      for (let i = 0; i < ProductMutationId.length; i++) {
+        const findTotalStockProduct = await ProductWarehouses.findAll({
+          where: {
+            WarehouseId: sortWarehouse[i],
+            ProductId: ProductMutationId[i],
+          },
+          raw: true,
+        });
+
+        if (findTotalStockProduct.map((val) => val.stocks) < difference[i]) {
+          return res.status(200).json({
+            message: `Warehouse ${sortWarehouse[i]} out of stock`,
+          });
+        }
+
+        minusStock.push(
+          findTotalStockProduct.map((val, idx) => val.stocks - difference[idx])
+        );
+        closesStock.push(findTotalStockProduct.map((val) => val.stocks));
+      }
+
+      // tambah stock ke warehouse origin transaction
+      const plushStock = [];
+      const beforeMut = [];
+      for (let i = 0; i < ProductMutationId.length; i++) {
+        const findTotalStockProduct = await ProductWarehouses.findAll({
+          where: {
+            WarehouseId: originWarehouse.id,
+            ProductId: ProductMutationId[i],
+          },
+          raw: true,
+        });
+
+        plushStock.push(
+          findTotalStockProduct.map((val) => val.stocks + difference[i])
+        );
+        beforeMut.push(findTotalStockProduct.map((val) => val.stocks));
+      }
+
+      // ngurangin stock buat dikirim ke warehouse origin
+      const time = new Date();
+      for (let i = 0; i < findTransactionItem.length; i++) {
+        await ProductWarehouses.update(
+          {
+            stocks: minusStock[i],
+          },
+          {
+            where: {
+              WarehouseId: sortWarehouse[0],
+              ProductId: ProductMutationId[i],
+            },
+          }
+        );
+
+        const Stock_Mutation = await StockMutation.create({
+          IdWarehouseTo: originWarehouse.id,
+          IdWarehouseFrom: sortWarehouse[0],
+          quantity: difference[i],
+          approval: true,
+          invoice:
+            time.getDate() +
+            (time.getMonth() + 1) +
+            time.getFullYear() +
+            time.getHours() +
+            time.getMinutes() +
+            time.getSeconds(),
+          ProductId: ProductMutationId[i],
+        });
+
+        await Journal.create({
+          stock_before: closesStock[i],
+          stock_after: minusStock[i],
+          desc: Stock_Mutation.invoice,
+          JournalTypeId: 4,
+          ProductId: productId[i],
+          StockMutationId: Stock_Mutation.id,
+        });
+      }
+
+      // warehouse origin nerima stock dari warehouse terdekatnya
+      for (let i = 0; i < findTransactionItem.length; i++) {
+        await ProductWarehouses.update(
+          {
+            stocks: plushStock[i],
+          },
+          {
+            where: {
+              WarehouseId: originWarehouse.id,
+              ProductId: ProductMutationId[i],
+            },
+          }
+        );
+
+        const Stock_Mutation = await StockMutation.create({
+          IdWarehouseTo: originWarehouse.id,
+          IdWarehouseFrom: sortWarehouse[0],
+          quantity: difference[i],
+          approval: true,
+          invoice:
+            time.getDate() +
+            (time.getMonth() + 1) +
+            time.getFullYear() +
+            time.getHours() +
+            time.getMinutes() +
+            time.getSeconds(),
+          ProductId: ProductMutationId[i],
+        });
+
+        await Journal.create({
+          stock_before: beforeMut[i],
+          stock_after: plushStock[i],
+          desc: Stock_Mutation.invoice,
+          JournalTypeId: 3,
+          ProductId: productId[i],
+          StockMutationId: Stock_Mutation.id,
+        });
+      }
+
+      // stock di kurang dari WarehouseId yg sudah mutasi stock
+      const finalStock = [];
+      const stockBefore = [];
+      for (let i = 0; i < productId.length; i++) {
+        const findTotalStockProduct = await ProductWarehouses.findAll({
+          where: {
+            WarehouseId: originWarehouse.id,
+            ProductId: productId[i],
+          },
+          raw: true,
+        });
+
+        finalStock.push(
+          findTotalStockProduct.map((val) => val.stocks - quantity[i])
+        );
+        stockBefore.push(findTotalStockProduct.map((val) => val.stocks));
+      }
+
+      for (let i = 0; i < productId.length; i++) {
+        await ProductWarehouses.update(
+          {
+            stocks: finalStock[i],
+          },
+          {
+            where: {
+              ProductId: productId[i],
+              WarehouseId: originWarehouse.id,
+            },
+          }
+        );
+
+        // jurnal nyatet transaction nya
+        await Journal.create({
+          stock_before: stockBefore[i],
+          stock_after: finalStock[i],
+          desc: userTransaction.invoice,
+          JournalTypeId: 1,
+          ProductId: productId[i],
+          TransactionId: id,
+        });
+      }
+
+      const user = await User.findOne({
+        where: { id: userTransaction.IdUser },
+        attributes: ["email"],
+        raw: true,
+      });
+
+      const tempEmail = fs.readFileSync(
+        path.resolve(__dirname, "../template/order-process.html"),
+        "utf-8"
+      );
+      const tempCompile = handlebars.compile(tempEmail);
+      const tempResult = tempCompile({
+        link: `${FEURL_BASE}/order-list`,
+        transactionInformation: userTransaction,
+        price: userTransaction.final_price.toLocaleString(),
+        email: user.email,
+      });
+
+      await transporter.sendMail({
+        from: "Admin",
+        to: user.email,
+        subject: `Order in Process`,
+        html: tempResult,
+      });
+
+      return res.status(201).send({ message: "Success Confirm Order" });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);
@@ -500,6 +596,31 @@ module.exports = {
           )
       );
 
+      const user = await User.findOne({
+        where: { id: userTransaction.IdUser },
+        attributes: ["email"],
+        raw: true,
+      });
+
+      const tempEmail = fs.readFileSync(
+        path.resolve(__dirname, "../template/order-send.html"),
+        "utf-8"
+      );
+      const tempCompile = handlebars.compile(tempEmail);
+      const tempResult = tempCompile({
+        link: `${FEURL_BASE}/order-list`,
+        transactionInformation: userTransaction,
+        price: userTransaction.final_price.toLocaleString(),
+        email: user.email,
+      });
+
+      await transporter.sendMail({
+        from: "Admin",
+        to: user.email,
+        subject: `Order on the wayyyyy`,
+        html: tempResult,
+      });
+
       return res.status(201).send({ message: "Success Send Order" });
     } catch (error) {
       console.log(error);
@@ -529,23 +650,6 @@ module.exports = {
       const ProductId = userTransaction.Transaction_Product_Warehouses.map(
         (item) => item.ProductId
       );
-
-      if (userTransaction.OrderStatusId === 1) {
-        await Transaction.update(
-          {
-            OrderStatusId: 6,
-          },
-          {
-            where: {
-              id: id,
-            },
-          }
-        );
-        return res.status(201).send({
-          status: userTransaction.OrderStatusId,
-          message: "Success Cancel Order",
-        });
-      }
 
       if (userTransaction.OrderStatusId === 3) {
         const re_stock = [];
@@ -609,6 +713,31 @@ module.exports = {
             ProductId: ProductId[i],
           });
         }
+
+        const user = await User.findOne({
+          where: { id: userTransaction.IdUser },
+          attributes: ["email"],
+          raw: true,
+        });
+
+        const tempEmail = fs.readFileSync(
+          path.resolve(__dirname, "../template/order-cancel.html"),
+          "utf-8"
+        );
+        const tempCompile = handlebars.compile(tempEmail);
+        const tempResult = tempCompile({
+          link: `${FEURL_BASE}/order-list`,
+          transactionInformation: userTransaction,
+          price: userTransaction.final_price.toLocaleString(),
+          email: user.email,
+        });
+
+        await transporter.sendMail({
+          from: "Admin",
+          to: user.email,
+          subject: `Order Canceled`,
+          html: tempResult,
+        });
 
         return res.status(201).send({
           status: userTransaction.OrderStatusId,

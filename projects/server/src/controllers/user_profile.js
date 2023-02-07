@@ -6,6 +6,7 @@ const fs = require("fs");
 const handlebars = require("handlebars");
 const schedule = require("node-schedule");
 const moment = require("moment");
+const path = require("path");
 
 const transporter = require("../helpers/transporter");
 const { generateOTP } = require("../helpers/generateOTP");
@@ -80,7 +81,10 @@ module.exports = {
         }
       );
 
-      const tempEmail = fs.readFileSync("./src/template/otp.html", "utf-8");
+      const tempEmail = fs.readFileSync(
+        path.resolve(__dirname, "../template/otp.html"),
+        "utf-8"
+      );
       const tempCompile = handlebars.compile(tempEmail);
       const tempResult = tempCompile({
         link: FEURL_BASE,
@@ -139,7 +143,7 @@ module.exports = {
       } else throw "Incorrect OTP";
 
       const tempEmail = fs.readFileSync(
-        "./src/template/verified.html",
+        path.resolve(__dirname, "../template/verified.html"),
         "utf-8"
       );
       const tempCompile = handlebars.compile(tempEmail);
@@ -244,7 +248,7 @@ module.exports = {
       );
 
       const tempEmail = fs.readFileSync(
-        "./src/template/change-password.html",
+        path.resolve(__dirname, "../template/change-password.html"),
         "utf-8"
       );
       const tempCompile = handlebars.compile(tempEmail);

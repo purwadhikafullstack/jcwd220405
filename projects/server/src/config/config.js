@@ -15,6 +15,7 @@ module.exports = {
     username: USER_DB_POD,
     password: PASSWORD_DB_POD,
     database: SOURCE_DB_POD,
+    // host: "127.0.0.1",
     host: HOST_POD,
     dialect: "mysql",
   },
