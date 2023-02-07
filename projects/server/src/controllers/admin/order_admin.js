@@ -1,15 +1,17 @@
-// const db = require("../../../models");
 const db = require("../../models");
+const { Op } = require("sequelize");
+
 const Transaction = db.Transaction;
 const TransactionWarehouses = db.Transaction_Product_Warehouses;
 const Warehouse = db.Warehouse;
 const orderStatus = db.Order_Status;
 const User = db.User;
+const Address = db.Address_User;
 const Product = db.Product;
 const ProductWarehouses = db.Product_Warehouses;
 const StockMutation = db.Stock_Mutation;
 const Journal = db.Journal;
-const { Op } = require("sequelize");
+
 const schedule = require("node-schedule");
 const moment = require("moment");
 
@@ -17,18 +19,24 @@ module.exports = {
   allUserOrderList: async (req, res) => {
     try {
       const { id } = req.params;
-      const { role, wrId } = req.body;
-      const { page, limit } = req.query;
+      const { page, limit, wrId, role, status } = req.query;
       const page_list = +page || 0;
       const limit_list = +limit || 8;
       const offset = limit_list * page_list;
       const WarehouseId = +wrId || "";
-      const totalRows = await Transaction.count();
-      const totalPage = Math.ceil(totalRows / limit_list);
+      const orderId = +status || "";
+
       if (+role === 3) {
         const allOrder = await Transaction.findAll({
+          where: {
+            OrderStatusId: orderId ? orderId : { [Op.not]: null },
+          },
           include: [
             { model: User, attributes: ["id", "name", "email"] },
+            {
+              model: Address,
+              attributes: ["id", "received_name", "province", "city"],
+            },
             {
               model: TransactionWarehouses,
               where: {
@@ -56,16 +64,19 @@ module.exports = {
           offset: offset,
           limit: limit_list,
         });
+        const totalPage = Math.ceil(allOrder?.length / limit_list);
+
         return res.status(200).send({
           message: "For Admin",
           result: allOrder,
           page: page_list,
           limit: limit_list,
           offset: offset,
-          totalRows: totalRows,
-          totalPage: totalPage,
+          totalRows: allOrder?.length,
+          totalPage,
         });
       }
+
       if (+role === 2) {
         const AdminId = +id || "";
         const warehouse = await Warehouse.findOne({
@@ -74,8 +85,15 @@ module.exports = {
         });
 
         const branchOrder = await Transaction.findAll({
+          where: {
+            OrderStatusId: orderId ? orderId : { [Op.not]: null },
+          },
           include: [
             { model: User, attributes: ["id", "name", "email"] },
+            {
+              model: Address,
+              attributes: ["id", "received_name", "province", "city"],
+            },
             {
               model: TransactionWarehouses,
               where: { WarehouseId: warehouse.id },
@@ -98,10 +116,20 @@ module.exports = {
             },
           ],
           order: [["OrderStatusId", "ASC"]],
+          offset: offset,
+          limit: limit_list,
         });
-        return res
-          .status(200)
-          .send({ message: "For Admin Branch", result: branchOrder });
+        const totalPage = Math.ceil(branchOrder?.length / limit_list);
+
+        return res.status(200).send({
+          message: "For Admin Branch",
+          result: branchOrder,
+          page: page_list,
+          limit: limit_list,
+          offset: offset,
+          totalRows: branchOrder?.length,
+          totalPage,
+        });
       }
       return res.status(200).send("order list");
     } catch (error) {
@@ -116,6 +144,18 @@ module.exports = {
         raw: true,
       });
       res.status(200).send({ message: "Warehouse List", result: allWarehouse });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  statusList: async (req, res) => {
+    try {
+      const allStatus = await orderStatus.findAll({
+        attributes: ["id", "status"],
+        raw: true,
+      });
+      res.status(200).send({ message: "Status List", result: allStatus });
     } catch (error) {
       console.log(error);
       res.status(400).send(error);

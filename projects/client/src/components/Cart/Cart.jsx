@@ -4,8 +4,17 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { cartUser } from "../../redux/cartSlice";
 
-import { Box, Container, Heading, Divider, useToast } from "@chakra-ui/react";
+import {
+  Box,
+  Container,
+  Heading,
+  Divider,
+  useToast,
+  Image,
+  Text,
+} from "@chakra-ui/react";
 import swal from "sweetalert";
+import empty_cart from "../../assets/empty-cart.png";
 
 import { CartCard } from "./CartCard";
 import { CartSummary } from "./CartSummary";
@@ -115,8 +124,21 @@ export const Cart = ({ baseServer, baseApi }) => {
           <Box>
             <Divider mt={"4"} borderTop={"4px"} borderBottom={"2px"} />
           </Box>
-          <Box mt={"4"} hidden={cart?.length ? true : false}>
-            <Heading size={"md"}>Your cart is empty</Heading>
+          <Box hidden={cart?.length ? true : false}>
+            <Box>
+              <Image
+                src={empty_cart}
+                m="auto"
+                pl="10"
+                w={{ base: "full", md: "477px" }}
+                h={{ base: "full", md: "333px" }}
+              />
+            </Box>
+            <Box textAlign={"center"}>
+              <Text fontSize={"lg"} fontWeight={"semibold"}>
+                Wow, your shopping cart is empty!
+              </Text>
+            </Box>
           </Box>
         </Box>
         <Box

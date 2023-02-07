@@ -1,11 +1,12 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { OrderListCard } from "./OrderListCard";
 
-import { Box, Select, useToast } from "@chakra-ui/react";
-import { OrderListPagination } from "./OrderListPagination";
+import { Box, Select, Text, useMediaQuery, useToast } from "@chakra-ui/react";
 import swal from "sweetalert";
+
+import { OrderListCard } from "./OrderListCard";
+import { OrderListPagination } from "./OrderListPagination";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -14,24 +15,28 @@ export const OrderList = () => {
   const [orderList, setOrderList] = useState([]);
   const [wrList, setWrList] = useState([]);
   const [wrId, setWrId] = useState("");
+  const [statusList, setStatusList] = useState([]);
+  const [statusId, setStatusId] = useState("");
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const toast = useToast();
+  const [setHide] = useMediaQuery("(max-width: 780px)");
 
   const getOrderList = useCallback(async () => {
     try {
       const response = await (
-        await axios.post(`${baseApi}/admin/order-list/${id}?page=${page - 1}`, {
-          wrId,
-          role,
-        })
+        await axios.get(
+          `${baseApi}/admin/order-list/${id}?role=${role}&wrId=${wrId}&status=${statusId}&page=${
+            page - 1
+          }`
+        )
       ).data;
       setOrderList(response.result);
       setTotalPage(response.totalPage);
     } catch (error) {
       console.error(error);
     }
-  }, [wrId, id, role, page]);
+  }, [wrId, id, role, page, statusId]);
 
   const rejectOrder = async (order, status) => {
     try {
@@ -59,6 +64,7 @@ export const OrderList = () => {
       console.error(error);
     }
   };
+
   const confirmOrder = async (order) => {
     try {
       const once = await swal("Confirm this order?", {
@@ -85,6 +91,7 @@ export const OrderList = () => {
       console.error(error);
     }
   };
+
   const sendOrder = async (order) => {
     try {
       const once = await swal("Send this order?", {
@@ -111,6 +118,7 @@ export const OrderList = () => {
       console.error(error);
     }
   };
+
   const cancelOrder = async (order) => {
     try {
       const once = await swal("Cancel this order?", {
@@ -159,10 +167,32 @@ export const OrderList = () => {
     });
   };
 
+  const orderStatusList = useCallback(async () => {
+    try {
+      const response = await (
+        await axios.get(`${baseApi}/admin/status-list`)
+      ).data;
+      setStatusList(response.result);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
+  const renderStatus = () => {
+    return statusList.map((item, index) => {
+      return (
+        <option value={item.id} key={index}>
+          {item.status}
+        </option>
+      );
+    });
+  };
+
   useEffect(() => {
     getOrderList();
     warehouseList();
-  }, [getOrderList, warehouseList]);
+    orderStatusList();
+  }, [getOrderList, warehouseList, orderStatusList]);
 
   const crossTitle = (str, start, end) => {
     if (str?.length > end) {
@@ -172,26 +202,48 @@ export const OrderList = () => {
   };
 
   return (
-    <Box pb={"4"}>
+    <Box pb={"4"} minH={"87.7vh"}>
       <Box
         display={"flex"}
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Box>Order List</Box>
-        <Box hidden={role === 3 ? false : true}>
-          <Select
-            placeholder={wrId ? "Reset" : "--Select Warehouse--"}
-            onChange={(e) => {
-              setWrId(e.target.value);
-              setPage(1);
-            }}
-          >
-            {renderWarehouse()}
-          </Select>
+        <Box hidden={setHide ? true : false}>
+          <Text>Order List</Text>
+        </Box>
+        <Box
+          display={"flex"}
+          flexDirection={{ base: "column", md: "row" }}
+          justifyContent={{ base: "", md: "flex-end" }}
+          gap={"4"}
+          mt={{ base: "4", md: "" }}
+          w={{ base: "full", md: "400px" }}
+        >
+          <Box w={{ base: "full", md: "40%" }}>
+            <Select
+              placeholder={statusId ? "Reset" : "--Status--"}
+              onChange={(e) => {
+                setStatusId(e.target.value);
+                setPage(1);
+              }}
+            >
+              {renderStatus()}
+            </Select>
+          </Box>
+          <Box hidden={role === 3 ? false : true}>
+            <Select
+              placeholder={wrId ? "Reset" : "--Select Warehouse--"}
+              onChange={(e) => {
+                setWrId(e.target.value);
+                setPage(1);
+              }}
+            >
+              {renderWarehouse()}
+            </Select>
+          </Box>
         </Box>
       </Box>
-      <Box>
+      <Box h={"68vh"} overflow={"auto"}>
         <OrderListCard
           orderList={orderList}
           crossTitle={crossTitle}
@@ -201,10 +253,7 @@ export const OrderList = () => {
           cancelOrder={cancelOrder}
         />
       </Box>
-      <Box
-        p={"4"}
-        hidden={role < 3 ? true : false || orderList?.length ? false : true}
-      >
+      <Box p={"4"} hidden={orderList?.length ? false : true}>
         <OrderListPagination
           page={page}
           setPage={setPage}

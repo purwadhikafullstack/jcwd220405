@@ -55,7 +55,6 @@ export const Profile = () => {
   const settingUser = async (e) => {
     e.preventDefault();
     try {
-      // perlu refresh page?
       setLoading(true);
       if (!birthDate) {
         setLoading(false);

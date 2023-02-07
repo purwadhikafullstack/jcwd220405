@@ -1,5 +1,4 @@
 import { Box, Button, Text } from "@chakra-ui/react";
-import React from "react";
 
 export const OrderListPagination = ({ page, setPage, totalPage }) => {
   return (
