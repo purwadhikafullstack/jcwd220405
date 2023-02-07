@@ -86,7 +86,9 @@ export const DrawerCompUser = () => {
                 <Button as={Link} to={"/profile/settings"}>
                   Profile
                 </Button>
-                <Button>History</Button>
+                <Button as={Link} to={"/order-list"}>
+                  History
+                </Button>
               </Stack>
             ) : (
               <Stack>

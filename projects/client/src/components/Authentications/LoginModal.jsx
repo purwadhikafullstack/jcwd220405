@@ -81,18 +81,16 @@ export const LoginModal = () => {
   };
 
   return (
-    <Box>
+    <>
       <Button
-        display={{ base: "block", md: "inline-flex" }}
-        as={"a"}
+        display={{ base: "solid", md: "inline-flex" }}
         fontSize={"sm"}
         fontWeight={600}
-        // variant={"link"}
-        href={"#"}
-        bg="#440F5D"
         color={"pink.300"}
+        bg="#440F5D"
+        href={"#"}
         onClick={onOpenLogin}
-        textAlign={"center"}
+        // textAlign={"center"}
         pt={{ base: "3", md: 0 }}
       >
         Sign In
@@ -121,6 +119,6 @@ export const LoginModal = () => {
           </ModalBody>
         </ModalContent>
       </Modal>
-    </Box>
+    </>
   );
 };

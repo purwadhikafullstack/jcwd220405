@@ -24,6 +24,7 @@ import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { OrderListPage } from "./pages/OrderListPage";
 import { CheckoutPage } from "./pages/CheckoutPage/CheckoutPage";
+import { UnAuthorizedRequest } from "./pages/NotFound/UnAuthorized";
 
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -129,6 +130,7 @@ function App() {
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/401" element={<UnAuthorizedRequest />} />
         {/* <Footer /> */}
       </Routes>
     </>

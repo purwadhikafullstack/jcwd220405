@@ -11,5 +11,6 @@ router.post(
   uploadPaymentProof.single("image"),
   shipment.uploadPayment
 );
+router.post("/getWarehouse/:id", shipment.getWarehouse);
 
 module.exports = router;

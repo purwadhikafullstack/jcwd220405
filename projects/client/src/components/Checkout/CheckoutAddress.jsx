@@ -19,7 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { AddressList } from "./AddressList";
 import Axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { CheckoutShipment } from "./CheckoutShipment";
@@ -31,14 +31,16 @@ export const CheckoutAddress = () => {
   const [address, setAddress] = useState([]);
   const { id } = useSelector((state) => state.userSlice.value);
 
-  const checkAddress = async () => {
+  const checkAddress = useCallback(async () => {
     try {
       const result = await (await Axios.get(`${baseApi}/address/${id}`)).data;
-      setAddress(result);
+      // console.log(result);
+      setAddress(result.result);
+      // console.log(address.result);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [id]);
 
   const onClick = () => {
     try {
@@ -50,7 +52,7 @@ export const CheckoutAddress = () => {
 
   useEffect(() => {
     checkAddress();
-  }, [id]);
+  }, [checkAddress]);
 
   return (
     <Container
@@ -76,11 +78,8 @@ export const CheckoutAddress = () => {
         >
           <Heading color={"salmon"}>Checkout</Heading>
         </Box>
-        {address?.length ? (
-          <>
-            <AddressList />
-            {/* <CheckoutShipment /> */}
-          </>
+        {address ? (
+          <AddressList />
         ) : (
           <Box mt={8}>
             <Box>

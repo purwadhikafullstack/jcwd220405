@@ -9,6 +9,7 @@ import { ReportList } from "./TabBody/ReportList";
 import { CategoryList } from "./TabBody/CategoryList";
 import { OrderList } from "./TabBody/Order/OrderList";
 import { MutationList } from "./TabBody/MutationList";
+import { SalesList } from "./TabBody/SalesList";
 
 export const AdminBody = ({ tabNum }) => {
   const tabs = [
@@ -19,6 +20,7 @@ export const AdminBody = ({ tabNum }) => {
     OrderList,
     MutationList,
     ReportList,
+    SalesList,
   ];
   const TabBody = tabs[tabNum];
 

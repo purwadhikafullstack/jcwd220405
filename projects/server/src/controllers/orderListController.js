@@ -6,36 +6,45 @@ const product = db.Product;
 const product_image = db.Product_Image;
 const transaction_product = db.Transaction_Product_Warehouses;
 const order_status = db.Order_Status;
+const warehouse = db.Warehouse;
 const { Op } = require("sequelize");
 
 module.exports = {
   getOrderList: async (req, res) => {
     try {
+      const { page, limit, status } = req.query;
+      const page_list = +page || 0;
+      const limit_list = +limit || 5;
+      const offset = page_list * limit_list;
+      const totalRows = await transaction.count();
+      const totalPage = Math.ceil(totalRows / limit_list);
+      const statusOrder = +status || "";
+
       const transactionUser = await transaction.findAll({
-        where: { idUser: req.params.user },
-        attributes: {
-          exclude: ["createdAt", "updatedAt"],
+        where: {
+          idUser: req.params.user,
+          OrderStatusId: statusOrder ? statusOrder : { [Op.not]: null },
         },
         include: [
           {
-            model: cart,
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
+            model: transaction_product,
+            attributes: ["quantity", "price", "WarehouseId"],
+            require: true,
             include: [
               {
                 model: product,
-                attributes: {
-                  exclude: ["createdAt", "updatedAt"],
-                },
+                attributes: ["name", "weight"],
+                require: true,
                 include: [
                   {
                     model: product_image,
-                    attributes: {
-                      exclude: ["createdAt", "updatedAt"],
-                    },
+                    attributes: ["image"],
                   },
                 ],
+              },
+              {
+                model: warehouse,
+                attributes: ["province", "city"],
               },
             ],
           },
@@ -46,12 +55,23 @@ module.exports = {
             },
           },
         ],
+        order: [["createdAt", "DESC"]],
+        offset: offset,
+        limit: limit_list,
         // raw: true,
       });
 
       // console.log(transactionUser);
 
-      res.status(200).send(transactionUser);
+      res.status(200).send({
+        message: "Transaction List",
+        result: transactionUser,
+        page: page_list,
+        limit: limit_list,
+        offset: offset,
+        totalRows: totalRows,
+        totalPage: totalPage,
+      });
     } catch (err) {
       res.status(400).send(err);
     }
@@ -74,6 +94,39 @@ module.exports = {
         message: "Transaction cancelation success",
       });
     } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  completeOrder: async (req, res) => {
+    try {
+      const idTransaction = req.body.id;
+      const { user } = req.params;
+      await transaction.update(
+        {
+          OrderStatusId: 5,
+        },
+
+        {
+          where: { [Op.and]: [{ idUSer: user }, { id: idTransaction }] },
+        }
+      );
+
+      res.status(200).send({
+        message: "Transaction cancelation success",
+      });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+  transactionStatusList: async (req, res) => {
+    try {
+      const allStatus = await order_status.findAll({
+        attributes: ["id", "status"],
+        // raw: true,
+      });
+      res.status(200).send({ message: "Status List", result: allStatus });
+    } catch (err) {
+      // console.log(err);
       res.status(400).send(err);
     }
   },

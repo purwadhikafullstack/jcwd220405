@@ -185,6 +185,7 @@ export const AdminPage = () => {
       "Orders",
       "Mutations",
       "Reports",
+      "Sales",
     ];
 
     return (

@@ -8,19 +8,16 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const key = process.env.OKAI_SECRET;
 const handlebars = require("handlebars");
+const schedule = require("node-schedule");
+const moment = require("moment");
 
 module.exports = {
   register: async (req, res) => {
     try {
       const { email } = req.body;
-
-      const isEmailExist = await user.findOne({
-        where: { email },
-        raw: true,
+      const token = jwt.sign({ id: email }, key, {
+        expiresIn: "24h",
       });
-      if (isEmailExist) throw "Email have been used";
-
-      const token = jwt.sign({ id: email }, key);
 
       const tempEmail = fs.readFileSync("./src/template/email.html", "utf-8");
       const tempCompile = handlebars.compile(tempEmail);
@@ -35,9 +32,24 @@ module.exports = {
         html: tempResult,
       });
 
-      await user.create({
+      const registered = await user.create({
         email,
       });
+      console.log(registered);
+
+      const afterRegistered = moment()
+        .add(24, "hours")
+        .format("YYYY-MM-DD HH:mm:ss");
+
+      schedule.scheduleJob(
+        afterRegistered,
+        async () =>
+          await user.destroy({
+            where: {
+              id: registered.id,
+            },
+          })
+      );
 
       res.status(200).send({
         message: "Please Check Your Email to Continue The Sign Up Proccess",
@@ -165,7 +177,9 @@ module.exports = {
 
       if (!cekVerified) throw "No User Found";
 
-      const token = jwt.sign({ id: email }, key);
+      const token = jwt.sign({ id: email }, key, {
+        expiresIn: "24h",
+      });
 
       const tempEmail = fs.readFileSync(
         "./src/template/password.html",
