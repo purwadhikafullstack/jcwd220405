@@ -261,7 +261,7 @@ module.exports = {
 
       await Transaction.update(
         {
-          payment_proof: fileUploaded.filename,
+          payment_proof: `/public/payment/${fileUploaded.filename}`,
           OrderStatusId: 2,
         },
         {

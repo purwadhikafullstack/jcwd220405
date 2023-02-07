@@ -125,7 +125,7 @@ export const Shipment = () => {
       Swal.fire({
         icon: "success",
         title: "Payment on Process",
-        text: `${resultCreateOrder.data}`,
+        text: `${resultCreateOrder.data.message}`,
 
         customClass: {
           container: "my-swal",

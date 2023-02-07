@@ -12,6 +12,8 @@ import {
   useToast,
   Text,
 } from "@chakra-ui/react";
+import Swal from "sweetalert2";
+
 import React, { useState } from "react";
 import Axios from "axios";
 const baseApi = process.env.REACT_APP_API_BASE_URL;
@@ -73,9 +75,25 @@ export const PaymentProof = ({ id }) => {
         },
       });
 
-      setTimeout(() => window.location.reload(), 4000);
+      Swal.fire({
+        icon: "success",
+        title: "File Uploaded",
+        text: `Please Wait For Admin Confirmation`,
+        customClass: {
+          container: "my-swal",
+        },
+      });
+
+      setTimeout(() => window.location.reload(), 2500);
     } catch (err) {
       console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong",
+        customClass: {
+          container: "my-swal",
+        },
+      });
     }
   };
 

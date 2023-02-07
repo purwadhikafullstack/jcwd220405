@@ -76,7 +76,6 @@ function App() {
   useEffect(() => {
     testApi();
     keepLogin();
-    console.log("MOKOMDO HERE");
   }, [keepLogin]);
 
   return (
@@ -84,8 +83,15 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="/order-list" element={<OrderListPage />} />
         </Route>
+        <Route
+          path="/order-list"
+          element={
+            <ProtectingRoute>
+              <OrderListPage />
+            </ProtectingRoute>
+          }
+        />
         <Route
           path="/profile/settings"
           element={
