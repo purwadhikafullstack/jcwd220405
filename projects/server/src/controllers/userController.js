@@ -11,6 +11,9 @@ const handlebars = require("handlebars");
 const schedule = require("node-schedule");
 const moment = require("moment");
 
+const path = require("path");
+const { FEURL_BASE } = process.env;
+
 module.exports = {
   register: async (req, res) => {
     try {
@@ -19,10 +22,13 @@ module.exports = {
         expiresIn: "24h",
       });
 
-      const tempEmail = fs.readFileSync("./src/template/email.html", "utf-8");
+      const tempEmail = fs.readFileSync(
+        path.resolve(__dirname, "../template/email.html"),
+        "utf-8"
+      );
       const tempCompile = handlebars.compile(tempEmail);
       const tempResult = tempCompile({
-        link: `http://localhost:3000/verification/${token}`,
+        link: `${FEURL_BASE}/verification/${token}`,
       });
 
       await transporter.sendMail({
@@ -182,12 +188,12 @@ module.exports = {
       });
 
       const tempEmail = fs.readFileSync(
-        "./src/template/password.html",
+        path.resolve(__dirname, "../template/password.html"),
         "utf-8"
       );
       const tempCompile = handlebars.compile(tempEmail);
       const tempResult = tempCompile({
-        link: `http://localhost:3000/resetpassword/${token}`,
+        link: `${FEURL_BASE}/resetpassword/${token}`,
       });
 
       await transporter.sendMail({

@@ -81,7 +81,7 @@ export const ProfileSettingBirthDate = ({ user, birthDate, setbirthDate }) => {
               <FormLabel>Date of Birth</FormLabel>
               <Input
                 type="date"
-                value={birthDate}
+                value={birthDate ? birthDate : ""}
                 onChange={(e) => setbirthDate(e.target.value)}
                 min={"1950-01-01"}
                 max={"2010-01-01"}

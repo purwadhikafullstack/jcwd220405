@@ -63,9 +63,9 @@ module.exports = {
           "desc",
           "price",
           "weight",
-          [Sequelize.fn("SUM", Sequelize.col("stocks")), "product_stocks"],
+          // [Sequelize.fn("SUM", Sequelize.col("stocks")), "product_stocks"],
         ],
-        group: ["ProductId"],
+        // group: ["ProductId"],
         having: {
           [Op.or]: [
             {
@@ -88,7 +88,7 @@ module.exports = {
         offset: offset,
         limit: limit_list,
         order: [[order_by, direction]],
-        subQuery: false,
+        // subQuery: false,
       });
       res.status(200).send({
         result: all,
@@ -135,9 +135,34 @@ module.exports = {
       );
       const weight = response.weight >= 1000 ? response.weight / 1000 : "";
       res.status(200).send({ result: response, stock: stock, weight: weight });
-    } catch (err) {
-      console.log(err);
-      res.status(404).send(err);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  homeProduct: async (req, res) => {
+    try {
+      const length = await Product.count();
+      const offset = Math.floor(Math.random() * length - 12);
+      const all = await Product.findAll({
+        include: [
+          {
+            model: productImage,
+            attributes: ["image"],
+            required: true,
+          },
+        ],
+        attributes: ["id", "name", "desc", "price", "weight"],
+        offset: offset < 0 ? 1 : offset,
+        limit: 12,
+      });
+
+      res.status(200).send({
+        result: all,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   },
 };
