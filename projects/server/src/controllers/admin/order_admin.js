@@ -191,7 +191,7 @@ module.exports = {
         await Transaction.update({ OrderStatusId: 1 }, { where: { id: id } });
 
         const tempEmail = fs.readFileSync(
-          path.resolve(__dirname, "../template/order-reject.html"),
+          path.resolve(__dirname, "../../template/order-reject.html"),
           "utf-8"
         );
         const tempCompile = handlebars.compile(tempEmail);
@@ -530,7 +530,7 @@ module.exports = {
       });
 
       const tempEmail = fs.readFileSync(
-        path.resolve(__dirname, "../template/order-process.html"),
+        path.resolve(__dirname, "../../template/order-process.html"),
         "utf-8"
       );
       const tempCompile = handlebars.compile(tempEmail);
@@ -603,7 +603,7 @@ module.exports = {
       });
 
       const tempEmail = fs.readFileSync(
-        path.resolve(__dirname, "../template/order-send.html"),
+        path.resolve(__dirname, "../../template/order-send.html"),
         "utf-8"
       );
       const tempCompile = handlebars.compile(tempEmail);
@@ -721,7 +721,7 @@ module.exports = {
         });
 
         const tempEmail = fs.readFileSync(
-          path.resolve(__dirname, "../template/order-cancel.html"),
+          path.resolve(__dirname, "../../template/order-cancel.html"),
           "utf-8"
         );
         const tempCompile = handlebars.compile(tempEmail);

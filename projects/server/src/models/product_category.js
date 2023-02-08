@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         type: STRING,
         unique: true,
       },
+      image: {
+        type: DataTypes.STRING(255),
+        defaultValue: "/public/category/default-category.png",
+      },
     },
     {
       sequelize,

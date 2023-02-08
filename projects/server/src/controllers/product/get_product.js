@@ -63,9 +63,9 @@ module.exports = {
           "desc",
           "price",
           "weight",
-          // [Sequelize.fn("SUM", Sequelize.col("stocks")), "product_stocks"],
+          [Sequelize.fn("SUM", Sequelize.col("stocks")), "product_stocks"],
         ],
-        // group: ["ProductId"],
+        group: ["ProductId"],
         having: {
           [Op.or]: [
             {
@@ -88,7 +88,7 @@ module.exports = {
         offset: offset,
         limit: limit_list,
         order: [[order_by, direction]],
-        // subQuery: false,
+        subQuery: false,
       });
       res.status(200).send({
         result: all,
@@ -159,6 +159,21 @@ module.exports = {
 
       res.status(200).send({
         result: all,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  homeCategory: async (req, res) => {
+    try {
+      const category = await productCategory.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        raw: true,
+      });
+
+      res.status(200).send({
+        result: category,
       });
     } catch (error) {
       console.log(error);
