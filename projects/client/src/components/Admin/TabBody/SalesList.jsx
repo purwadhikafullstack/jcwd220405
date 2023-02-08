@@ -38,7 +38,7 @@ export const SalesList = () => {
   const getSalesList = useCallback(async () => {
     try {
       const response = await (
-        await Axios.get(`${baseApi}/admin/salesList`)
+        await Axios.get(`${baseApi}/admin/salesList?month=${filterMonth}`)
       ).data;
       // console.log(response);
       setSalesList(response);
