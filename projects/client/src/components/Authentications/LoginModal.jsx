@@ -71,7 +71,7 @@ export const LoginModal = () => {
         title: "Failed Attempt",
         text: err.response.data.name
           ? err.response.data.errors[0].message
-          : err.response.data,
+          : "Something Went Wrong",
 
         customClass: {
           container: "my-swal",

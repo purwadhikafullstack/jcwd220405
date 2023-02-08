@@ -12,10 +12,10 @@ const {
 
 module.exports = {
   development: {
-    username: USER_DB_POD,
-    password: PASSWORD_DB_POD,
-    database: SOURCE_DB_POD,
-    host: HOST_POD,
+    username: USER_DB,
+    password: PASS_DB,
+    database: SOURCE_DB,
+    host: "127.0.0.1",
     dialect: "mysql",
   },
   test: {
@@ -29,7 +29,7 @@ module.exports = {
     username: USER_DB_POD,
     password: PASSWORD_DB_POD,
     database: SOURCE_DB_POD,
-    host: "127.0.0.1",
+    host: HOST_POD,
     dialect: "mysql",
   },
 };
