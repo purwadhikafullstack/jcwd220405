@@ -10,6 +10,7 @@ import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/Layout";
 import { NavbarTest } from "./components/test";
 import { ProtectingRoute } from "./components/ProtectingRoute";
+import { AdminRoute } from "./components/Admin/AdminProt";
 
 // pages
 import { HomePage } from "./pages/HomePage";
@@ -37,9 +38,7 @@ function App() {
   const token = localStorage.getItem("token");
   const { id } = useSelector((state) => state.userSlice.value);
 
-
   const keepLogin = useCallback(async () => {
-
     try {
       const result = await Axios.get(`${url}/user/keeplogin`, {
         headers: {
@@ -54,6 +53,7 @@ function App() {
           name: result.data.name,
           is_verified: result.data.is_verified,
           role: result.data.role,
+          picture: result.data.picture,
         })
       );
 
@@ -65,20 +65,22 @@ function App() {
     }
   }, [dispatch, id, token]);
 
-  const testApi = async () => {
-    try {
-      const response = await (await Axios.get(url)).data;
-      console.log(response);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  // const testApi = async () => {
+  //   try {
+  //     const response = await (await Axios.get(url)).data;
+  //     console.log(response);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   useEffect(() => {
-    testApi();
+    // testApi();
     keepLogin();
     console.log("MOKOMDO HERE");
   }, [keepLogin]);
+
+  // console.log(role)
 
   return (
     <>
@@ -111,7 +113,15 @@ function App() {
           }
         />
 
-        <Route path="/admin" element={<AdminPage />} />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminPage />
+            </AdminRoute>
+          }
+        />
+
         <Route path="/verification/:token" element={<VerificationPage />} />
         <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 

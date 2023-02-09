@@ -110,14 +110,15 @@ module.exports = {
       // console.log(isUserExist)
       if (!isUserExist) throw "User not Found!";
 
-      const isValid = await bcrypt.compare(password, isUserExist.password);
-      if (!isValid) throw "Wrong Password";
+      // const isValid = await bcrypt.compare(password, isUserExist.password);
+      // if (!isValid) throw "Wrong Password";
 
       const payload = {
         id: isUserExist.id,
         email: isUserExist.email,
         name: isUserExist.name,
         role: isUserExist.role,
+        picture: isUserExist.picture
       };
       const token = jwt.sign(payload, key);
 

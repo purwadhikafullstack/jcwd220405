@@ -10,16 +10,19 @@ import { CategoryList } from "./TabBody/CategoryList";
 import { OrderList } from "./TabBody/Order/OrderList";
 import { MutationList } from "./TabBody/MutationList";
 
-export const AdminBody = ({ tabNum }) => {
-  const tabs = [
-    UserList,
-    WarehouseList,
-    ProductList,
-    CategoryList,
-    OrderList,
-    MutationList,
-    ReportList,
-  ];
+export const AdminBody = ({ tabNum, role }) => {
+  const tabs =
+    role === 3
+      ? [
+          UserList,
+          WarehouseList,
+          ProductList,
+          CategoryList,
+          OrderList,
+          MutationList,
+          ReportList,
+        ]
+      : [ProductList, CategoryList, OrderList, MutationList, ReportList];
   const TabBody = tabs[tabNum];
 
   return (

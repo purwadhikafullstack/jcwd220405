@@ -1,6 +1,7 @@
 // react
 import Axios from "axios";
 import { useEffect, useState, useCallback, useRef } from "react";
+import { useSelector } from "react-redux";
 
 // chakra
 import {
@@ -24,6 +25,9 @@ import {
   Select,
 } from "@chakra-ui/react";
 
+// swal
+import Swal from "sweetalert2";
+
 // icons
 import { BiSearch } from "react-icons/bi";
 import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
@@ -36,6 +40,8 @@ import { EditProduct } from "./ProductProps/EditProduct";
 
 export const ProductList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+
+  const { role } = useSelector((state) => state.userSlice.value);
 
   const [products, setProducts] = useState();
   const [category, setCategory] = useState();
@@ -59,22 +65,14 @@ export const ProductList = () => {
     try {
       const productURL =
         warehouse === `All Stocks`
-          ? /* search */
-            url +
-            // `all_products?sort=${sort}&direction=${direction}&pagination=${pagination}`
-            `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
-          : // : url +
-            // `filter_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
-            /* search
-          ? */ url +
-            `filter_warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-      // : url + `warehouse_products?warehouse=${warehouse}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-
-      // console.log(productURL);
+          ? url +
+            `all_products?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`
+          : url +
+            `warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
       const resultProducts = await Axios.get(productURL);
-      const resultCategories = await Axios.get(url + "all_category");
-      const resultWarehouse = await Axios.get(url + "all_warehouse");
+      const resultCategories = await Axios.get(url + "all_category?search=");
+      const resultWarehouse = await Axios.get(url + "all_warehouse?search=");
 
       setProducts(resultProducts.data.result);
       setPages(resultProducts.data.pages);
@@ -94,6 +92,34 @@ export const ProductList = () => {
       getProducts();
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const deleteWarning = async (id) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteProduct(id);
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        }
+      });
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
@@ -151,32 +177,34 @@ export const ProductList = () => {
               }}
             />
           </Flex>
-          <Center>
-            <AddProduct
-              warehouses={warehouses}
-              getProducts={getProducts}
-              category={category}
-            />
-            <Select
-              ref={warehouseValue}
-              onChange={() => {
-                setWarehouse(warehouseValue.current.value);
-                setSort("id");
-                setPagination(0);
-                setDirection("ASC");
-              }}
-              paddingLeft={"5px"}
-            >
-              <option>All Stocks</option>
-              {warehouses?.map((item, index) => {
-                return (
-                  <option value={item.id} key={index}>
-                    {item.warehouse_name} Stocks
-                  </option>
-                );
-              })}
-            </Select>
-          </Center>
+          {role === 3 ? (
+            <Center>
+              <AddProduct
+                warehouses={warehouses}
+                getProducts={getProducts}
+                category={category}
+              />
+              <Select
+                ref={warehouseValue}
+                onChange={() => {
+                  setWarehouse(warehouseValue.current.value);
+                  setSort("id");
+                  setPagination(0);
+                  setDirection("ASC");
+                }}
+                paddingLeft={"5px"}
+              >
+                <option>All Stocks</option>
+                {warehouses?.map((item, index) => {
+                  return (
+                    <option value={item.id} key={index}>
+                      {item.warehouse_name} Stocks
+                    </option>
+                  );
+                })}
+              </Select>
+            </Center>
+          ) : null}
         </Stack>
       </Center>
       <TableContainer borderRadius={"10px"}>
@@ -225,15 +253,17 @@ export const ProductList = () => {
                   </Th>
                 );
               })}
-              <Th
-                bg={"#b759b4"}
-                textAlign={"center"}
-                color={"white"}
-                w={"200px"}
-                borderY={"none"}
-              >
-                Action
-              </Th>
+              {role === 3 ? (
+                <Th
+                  bg={"#b759b4"}
+                  textAlign={"center"}
+                  color={"white"}
+                  w={"200px"}
+                  borderY={"none"}
+                >
+                  Action
+                </Th>
+              ) : null}
             </Tr>
           </Thead>
           {products ? (
@@ -250,28 +280,30 @@ export const ProductList = () => {
                       {item.Product_Category?.category}
                     </Td>
                     <Td textAlign={"center"}>{+item.total_stocks}</Td>
-                    <Td>
-                      <Flex
-                        gap={"20px"}
-                        justifyContent={"center"}
-                        alignItems={"center"}
-                      >
-                        <EditProduct
-                          getProducts={getProducts}
-                          category={category}
-                          warehouse={+warehouse}
-                          item={item}
-                        />
-                        <IconButton
-                          onClick={() => {
-                            deleteProduct(item.id);
-                          }}
-                          bg={"none"}
-                          color={"#ff4d4d"}
-                          icon={<BsFillTrashFill />}
-                        />
-                      </Flex>
-                    </Td>
+                    {role === 3 ? (
+                      <Td>
+                        <Flex
+                          gap={"20px"}
+                          justifyContent={"center"}
+                          alignItems={"center"}
+                        >
+                          <EditProduct
+                            getProducts={getProducts}
+                            category={category}
+                            warehouse={+warehouse}
+                            item={item}
+                          />
+                          <IconButton
+                            onClick={() => {
+                              deleteWarning(item.id);
+                            }}
+                            bg={"none"}
+                            color={"#ff4d4d"}
+                            icon={<BsFillTrashFill />}
+                          />
+                        </Flex>
+                      </Td>
+                    ) : null}
                   </Tr>
                 </Tbody>
               );
@@ -286,9 +318,11 @@ export const ProductList = () => {
                     </Td>
                   );
                 })}
-                <Td>
-                  <Skeleton h={"10px"} />
-                </Td>
+                {role === 3 ? (
+                  <Td>
+                    <Skeleton h={"10px"} />
+                  </Td>
+                ) : null}
               </Tr>
             </Tbody>
           )}

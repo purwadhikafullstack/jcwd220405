@@ -1,6 +1,9 @@
 // react
 import Axios from "axios";
-import { useRef } from "react";
+
+// validation
+import { Formik, ErrorMessage, Form, Field } from "formik";
+import * as Yup from "yup";
 
 // chakra
 import {
@@ -18,6 +21,9 @@ import {
   Center,
   IconButton,
 } from "@chakra-ui/react";
+
+// swal
+import Swal from "sweetalert2";
 
 // icons
 import { CgMathPlus } from "react-icons/cg";
@@ -50,43 +56,84 @@ export const AddCategory = ({ getCategory }) => {
 };
 
 const AddForm = ({ close, getCategory }) => {
-  const url = "http://localhost:8000/api/admin/add_category";
+  const url = process.env.REACT_APP_API_BASE_URL + "/admin/add_category";
 
-  const category = useRef("");
+  // const category = useRef("");
 
-  const addCategory = async () => {
+  const validation = Yup.object().shape({
+    category: Yup.string().required("Cannot Be Empty"),
+  });
+
+  const addCategory = async (value) => {
     try {
       const data = {
-        category: category.current.value,
+        category: value.category,
       };
+
+      console.log();
       await Axios.post(url, data);
       getCategory();
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: `Category Added`,
+      });
+
       close();
     } catch (err) {
       console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
   return (
     <Box>
-      <FormControl>
-        <FormLabel>Category Name</FormLabel>
-        <Input ref={category} />
-        <Center paddingTop={"10px"} gap={"10px"}>
-          <IconButton
-            icon={<RxCheck />}
-            fontSize={"3xl"}
-            color={"green"}
-            onClick={addCategory}
-          />
-          <IconButton
-            icon={<RxCross1 />}
-            fontSize={"xl"}
-            color={"red"}
-            onClick={close}
-          />
-        </Center>
-      </FormControl>
+      <Formik
+        initialValues={{
+          category: "",
+        }}
+        validationSchema={validation}
+        onSubmit={(value) => {
+          addCategory(value);
+        }}
+      >
+        {(props) => {
+          return (
+            <Form>
+              <FormControl isRequired>
+                <FormLabel>Category Name</FormLabel>
+                <Input as={Field} name={"category"} placeholder={"Mouse"} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="category"
+                />
+                <Center paddingTop={"10px"} gap={"10px"}>
+                  <IconButton
+                    icon={<RxCheck />}
+                    fontSize={"3xl"}
+                    color={"green"}
+                    type={"submit"}
+                  />
+                  <IconButton
+                    icon={<RxCross1 />}
+                    fontSize={"xl"}
+                    color={"red"}
+                    onClick={close}
+                  />
+                </Center>
+              </FormControl>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

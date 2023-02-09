@@ -38,8 +38,10 @@ export const WarehouseList = () => {
 
   const [warehouse, setWarehouse] = useState();
   const [admin, setAdmin] = useState();
-  const [sort, setSort] = useState();
-  const [direction, setDirection] = useState();
+  const [provinces, setProvinces] = useState();
+  const [products, setProducts] = useState();
+  const [sort, setSort] = useState("id");
+  const [direction, setDirection] = useState("ASC");
   const [pagination, setPagination] = useState(0);
   const [pages, setPages] = useState();
   const [search, setSearch] = useState(``);
@@ -49,17 +51,9 @@ export const WarehouseList = () => {
   const getWarehouse = useCallback(async () => {
     try {
       const warehouseURL =
-        search === ``
-          ? url + "all_warehouse?"
-          : url + `filter_warehouse?search=${search}&`;
-      const sortURL = sort ? warehouseURL + `sort=${sort}&` : warehouseURL;
-      const directionURL = direction
-        ? sortURL + `direction=${direction}&`
-        : sortURL;
-      const paginationURL = pagination
-        ? directionURL + `pagination=${pagination}`
-        : directionURL;
-      const resultWarehouse = await Axios.get(paginationURL);
+        url +
+        `all_warehouse?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
+      const resultWarehouse = await Axios.get(warehouseURL);
       setWarehouse(resultWarehouse.data.result);
       setPages(resultWarehouse.data.pages);
       document.documentElement.scrollTop = 0;
@@ -68,6 +62,29 @@ export const WarehouseList = () => {
       console.log(err);
     }
   }, [sort, direction, pagination, search, url]);
+
+  const getProvince = async () => {
+    try {
+      const resultProvinces = await Axios.get(
+        process.env.REACT_APP_API_BASE_URL + "/province"
+      );
+      setProvinces(resultProvinces.data.result);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const getProducts = useCallback(
+    async (req, res) => {
+      try {
+        const resultProduct = await Axios.get(url + `all_products?search=`);
+        setProducts(resultProduct.data.raw);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [url]
+  );
 
   const getAdmin = useCallback(async () => {
     try {
@@ -90,7 +107,9 @@ export const WarehouseList = () => {
   useEffect(() => {
     getWarehouse();
     getAdmin();
-  }, [getWarehouse, getAdmin]);
+    getProvince();
+    getProducts();
+  }, [getWarehouse, getAdmin, getProducts]);
 
   const tableHead = [
     { name: "Id", origin: "id", width: "100px" },
@@ -103,7 +122,7 @@ export const WarehouseList = () => {
 
   return (
     <Box padding={{ base: "10px", lg: "0" }}>
-      <Center paddingBottom={"12px"}>
+      <Center paddingBottom={"5px"}>
         <Stack>
           <Flex>
             <Box paddingRight={"12px"}>
@@ -136,7 +155,12 @@ export const WarehouseList = () => {
             />
           </Flex>
           <Center>
-            <AddWarehouse getWarehouse={getWarehouse} admin={admin} />
+            <AddWarehouse
+              getWarehouse={getWarehouse}
+              provinces={provinces}
+              admin={admin}
+              products={products}
+            />
           </Center>
         </Stack>
       </Center>
@@ -218,6 +242,7 @@ export const WarehouseList = () => {
                           warehouse={item}
                           admin={admin}
                           getWarehouse={getWarehouse}
+                          provinces={provinces}
                         />
                         <IconButton
                           onClick={() => {

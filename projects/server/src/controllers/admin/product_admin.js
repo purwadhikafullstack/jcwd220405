@@ -55,42 +55,9 @@ module.exports = {
   },
   allProduct: async (req, res) => {
     try {
-      const { sort, direction, pagination } = req.query;
-
-      const { count, rows } = await product.findAndCountAll({
-        include: [
-          {
-            model: category,
-          },
-          {
-            model: productWarehouses,
-            as: "Details",
-          },
-        ],
-        attributes: {
-          // exclude: ["WarehouseId", "stocks"],
-          include: [
-            [Sequelize.fn("SUM", Sequelize.col("stocks")), "total_stocks"],
-          ],
-        },
-        group: ["id"],
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination * 10 : 0,
-        subQuery: false,
-      });
-
-      res
-        .status(200)
-        .send({ pages: Math.ceil(count.length / 10), result: rows });
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterProduct: async (req, res) => {
-    try {
       const { search, sort, direction, pagination } = req.query;
+
+      const raw = await product.findAll()
 
       const { count, rows } = await product.findAndCountAll({
         where: {
@@ -122,49 +89,13 @@ module.exports = {
 
       res
         .status(200)
-        .send({ pages: Math.ceil(count.length / 10), result: rows });
+        .send({ pages: Math.ceil(count.length / 10), result: rows, raw });
     } catch (err) {
       res.status(400).send(err);
       console.log(err);
     }
   },
   warehouseProduct: async (req, res) => {
-    try {
-      const { sort, direction, pagination, warehouse } = req.query;
-
-      const { count, rows } = await product.findAndCountAll({
-        include: [
-          {
-            model: category,
-          },
-          {
-            model: productWarehouses,
-            as: "Details",
-            where: {
-              WarehouseId: warehouse,
-            },
-            required: false,
-          },
-        ],
-        attributes: {
-          include: [
-            // [Sequelize.fn("COUNT", Sequelize.col("stocks")), "total_stocks"],
-            [Sequelize.col("stocks"), "total_stocks"],
-          ],
-        },
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination * 10 : 0,
-        subQuery: false,
-      });
-
-      res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterWarehouseProduct: async (req, res) => {
     try {
       const { search, sort, direction, pagination, warehouse } = req.query;
 

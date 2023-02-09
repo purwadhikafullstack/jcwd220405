@@ -2,17 +2,18 @@
 import Axios from "axios";
 import { useRef } from "react";
 
+// validation
+import { Formik, ErrorMessage, Form, Field } from "formik";
+import * as Yup from "yup";
+
 // chakra
 import {
   Box,
-  Button,
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
-  ModalCloseButton,
   useDisclosure,
   FormControl,
   FormLabel,
@@ -25,6 +26,9 @@ import {
   IconButton,
   Center,
 } from "@chakra-ui/react";
+
+// swal
+import Swal from "sweetalert2";
 
 // icons
 import { BsFillGearFill } from "react-icons/bs";
@@ -50,64 +54,113 @@ export const EditUser = ({ user, getUsers }) => {
 };
 
 const EditForm = ({ user, close, getUsers }) => {
-  const url = `http://localhost:8000/api/admin/edit_user/${user.id}`;
+  const url =
+    process.env.REACT_APP_API_BASE_URL + `/admin/edit_user/${user.id}`;
 
-  const email = useRef("");
-  const name = useRef("");
   const role = useRef("");
 
-  const editUser = async () => {
+  const validation = Yup.object().shape({
+    email: Yup.string().email("Email Invalid").required("Cannot be Empty"),
+    name: Yup.string().required("Cannot be Empty"),
+  });
+
+  const editUser = async (value) => {
     try {
       if (
-        email.current.value !== user.email ||
-        name.current.value !== user.name ||
-        +role.current.value !== user.role
+        value.email !== user.email ||
+        value.name !== user.name ||
+        +role.current.value.role !== user.role
       ) {
         const editData = {
-          email: email.current.value,
-          name: name.current.value,
+          email: value.email,
+          name: value.name,
           role: +role.current.value,
         };
         await Axios.patch(url, editData);
         getUsers();
       }
 
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: `User Edited`,
+      });
+
       close();
     } catch (err) {
       console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
   return (
     <Box>
-      <FormControl>
-        <FormLabel>Email</FormLabel>
-        <Input type="email" defaultValue={user.email} ref={email} />
-        <FormLabel>Name</FormLabel>
-        <Input defaultValue={user.name} ref={name} />
-        <FormLabel>Role</FormLabel>
-        <NumberInput defaultValue={user.role} min={1} max={3}>
-          <NumberInputField ref={role} />
-          <NumberInputStepper>
-            <NumberIncrementStepper />
-            <NumberDecrementStepper />
-          </NumberInputStepper>
-        </NumberInput>
-        <Center paddingTop={"10px"} gap={"10px"}>
-          <IconButton
-            icon={<RxCheck />}
-            fontSize={"3xl"}
-            color={"green"}
-            onClick={editUser}
-          />
-          <IconButton
-            icon={<RxCross1 />}
-            fontSize={"xl"}
-            color={"red"}
-            onClick={close}
-          />
-        </Center>
-      </FormControl>
+      <Formik
+        initialValues={{
+          email: user.email,
+          name: user.name,
+        }}
+        validationSchema={validation}
+        onSubmit={(value) => {
+          editUser(value);
+        }}
+      >
+        {(props) => {
+          return (
+            <Form>
+              <FormControl>
+                <FormLabel>Email</FormLabel>
+                <Input as={Field} type="email" name={"email"} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="email"
+                />
+                <FormLabel>Name</FormLabel>
+                <Input as={Field} name={"name"} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="name"
+                />
+                <FormLabel>Role</FormLabel>
+                <NumberInput min={1} max={3} defaultValue={user.role}>
+                  <NumberInputField ref={role} readOnly />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper />
+                    <NumberDecrementStepper />
+                  </NumberInputStepper>
+                </NumberInput>
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="role"
+                />
+                <Center paddingTop={"10px"} gap={"10px"}>
+                  <IconButton
+                    icon={<RxCheck />}
+                    fontSize={"3xl"}
+                    color={"green"}
+                    type={"submit"}
+                  />
+                  <IconButton
+                    icon={<RxCross1 />}
+                    fontSize={"xl"}
+                    color={"red"}
+                    onClick={close}
+                  />
+                </Center>
+              </FormControl>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

@@ -4,25 +4,25 @@ const db = require("../../models");
 const user = db.User;
 
 module.exports = {
+  // allUser: async (req, res) => {
+  //   try {
+  //     const { sort, direction, pagination } = req.query;
+
+  //     const pages = Math.ceil((await user.count()) / 10);
+
+  //     const result = await user.findAll({
+  //       order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+  //       limit: 10,
+  //       offset: pagination ? +pagination * 10 : 0,
+  //       raw: true,
+  //     });
+  //     res.status(200).send({ result, pages });
+  //   } catch (err) {
+  //     res.status(400).send(err);
+  //     console.log(err);
+  //   }
+  // },
   allUser: async (req, res) => {
-    try {
-      const { sort, direction, pagination } = req.query;
-
-      const pages = Math.ceil((await user.count()) / 10);
-
-      const result = await user.findAll({
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination * 10 : 0,
-        raw: true,
-      });
-      res.status(200).send({ result, pages });
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterUser: async (req, res) => {
     try {
       const { search, sort, direction, pagination } = req.query;
 

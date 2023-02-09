@@ -1,9 +1,79 @@
-module.exports = {
-    addJournal: async (req, res) => {
-        try {
+const { Op } = require("sequelize");
+const db = require("../../models");
+const journal = db.Journal;
+const journal_type = db.Journal_Type;
+const warehouse = db.Warehouse;
+const moment = require("moment");
 
-        } catch (err) {
-            
-        }
+module.exports = {
+  allJournal: async (req, res) => {
+    try {
+      const { sort, direction, pagination, WarehouseId } = req.query;
+
+      // const thisMonth = moment().format("YYYY-MM-DD");
+      // moment.suppressDeprecationWarnings = true
+      // console.log(thisMonth)
+      
+      const { count, rows } = await journal.findAndCountAll({
+        where: {
+          WarehouseId: {
+            [Op.like]: `%${WarehouseId}%`,
+          },
+          // createdAt: {
+          //     [Op.like]: `%${thisMonth}%`,
+          // },
+        },
+        include: [{ model: journal_type }],
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+      });
+
+      res.status(200).send({ result: rows, pages: Math.ceil(count / 10) });
+    } catch (err) {
+      res.status(400).send(err);
+      console.log(err);
     }
-}
+  },
+  warehouseJournal: async (req, res) => {
+    try {
+      const { sort, direction, pagination, UserId } = req.query;
+
+      const adminWarehouse = await warehouse.findOne({
+        where: {
+          UserId,
+        },
+        attributes: {
+          exclude: [
+            "warehouse_name",
+            "province",
+            "province_id",
+            "city",
+            "city_id",
+            "postal_code",
+            "lat",
+            "lng",
+            "createdAt",
+            "updatedAt",
+          ],
+        },
+        raw: true,
+      });
+
+      const { count, rows } = await journal.findAndCountAll({
+        where: {
+          WarehouseId: adminWarehouse.id,
+        },
+        include: [{ model: journal_type }],
+        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
+        limit: 10,
+        offset: pagination ? +pagination * 10 : 0,
+      });
+
+      res.status(200).send({ result: rows, pages: Math.ceil(count / 10) });
+    } catch (err) {
+      res.status(400).send(err);
+      console.log(err);
+    }
+  },
+};

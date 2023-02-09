@@ -1,49 +1,23 @@
+const { GEOAPIFY_KEY, GEOAPIFY_KEY_URL } = process.env;
+const axios = require("axios");
+
 const { Op } = require("sequelize");
-// const db = require("../../../models");
 const db = require("../../models");
 const warehouse = db.Warehouse;
 
 module.exports = {
   allWarehouse: async (req, res) => {
     try {
-      const { sort, direction, pagination } = req.query;
-
-      const pages = Math.ceil((await warehouse.count()) / 10);
-
-      const { count, rows } = await warehouse.findAndCountAll({
-        order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 10,
-        offset: pagination ? +pagination * 10 : 0,
-        raw: true,
-      });
-      res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
-    } catch (err) {
-      res.status(400).send(err);
-      console.log(err);
-    }
-  },
-  filterWarehouse: async (req, res) => {
-    try {
       const { search, sort, direction, pagination } = req.query;
-
-      const pages = Math.ceil(
-        (await warehouse.count({
-          where: {
-            warehouse_name: {
-              [Op.like]: search ? `%${search}%` : "",
-            },
-          },
-        })) / 10
-      );
 
       const { count, rows } = await warehouse.findAndCountAll({
         where: {
           warehouse_name: {
-            [Op.like]: search ? `%${search}%` : "",
+            [Op.like]: `%${search}%`,
           },
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
-        limit: 5,
+        limit: 10,
         offset: pagination ? +pagination * 10 : 0,
         raw: true,
       });
@@ -69,17 +43,41 @@ module.exports = {
   },
   addWarehouse: async (req, res) => {
     try {
-      const { warehouse_name, province, city, postal_code, UserId } = req.body;
-
-      await warehouse.create({
+      const {
         warehouse_name,
         province,
+        province_id,
         city,
+        city_id,
         postal_code,
         UserId,
+      } = req.body;
+
+      const forwardAddress = await (
+        await axios.get(
+          `${GEOAPIFY_KEY_URL}/search?postcode=${postal_code}&city=${city}&province=${province}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
+          {
+            headers: { "Accept-Encoding": "gzip,deflate,compress" },
+          }
+        )
+      ).data;
+
+      // console.log(forwardAddress.results[0].lon)
+      // console.log(forwardAddress.results[0].lat)
+
+      const result = await warehouse.create({
+        warehouse_name,
+        province,
+        province_id,
+        city,
+        city_id,
+        postal_code,
+        UserId,
+        lat: +forwardAddress.results[0].lon,
+        lng: +forwardAddress.results[0].lat,
       });
 
-      res.status(200).send("Warehouse Created");
+      res.status(200).send(result);
     } catch (err) {
       res.status(400).send(err);
       console.log(err);

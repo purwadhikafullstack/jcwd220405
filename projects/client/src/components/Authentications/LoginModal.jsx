@@ -46,9 +46,12 @@ export const LoginModal = () => {
       const result = await Axios.post(`${url}/user/login`, user);
       dispatch(
         login({
-          id: result.data.isUserExist.id,
-          email: result.data.isUserExist.email,
-          name: result.data.isUserExist.name,
+          id: result.data.id,
+          email: result.data.email,
+          name: result.data.name,
+          is_verified: result.data.is_verified,
+          role: result.data.role,
+          picture: result.data.picture,
         })
       );
 

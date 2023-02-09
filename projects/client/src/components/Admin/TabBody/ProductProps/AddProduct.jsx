@@ -2,6 +2,10 @@
 import Axios from "axios";
 import { useRef } from "react";
 
+// validation
+import { Formik, ErrorMessage, Form, Field } from "formik";
+import * as Yup from "yup";
+
 // chakra
 import {
   Box,
@@ -20,6 +24,9 @@ import {
   Center,
   IconButton,
 } from "@chakra-ui/react";
+
+// swal
+import Swal from "sweetalert2";
 
 // icons
 import { CgMathPlus } from "react-icons/cg";
@@ -59,26 +66,30 @@ export const AddProduct = ({ getProducts, category, warehouses }) => {
 const AddForm = ({ close, category_name, getProducts, warehouses }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
-  const name = useRef("");
-  const desc = useRef("");
-  const price = useRef("");
-  const weight = useRef("");
   const ProductCategoryId = useRef("");
 
-  // console.log(warehouses);
+  const validation = Yup.object().shape({
+    name: Yup.string().required("Cannot be Empty"),
+    desc: Yup.string()
+      .min(50, "Desc minimum is 50 char")
+      .max(200, "Desc maximum is 200 char")
+      .required("Cannot be Empty"),
+    price: Yup.number("Must be Integer").required("Cannot be Empty"),
+    weight: Yup.number("Must be Integer").required("Cannot be Empty"),
+  });
 
-  const addProduct = async () => {
+  const addProduct = async (value) => {
     try {
       const data = {
-        name: name.current.value,
-        desc: desc.current.value,
-        price: +price.current.value,
-        weight: +weight.current.value,
+        name: value.name,
+        desc: value.desc,
+        price: +value.price,
+        weight: +value.weight,
         ProductCategoryId: +ProductCategoryId.current.value,
       };
       const result = await Axios.post(url + "add_product", data);
 
-      await warehouses.map(async(warehouse) => {
+      await warehouses.map(async (warehouse) => {
         const stocks = {
           stocks: 0,
           ProductId: result.data.id,
@@ -88,49 +99,101 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
         return await Axios.post(url + `add_stocks`, stocks);
       });
 
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Product added",
+      });
+
       getProducts();
       close();
     } catch (err) {
       console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
   return (
     <Box>
-      <FormControl>
-        <FormLabel>Category Name</FormLabel>
-        <Input ref={name} />
-        <FormLabel>Description</FormLabel>
-        <Textarea ref={desc} />
-        <FormLabel>Price</FormLabel>
-        <Input type={"number"} ref={price} />
-        <FormLabel>Weight</FormLabel>
-        <Input type={"number"} ref={weight} />
-        <FormLabel>Category</FormLabel>
-        <Select ref={ProductCategoryId}>
-          {category_name?.map((item, index) => {
-            return (
-              <option value={item.id} key={index}>
-                {item.category}
-              </option>
-            );
-          })}
-        </Select>
-        <Center paddingTop={"10px"} gap={"10px"}>
-          <IconButton
-            icon={<RxCheck />}
-            fontSize={"3xl"}
-            color={"green"}
-            onClick={addProduct}
-          />
-          <IconButton
-            icon={<RxCross1 />}
-            fontSize={"xl"}
-            color={"red"}
-            onClick={close}
-          />
-        </Center>
-      </FormControl>
+      <Formik
+        initialValues={{
+          name: "",
+          desc: "",
+          price: "",
+          weight: "",
+        }}
+        validationSchema={validation}
+        onSubmit={(value) => {
+          addProduct(value);
+        }}
+      >
+        {(props) => {
+          return (
+            <Form>
+              <FormControl isRequired>
+                <FormLabel>Category Name</FormLabel>
+                <Input name={"name"} as={Field} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="name"
+                />
+                <FormLabel>Description</FormLabel>
+                <Textarea name={"desc"} as={Field} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="desc"
+                />
+                <FormLabel>Price</FormLabel>
+                <Input type={"number"} name={"price"} as={Field} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="price"
+                />
+                <FormLabel>Weight</FormLabel>
+                <Input type={"number"} name={"weight"} as={Field} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="weight"
+                />
+                <FormLabel>Category</FormLabel>
+                <Select ref={ProductCategoryId}>
+                  {category_name?.map((item, index) => {
+                    return (
+                      <option value={item.id} key={index}>
+                        {item.category}
+                      </option>
+                    );
+                  })}
+                </Select>
+                <Center paddingTop={"10px"} gap={"10px"}>
+                  <IconButton
+                    icon={<RxCheck />}
+                    fontSize={"3xl"}
+                    color={"green"}
+                    type={"submit"}
+                  />
+                  <IconButton
+                    icon={<RxCross1 />}
+                    fontSize={"xl"}
+                    color={"red"}
+                    onClick={close}
+                  />
+                </Center>
+              </FormControl>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };

@@ -23,6 +23,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+// swal
+import Swal from "sweetalert2";
+
 // icons
 import { BiSearch } from "react-icons/bi";
 import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
@@ -36,8 +39,8 @@ export const UserList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
 
   const [users, setUsers] = useState();
-  const [sort, setSort] = useState();
-  const [direction, setDirection] = useState();
+  const [sort, setSort] = useState("id");
+  const [direction, setDirection] = useState("ASC");
   const [pagination, setPagination] = useState(0);
   const [pages, setPages] = useState();
   const [search, setSearch] = useState(``);
@@ -47,21 +50,13 @@ export const UserList = () => {
   const getUsers = useCallback(async () => {
     try {
       const userURL =
-        search === ``
-          ? url + `all_user?`
-          : url + `filter_user?search=${search}&`;
-      const sortURL = sort ? userURL + `sort=${sort}&` : userURL;
-      const directionURL = direction
-        ? sortURL + `direction=${direction}&`
-        : sortURL;
-      const paginationURL = pagination
-        ? directionURL + `pagination=${pagination}`
-        : directionURL;
-      const resultUsers = await Axios.get(paginationURL);
+        url +
+        `all_user?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
+      const resultUsers = await Axios.get(userURL);
       setUsers(resultUsers.data.result);
       setPages(resultUsers.data.pages);
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
@@ -76,37 +71,49 @@ export const UserList = () => {
     }
   };
 
+  const deleteWarning = async (id) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteUser(id);
+          Swal.fire("Deleted!", "Your file has been deleted.", "success");
+        }
+      });
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
+    }
+  };
+
   useEffect(() => {
     getUsers();
   }, [getUsers]);
 
   const tableHead = [
-    {
-      name: "Id",
-      origin: "id",
-      width: "100px",
-    },
-    {
-      name: "Email",
-      origin: "email",
-      width: "",
-    },
-    {
-      name: "Name",
-      origin: "name",
-      width: "700px",
-    },
-    {
-      name: "Role",
-      origin: "role",
-      width: "50px",
-    },
+    { name: "Id", origin: "id", width: "100px" },
+    { name: "Email", origin: "email", width: "" },
+    { name: "Name", origin: "name", width: "700px" },
+    { name: "Role", origin: "role", width: "50px" },
   ];
 
   return (
-    <Box padding={{base: "10px", lg: "0"}}>
+    <Box padding={{ base: "10px", lg: "0" }}>
       <Center paddingBottom={"12px"}>
-        <Box paddingRight={"12px"}>
+        <Box paddingRight={"5px"}>
           <InputGroup w={{ base: "200px", lg: "400px" }}>
             <Input
               placeholder={"Search"}
@@ -210,7 +217,7 @@ export const UserList = () => {
                         <EditUser user={item} getUsers={getUsers} />
                         <IconButton
                           onClick={() => {
-                            deleteUser(item.id);
+                            deleteWarning(item.id);
                           }}
                           bg={"none"}
                           color={"#ff4d4d"}

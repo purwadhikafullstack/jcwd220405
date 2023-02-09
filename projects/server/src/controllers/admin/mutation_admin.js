@@ -5,6 +5,7 @@ const mutation = db.Stock_Mutation;
 const warehouse = db.Warehouse;
 const productWarehouses = db.Product_Warehouses;
 const product = db.Product;
+const journal = db.Journal;
 
 module.exports = {
   allMutation: async (req, res) => {
@@ -32,10 +33,12 @@ module.exports = {
         raw: true,
       });
 
+      console.log(warehouseId)
+
       if (+role === 2) {
         const { count, rows } = await mutation.findAndCountAll({
           where: {
-            IdWarehouseFrom: warehouseId.id,
+            IdWarehouseFrom: warehouseId ? warehouseId.id : null,
             invoice: {
               [Op.like]: `%${search}%`,
             },
@@ -150,19 +153,16 @@ module.exports = {
       const stocksTo = stocksWarehouseTo.stocks;
 
       if (approval === 0) {
-        await mutation.update(
-          { approval },
-          {
-            where: {
-              id: req.params.id,
-            },
-          }
-        );
+        await mutation.destroy({
+          where: {
+            id: req.params.id,
+          },
+        });
 
         res.status(200).send("Request Denied");
       } else {
         if (stocksFrom < +quantity) {
-          return res.status(200).send("Stocks are less than requested");
+          return res.status(400).send("Stocks are less than requested");
         }
 
         await mutation.update(
@@ -194,6 +194,26 @@ module.exports = {
           }
         );
 
+        await journal.create({
+          stock_before: stocksFrom,
+          stock_after: +stocksFrom - +quantity,
+          desc: "Mutation Update",
+          StockMutationId: req.params.id,
+          JournalTypeId: 3,
+          ProductId,
+          WarehouseId: WarehouseIdFrom,
+        });
+
+        await journal.create({
+          stock_before: stocksTo,
+          stock_after: +stocksTo + +quantity,
+          desc: "Mutation Update",
+          StockMutationId: req.params.id,
+          JournalTypeId: 4,
+          ProductId,
+          WarehouseId: WarehouseIdTo,
+        });
+
         res.status(200).send("Request Accepted");
       }
     } catch (err) {
@@ -201,5 +221,5 @@ module.exports = {
       console.log(err);
     }
   },
-  // requestListMutation: async (req, res)
+  deleteMutation: async (req, res) => {},
 };

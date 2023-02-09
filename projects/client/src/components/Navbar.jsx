@@ -64,8 +64,6 @@ export const NavbarComp = ({
     }
   }
 
-  // useEffect(() => {}, [user]);
-
   return (
     <Box px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
       <Container>
@@ -78,29 +76,29 @@ export const NavbarComp = ({
           >
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", md: "200px" }}>
               <Center>
-                <Link
-                  as={Image}
-                  href={"/"}
+                <Image
+                  to={"/"}
                   src={icon}
                   w={"auto"}
                   h={8}
                   display={{ md: "none" }}
+                  onClick={() => navigate("/")}
                 />
-                <Link
-                  as={Image}
-                  href={"/"}
+                <Image
+                  to={"/"}
                   src={mokomdo2}
                   w={"auto"}
                   h={9}
                   display={{ base: "none", md: "block", lg: "none" }}
+                  onClick={() => navigate("/")}
                 />
-                <Link
-                  as={Image}
-                  href={"/"}
+                <Image
+                  to={"/"}
                   src={mokomdo}
                   w={"auto"}
                   h={10}
                   display={{ base: "none", md: "none", lg: "block" }}
+                  onClick={() => navigate("/")}
                 />
               </Center>
             </GridItem>

@@ -6,7 +6,8 @@ const initialState = {
     email: "",
     name: "",
     is_verified: 0,
-    role: 0,
+    role: 1,
+    picture: "",
   },
 };
 
@@ -20,6 +21,7 @@ export const userSlice = createSlice({
       state.value.name = action.payload.name;
       state.value.is_verified = action.payload.is_verified;
       state.value.role = action.payload.role;
+      state.value.picture = action.payload.picture;
     },
     logout: (state) => {
       state.value.id = null;

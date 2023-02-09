@@ -45,6 +45,7 @@ const {
   userAddress,
   admin,
   orderList,
+  rajaOngkir,
 } = require("./routers");
 const { getProduct } = require("./routers/product");
 const { cart } = require("./routers/cart");
@@ -56,7 +57,8 @@ const {
   categoryComp,
   userOrderList,
   stocksComp,
-  mutationComp
+  mutationComp,
+  journalComp,
 } = admin;
 
 // user
@@ -67,9 +69,9 @@ app.use("/api", getProduct);
 app.use("/api", orderList);
 app.use("/api", cart);
 app.use("/api", shipment);
+app.use("/api", rajaOngkir);
 
 // admin
-
 app.use(
   "/api",
   userComp,
@@ -78,7 +80,8 @@ app.use(
   categoryComp,
   userOrderList,
   stocksComp,
-  mutationComp
+  mutationComp,
+  journalComp
 );
 
 // ===========================

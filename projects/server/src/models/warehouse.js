@@ -17,6 +17,7 @@ module.exports = (sequelize, DataTypes) => {
         through: "Product_Warehouses",
       });
       Warehouse.hasMany(models.Transaction_Product_Warehouses);
+      Warehouse.hasMany(models.Journal);
     }
   }
   Warehouse.init(

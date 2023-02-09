@@ -25,6 +25,9 @@ import {
   Select,
 } from "@chakra-ui/react";
 
+// swal
+import Swal from "sweetalert2";
+
 // icons
 import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 import { SlArrowRight, SlArrowLeft } from "react-icons/sl";
@@ -45,7 +48,7 @@ export const MutationList = () => {
   const [warehouseId, setWarehouseId] = useState();
   const [products, setProducts] = useState();
   const [sort, setSort] = useState("id");
-  const [direction, setDirection] = useState("ASC");
+  const [direction, setDirection] = useState("DESC");
   const [pagination, setPagination] = useState(0);
   const [pages, setPages] = useState();
   const [search, setSearch] = useState(``);
@@ -90,10 +93,57 @@ export const MutationList = () => {
         getMutations();
       } catch (err) {
         console.log(err);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err.response.data.name
+            ? err.response.data.errors[0].message.toUpperCase()
+            : err.response.data.toUpperCase(),
+        });
       }
     },
     [url, getMutations]
   );
+
+  const approvalWarning = async (
+    ItemId,
+    WarehouseIdTo,
+    WarehouseIdFrom,
+    ProductId,
+    approvalValue
+  ) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, accept request!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          approvalFunc(
+            ItemId,
+            WarehouseIdTo,
+            WarehouseIdFrom,
+            ProductId,
+            approvalValue
+          );
+          Swal.fire("Success!", "Mutation requested", "success");
+        } 
+      });
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
+    }
+  };
 
   useEffect(() => {
     getMutations();
@@ -115,7 +165,7 @@ export const MutationList = () => {
       <Center paddingBottom={"12px"}>
         <Stack>
           <Flex>
-          <Box paddingRight={"5px"}>
+            <Box paddingRight={"5px"}>
               <InputGroup w={{ base: "200px", lg: "400px" }}>
                 <Input
                   placeholder={"Search Invoice"}
@@ -142,7 +192,8 @@ export const MutationList = () => {
               onClick={() => {
                 setSort("id");
                 setPagination(0);
-                setDirection("ASC");
+                setDirection("DESC");
+                getMutations();
               }}
             />
           </Flex>
@@ -257,7 +308,7 @@ export const MutationList = () => {
                         >
                           <IconButton
                             onClick={() => {
-                              approvalFunc(
+                              approvalWarning(
                                 item.id,
                                 item.IdWarehouseTo,
                                 item.IdWarehouseFrom,
@@ -272,7 +323,7 @@ export const MutationList = () => {
                           />
                           <IconButton
                             onClick={() => {
-                              approvalFunc(
+                              approvalWarning(
                                 item.id,
                                 item.IdWarehouseTo,
                                 item.IdWarehouseFrom,

@@ -1,6 +1,10 @@
 // react
 import Axios from "axios";
-import { useRef } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
+
+// validation
+import { Formik, ErrorMessage, Form, Field } from "formik";
+import * as Yup from "yup";
 
 // chakra
 import {
@@ -19,11 +23,19 @@ import {
   IconButton,
 } from "@chakra-ui/react";
 
+// swal
+import Swal from "sweetalert2";
+
 // icons
 import { BsFillGearFill } from "react-icons/bs";
 import { RxCheck, RxCross1 } from "react-icons/rx";
 
-export const EditWarehouse = ({ warehouse, getWarehouse, admin }) => {
+export const EditWarehouse = ({
+  warehouse,
+  getWarehouse,
+  admin,
+  provinces,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -39,6 +51,7 @@ export const EditWarehouse = ({ warehouse, getWarehouse, admin }) => {
               getWarehouse={getWarehouse}
               close={onClose}
               admin={admin}
+              provinces={provinces}
             />
           </ModalBody>
         </ModalContent>
@@ -47,81 +60,167 @@ export const EditWarehouse = ({ warehouse, getWarehouse, admin }) => {
   );
 };
 
-const EditForm = ({ warehouse, close, getWarehouse, admin }) => {
-  const url = `http://localhost:8000/api/admin/edit_warehouse/${warehouse.id}`;
+const EditForm = ({ close, getWarehouse, admin, provinces, warehouse }) => {
+  const url =
+    process.env.REACT_APP_API_BASE_URL +
+    `/admin/edit_warehouse/${warehouse.id}`;
 
-  const warehouse_name = useRef("");
-  const province = useRef("");
-  const city = useRef("");
-  const postal_code = useRef("");
+  const [cities, setCities] = useState();
+  const [province, setProvince] = useState(warehouse.province);
+  const [provinceId, setProvinceId] = useState(warehouse.province_id);
+  const [city, setCity] = useState();
+  const [cityId, setCityId] = useState();
+
   const UserId = useRef("");
 
-  const editWarehouse = async () => {
-    try {
-      if (
-        warehouse_name.current.value !== warehouse.warehouse_name ||
-        province.current.value !== warehouse.province ||
-        city.current.value !== warehouse.city ||
-        +postal_code.current.value !== warehouse.postal_code ||
-        +UserId.current.value !== warehouse.UserId
-      ) {
-        const editData = {
-          warehouse_name: warehouse_name.current.value,
-          province: province.current.value,
-          city: city.current.value,
-          postal_code: postal_code.current.value,
-          UserId: UserId.current.value,
-        };
-        await Axios.patch(url, editData);
-        getWarehouse();
-      }
+  const validation = Yup.object().shape({
+    warehouse_name: Yup.string().required("Cannot be Empty"),
+    postal_code: Yup.number().required("Cannot be Empty"),
+  });
 
-      close();
+  const getCities = useCallback(async () => {
+    try {
+      const resultCities = await Axios.get(
+        process.env.REACT_APP_API_BASE_URL + `/city/${provinceId}`
+      );
+      setCities(resultCities.data.result);
     } catch (err) {
       console.log(err);
     }
+  }, [provinceId]);
+
+  const editWarehouse = async (value) => {
+    try {
+      if (
+        value.warehouse_name !== warehouse.warehouse_name ||
+        province !== warehouse.province ||
+        city !== warehouse.city ||
+        +value.warehouse_name !== warehouse.postal_code ||
+        +UserId.current.value !== warehouse.UserId
+      ) {
+        const data = {
+          warehouse_name: value.warehouse_name,
+          province: province,
+          province_id: +provinceId,
+          city: city,
+          city_id: +cityId,
+          postal_code: +value.postal_code,
+          UserId: UserId.current.value,
+        };
+        await Axios.patch(url, data);
+      }
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Warehouse Edited",
+      });
+
+      getWarehouse();
+      close();
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
+    }
   };
+
+  useEffect(() => {
+    getCities();
+  }, [getCities]);
 
   return (
     <Box>
-      <FormControl>
-        <FormLabel>Warehouse Name</FormLabel>
-        <Input defaultValue={warehouse.warehouse_name} ref={warehouse_name} />
-        <FormLabel>Province</FormLabel>
-        <Input defaultValue={warehouse.province} ref={province} />
-        <FormLabel>City</FormLabel>
-        <Input defaultValue={warehouse.city} ref={city} />
-        <FormLabel>Postal Code</FormLabel>
-        <Input
-          type={"number"}
-          defaultValue={warehouse.postal_code}
-          ref={postal_code}
-        />
-        <FormLabel>Admin Id</FormLabel>
-        <Select ref={UserId} defaultValue={warehouse.UserId}>
-          {admin.map((item, index) => {
-            return (
-              <option value={item.id} key={index}>
-                {item.id}
-              </option>
-            );
-          })}
-        </Select>
-        <Center paddingTop={"10px"} gap={"10px"}>
-          <IconButton
-            icon={<RxCheck />}
-            fontSize={"3xl"}
-            color={"green"}
-            onClick={editWarehouse}
-          />
-          <IconButton
-            icon={<RxCross1 />}
-            fontSize={"xl"}
-            color={"red"}
-            onClick={close}
-          />
-        </Center>
-      </FormControl>
+      <Formik
+        initialValues={{
+          warehouse_name: warehouse.warehouse_name,
+          postal_code: warehouse.postal_code,
+        }}
+        validationSchema={validation}
+        onSubmit={(value) => {
+          editWarehouse(value);
+        }}
+      >
+        <Form>
+          <FormControl>
+            <FormLabel>Warehouse Name</FormLabel>
+            <Input as={Field} name={"warehouse_name"} />
+            <ErrorMessage
+              style={{ color: "red" }}
+              component="div"
+              name="warehouse_name"
+            />
+            <FormLabel>Province</FormLabel>
+            <Select
+              placeholder={warehouse.province}
+              onChange={(e) => {
+                setProvinceId(e.target.value.split(",")[0]);
+                setProvince(e.target.value.split(",")[1]);
+              }}
+            >
+              {provinces?.map((item, index) => {
+                return (
+                  <option key={index} value={[item.province_id, item.province]}>
+                    {item.province}
+                  </option>
+                );
+              })}
+            </Select>
+            <FormLabel>City</FormLabel>
+            <Select
+              placeholder={warehouse.city}
+              onChange={(e) => {
+                setCityId(e.target.value.split(",")[0]);
+                setCity(e.target.value.split(",")[1]);
+              }}
+            >
+              {cities?.map((item, index) => {
+                return (
+                  <option key={index} value={[item.city_id, item.city_name]}>
+                    {item.city_name}
+                  </option>
+                );
+              })}
+            </Select>
+            <FormLabel>Postal Code</FormLabel>
+            <Input as={Field} type={"number"} name={"postal_code"} />
+            <ErrorMessage
+              style={{ color: "red" }}
+              component="div"
+              name="postal_code"
+            />
+            <FormLabel>Admin Id</FormLabel>
+            <Select ref={UserId} defaultValue={warehouse.UserId}>
+              {admin.map((item, index) => {
+                return (
+                  <option value={item.id} key={index}>
+                    {item.id}
+                  </option>
+                );
+              })}
+            </Select>
+            <Center paddingTop={"10px"} gap={"10px"}>
+              <IconButton
+                icon={<RxCheck />}
+                fontSize={"3xl"}
+                color={"green"}
+                type={"submit"}
+              />
+              <IconButton
+                icon={<RxCross1 />}
+                fontSize={"xl"}
+                color={"red"}
+                onClick={close}
+              />
+            </Center>
+          </FormControl>
+        </Form>
+      </Formik>
     </Box>
   );
 };

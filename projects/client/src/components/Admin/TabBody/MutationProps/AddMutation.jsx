@@ -2,6 +2,10 @@
 import Axios from "axios";
 import { useRef } from "react";
 
+// validation
+import { Formik, ErrorMessage, Form, Field } from "formik";
+import * as Yup from "yup";
+
 // chakra
 import {
   Box,
@@ -19,6 +23,9 @@ import {
   IconButton,
   Select,
 } from "@chakra-ui/react";
+
+// swal
+import Swal from "sweetalert2";
 
 // icons
 import { CgMathPlus } from "react-icons/cg";
@@ -61,88 +68,130 @@ const AddForm = ({ close, warehouses, products, warehouseId }) => {
   const WarehouseTo = useRef("");
   const WarehouseFrom = useRef("");
   const Product = useRef("");
-  const Quantity = useRef("");
 
-  const addMutation = async () => {
+  const validation = Yup.object().shape({
+    Quantity: Yup.number("Must be Integer").required("Cannot be Empty"),
+  });
+
+  const addMutation = async (value) => {
     try {
       const data = {
-        IdWarehouseFrom: WarehouseFrom.current.value,
-        IdWarehouseTo: WarehouseTo.current.value,
-        ProductId: Product.current.value,
-        quantity: Quantity.current.value,
+        IdWarehouseFrom: +WarehouseFrom.current.value,
+        IdWarehouseTo: +WarehouseTo.current.value,
+        ProductId: +Product.current.value,
+        quantity: +value.Quantity,
       };
 
       if (data.IdWarehouseFrom === data.IdWarehouseTo) {
-        alert("Receiver and Sender can't be the same");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Receiver and Sender can't be the same",
+        });
       } else {
         await Axios.post(url, data);
-        alert("Request is sent");
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Request is sent",
+        });
+         
         close();
       }
     } catch (err) {
       console.log(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
   return (
     <Box>
-      <FormControl>
-        <FormLabel>Warehouse Receiver</FormLabel>
-        {warehouseId === null ? (
-          <Select ref={WarehouseTo}>
-            <option>- Select -</option>
-            {warehouses?.map((item, index) => {
-              return (
-                <option value={item.id} key={index}>
-                  {item.warehouse_name}
-                </option>
-              );
-            })}
-          </Select>
-        ) : (
-          <Select ref={WarehouseTo} disabled>
-            <option value={warehouseId.id}>{warehouseId.warehouse_name}</option>
-          </Select>
-        )}
-        <FormLabel>Warehouse Sender</FormLabel>
-        <Select ref={WarehouseFrom}>
-          <option>- Select -</option>
-          {warehouses?.map((item, index) => {
-            return (
-              <option value={item.id} key={index}>
-                {item.warehouse_name}
-              </option>
-            );
-          })}
-        </Select>
-        <FormLabel>Product</FormLabel>
-        <Select ref={Product}>
-          <option>- Select -</option>
-          {products?.map((item, index) => {
-            return (
-              <option value={item.id} key={index}>
-                {item.id}
-              </option>
-            );
-          })}
-        </Select>
-        <FormLabel>Quantity</FormLabel>
-        <Input ref={Quantity} type={"number"} />
-        <Center paddingTop={"10px"} gap={"10px"}>
-          <IconButton
-            icon={<RxCheck />}
-            fontSize={"3xl"}
-            color={"green"}
-            onClick={addMutation}
-          />
-          <IconButton
-            icon={<RxCross1 />}
-            fontSize={"xl"}
-            color={"red"}
-            onClick={close}
-          />
-        </Center>
-      </FormControl>
+      <Formik
+        initialValues={{
+          Quantity: "",
+        }}
+        validationSchema={validation}
+        onSubmit={(value) => {
+          addMutation(value);
+        }}
+      >
+        {(props) => {
+          return (
+            <Form>
+              <FormControl isRequired>
+                <FormLabel>Warehouse Receiver</FormLabel>
+                {warehouseId === null ? (
+                  <Select ref={WarehouseTo} placeholder={"- Select -"}>
+                    {warehouses?.map((item, index) => {
+                      return (
+                        <option value={item.id} key={index}>
+                          {item.warehouse_name}
+                        </option>
+                      );
+                    })}
+                  </Select>
+                ) : (
+                  <Select ref={WarehouseTo} disabled>
+                    <option value={warehouseId.id}>
+                      {warehouseId.warehouse_name}
+                    </option>
+                  </Select>
+                )}
+                <FormLabel>Warehouse Sender</FormLabel>
+                <Select ref={WarehouseFrom}>
+                  <option>- Select -</option>
+                  {warehouses?.map((item, index) => {
+                    return (
+                      <option value={item.id} key={index}>
+                        {item.warehouse_name}
+                      </option>
+                    );
+                  })}
+                </Select>
+                <FormLabel>Product</FormLabel>
+                <Select ref={Product}>
+                  <option>- Select -</option>
+                  {products?.map((item, index) => {
+                    return (
+                      <option value={item.id} key={index}>
+                        {item.id}
+                      </option>
+                    );
+                  })}
+                </Select>
+                <FormLabel>Quantity</FormLabel>
+                <Input as={Field} name={"Quantity"} type={"number"} />
+                <ErrorMessage
+                  style={{ color: "red" }}
+                  component="div"
+                  name="Quantity"
+                />
+                <Center paddingTop={"10px"} gap={"10px"}>
+                  <IconButton
+                    icon={<RxCheck />}
+                    fontSize={"3xl"}
+                    color={"green"}
+                    type={"submit"}
+                  />
+                  <IconButton
+                    icon={<RxCross1 />}
+                    fontSize={"xl"}
+                    color={"red"}
+                    onClick={close}
+                  />
+                </Center>
+              </FormControl>
+            </Form>
+          );
+        }}
+      </Formik>
     </Box>
   );
 };
