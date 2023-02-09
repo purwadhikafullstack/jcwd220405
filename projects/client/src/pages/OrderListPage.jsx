@@ -23,6 +23,7 @@ import {
   Divider,
   Container,
   Select,
+  useMediaQuery,
 } from "@chakra-ui/react";
 import { PaymentProof } from "../components/Button/PaymentButton";
 import { IoBagHandleOutline } from "react-icons/io5";
@@ -51,6 +52,7 @@ export const OrderListPage = () => {
   const [totalPage, setTotalPage] = useState(0);
   const [statusName, setstatusName] = useState("");
   const [statusList, setStatusList] = useState([]);
+  const [setDir] = useMediaQuery("(max-width: 579px)");
 
   const getOrderList = useCallback(async () => {
     try {
@@ -120,10 +122,15 @@ export const OrderListPage = () => {
     transactionStatusList();
   }, [getOrderList, transactionStatusList]);
 
+  const minString = (str, num) => {
+    if (str?.length > num) return str.slice(0, num) + "...";
+    return str;
+  };
+
   return (
     <>
       <NavbarComp />
-      <Container maxW={"80%"}>
+      <Container maxW={{ base: "100%", md: "80%" }}>
         <Box>
           <Text fontSize="4xl" color={"white"}>
             Order List
@@ -175,11 +182,18 @@ export const OrderListPage = () => {
                       color={"white"}
                       borderTopRadius={10}
                       h={35}
+                      justifyContent={"space-between"}
+                      gap={{ base: "2", md: "4" }}
                     >
-                      <IoBagHandleOutline size={"25px"} />
-                      <Text ml={3}>{item?.invoice}</Text>
-                      <Spacer />
-
+                      <Box display={"flex"} gap={{ base: "2", md: "4" }}>
+                        <Box>
+                          <IoBagHandleOutline size={"25px"} />
+                        </Box>
+                        <Box>
+                          <Text>{item?.invoice}</Text>
+                        </Box>
+                      </Box>
+                      {/* <Spacer /> */}
                       <Box
                         color={"black"}
                         display="flex"
@@ -189,12 +203,21 @@ export const OrderListPage = () => {
                         // p={1}
                         pb={1}
                         px={1}
+                        overflow={setDir ? "auto" : ""}
                       >
                         <Text>{item?.Order_Status?.status}</Text>
                       </Box>
                     </Box>
-                    <Card direction={"row"} variant="ghost">
-                      <Box w={"130px"} h={"150px"}>
+                    <Card
+                      // direction={{ base: "column", md: "row" }}
+                      direction={setDir ? "column" : "row"}
+                      variant="ghost"
+                    >
+                      {/* <Box w={"130px"} h={"150px"} border={"2px"}> */}
+                      <Box
+                        w={setDir ? "100%" : "130px"}
+                        h={setDir ? "100%" : "150px"}
+                      >
                         <Image
                           src={
                             item?.Transaction_Product_Warehouses[0]?.Product
@@ -204,25 +227,32 @@ export const OrderListPage = () => {
                                   ?.Product_Images[0]?.image
                               : gameboy
                           }
-                          h="inherit"
-                          w="inherit"
+                          // h="inherit"
+                          // w="inherit"
+                          w={setDir ? "60%" : "130px"}
+                          h={setDir ? "60%" : "150px"}
+                          m={setDir ? "auto" : ""}
                           borderRadius={10}
                           objectFit="cover"
                           alt="This is photo of product"
                         />
                       </Box>
-
                       <CardBody my={0}>
                         <Stack>
                           <Heading size={"md"} color="black">
-                            {
-                              item?.Transaction_Product_Warehouses[0]?.Product
-                                ?.name
-                            }
+                            {setDir
+                              ? minString(
+                                  item?.Transaction_Product_Warehouses[0]
+                                    ?.Product?.name,
+                                  40
+                                )
+                              : item?.Transaction_Product_Warehouses[0]?.Product
+                                  ?.name}
                           </Heading>
                           <Text py={2} color="black">
                             {item?.Transaction_Product_Warehouses[0]?.quantity}{" "}
-                            X {item?.Transaction_Product_Warehouses[0]?.price}
+                            X{" "}
+                            {item?.Transaction_Product_Warehouses[0]?.price?.toLocaleString()}
                           </Text>
                           <Text
                             hidden={
@@ -243,27 +273,28 @@ export const OrderListPage = () => {
                         color="black"
                         orientation="vertical"
                         height={"40"}
+                        hidden={setDir ? true : false}
                       />
-                      <CardBody my={0}>
-                        <Stack color="black">
+                      <Box my={0} px={4} pt={setDir ? "0" : "4"} mb={"4"}>
+                        <Stack
+                          color="black"
+                          direction={setDir ? "row" : "column"}
+                        >
                           <Text>Total Belanja</Text>
-                          <Text>Rp {item?.total_price}</Text>
+                          <Text>Rp{item?.total_price?.toLocaleString()}</Text>
                         </Stack>
-                      </CardBody>
+                      </Box>
                     </Card>
-                    <CardFooter
-                      // border={"2px"}
-                      p={0}
-                      pb={3}
-                      pr={3}
-                    >
+                    <CardFooter p={0} pb={3} pr={3}>
                       {item?.OrderStatusId > 1 ? (
                         <Box
                           display={"flex"}
                           justifyContent="space-between"
                           hidden={item?.OrderStatusId === 6 ? true : false}
-                          // border="2px"
                           width={"100%"}
+                          flexDirection={setDir ? "column" : "row"}
+                          pl={"2"}
+                          gap="4"
                         >
                           <Button
                             variant={"solid"}
@@ -274,8 +305,7 @@ export const OrderListPage = () => {
                           >
                             Uploaded
                           </Button>
-                          <Spacer />
-
+                          {/* <Spacer /> */}
                           <Button
                             variant={"solid"}
                             bg="#D54B79"
@@ -285,7 +315,6 @@ export const OrderListPage = () => {
                           >
                             Cancel Order
                           </Button>
-
                           <Button
                             hidden={item?.OrderStatusId === 4 ? false : true}
                             variant={"solid"}
@@ -321,9 +350,19 @@ export const OrderListPage = () => {
                           </Modal>
                         </Box>
                       ) : (
-                        <>
-                          <PaymentProof id={item?.id} />
-                          <Spacer />
+                        <Box
+                          display={"flex"}
+                          justifyContent="space-between"
+                          flexDirection={setDir ? "column" : "row"}
+                          width={"100%"}
+                          pl={"2"}
+                        >
+                          <PaymentProof
+                            id={item?.id}
+                            setDir={setDir}
+                            minString={minString}
+                          />
+                          {/* <Spacer /> */}
                           <Button
                             variant={"solid"}
                             bg="#D54B79"
@@ -356,7 +395,7 @@ export const OrderListPage = () => {
                               </ModalFooter>
                             </ModalContent>
                           </Modal>
-                        </>
+                        </Box>
                       )}
                     </CardFooter>
                   </Card>

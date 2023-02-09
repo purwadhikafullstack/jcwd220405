@@ -18,7 +18,7 @@ import React, { useState } from "react";
 import Axios from "axios";
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
-export const PaymentProof = ({ id }) => {
+export const PaymentProof = ({ id, setDir, minString }) => {
   //   console.log(id);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -36,10 +36,10 @@ export const PaymentProof = ({ id }) => {
       cursor: "pointer",
     },
   };
-  const minString = (str, num) => {
-    if (str?.length > num) return str.slice(0, num) + "...";
-    return str;
-  };
+  // const minString = (str, num) => {
+  //   if (str?.length > num) return str.slice(0, num) + "...";
+  //   return str;
+  // };
 
   const handleChoose = (e) => {
     setImage(e.target.files[0]);
@@ -98,8 +98,8 @@ export const PaymentProof = ({ id }) => {
   };
 
   return (
-    <Box>
-      <Button onClick={onOpen} bg="#D54B79">
+    <Box mb={setDir ? "4" : "0"}>
+      <Button onClick={onOpen} bg="#D54B79" w={"100%"}>
         Upload your payment receipt
       </Button>
       <Modal isOpen={isOpen} onClose={onClose}>
