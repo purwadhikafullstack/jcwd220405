@@ -5,7 +5,7 @@ const address = db.Address_User;
 
 const axios = require("axios");
 
-const { GEOAPIFY_KEY, RAJA_ONGKIR, RAJA_ONGKIR_URL } = process.env;
+const { GEOAPIFY_KEY, RAJA_ONGKIR, RAJA_ONGKIR_URL, GEOAPIFY_KEY_URL } = process.env;
 
 module.exports = {
   getAddressUser: async (req, res) => {
@@ -114,7 +114,7 @@ module.exports = {
 
       const forwardAddress = await (
         await axios.get(
-          `https://api.geoapify.com/v1/geocode/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
+          GEOAPIFY_KEY_URL + `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
           {
             headers: { "Accept-Encoding": "gzip,deflate,compress" },
           }
@@ -188,7 +188,7 @@ module.exports = {
 
       const forwardAddress = await (
         await axios.get(
-          `https://api.geoapify.com/v1/geocode/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
+          GEOAPIFY_KEY_URL + `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
           {
             headers: { "Accept-Encoding": "gzip,deflate,compress" },
           }

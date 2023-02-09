@@ -125,6 +125,6 @@ app.listen(PORT, (err) => {
   } else {
     console.log(`APP RUNNING at ${PORT} ✅`);
     // db.sequelize.sync({ force: true });
-    // db.sequelize.sync({ alter: true });
+    db.sequelize.sync({ alter: true });
   }
 });
