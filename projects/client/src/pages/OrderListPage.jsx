@@ -59,7 +59,7 @@ export const OrderListPage = () => {
           `${baseApi}/order-list/${id}?page=${page - 1}&status=${statusName}`
         )
       ).data;
-      // console.log(result);
+      console.log(result);
       setOrderList(result.result);
       setTotalPage(result.totalPage);
     } catch (err) {
@@ -389,12 +389,14 @@ export const OrderListPage = () => {
             </Box>
           </Box>
         )}
+
         <Box
           display="flex"
           justifyContent="center"
           alignContent="center"
           gap={3}
           mb={3}
+          hidden={orderList.length < 1 ? true : false}
         >
           <Button
             onClick={() => {

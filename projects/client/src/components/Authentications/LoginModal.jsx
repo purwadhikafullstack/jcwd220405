@@ -69,12 +69,11 @@ export const LoginModal = () => {
 
       onCloseLogin();
     } catch (err) {
+      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Failed Attempt",
-        text: err.response.data.name
-          ? err.response.data.errors[0].message
-          : "Something Went Wrong",
+        text: err.response.data ? err.response.data : "Something Went Wrong !",
 
         customClass: {
           container: "my-swal",

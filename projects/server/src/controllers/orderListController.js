@@ -16,7 +16,9 @@ module.exports = {
       const page_list = +page || 0;
       const limit_list = +limit || 5;
       const offset = page_list * limit_list;
-      const totalRows = await transaction.count();
+      const totalRows = await transaction.count({
+        where: { IdUser: req.params.user },
+      });
       const totalPage = Math.ceil(totalRows / limit_list);
       const statusOrder = +status || "";
 
