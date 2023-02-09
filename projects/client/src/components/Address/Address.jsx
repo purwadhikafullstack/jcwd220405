@@ -11,10 +11,12 @@ import {
 } from "@chakra-ui/react";
 import { IoSearch, IoCheckmarkOutline } from "react-icons/io5";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 
-import { AddAddress, DeleteAddress, EditAddress } from "./AddressSettings";
+import { AddAddress } from "./AddAddress";
+import { EditAddress } from "./EditAddress";
+import { DeleteAddress } from "./DeleteAddress";
 import { useSelector } from "react-redux";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
@@ -22,29 +24,29 @@ const baseApi = process.env.REACT_APP_API_BASE_URL;
 export const Address = () => {
   const toast = useToast();
   const [address, setAddress] = useState([]);
+  const [name, setName] = useState("");
   const [query, setQuery] = useState("");
   const [search, setSearch] = useState("");
   const { id } = useSelector((state) => state.userSlice.value);
 
   const handleQuery = () => setQuery(search);
 
-  const getAddressUser = async () => {
+  const getAddressUser = useCallback(async () => {
     try {
-      // masih nembak lewat params, niatnya ambil user dari redux
       const response = await (
         await axios.get(
           `${baseApi}/address/${id}?search_query=${query ? query : ""}`
         )
       ).data;
-      setAddress(response);
+      setAddress(response?.result);
+      setName(response?.name);
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [id, query]);
 
   const selectAddress = async (item) => {
     try {
-      // masih nembak lewat params, niatnya ambil user dari redux
       await axios.post(`${baseApi}/address/s/${id}`, { id: item.id });
       setTimeout(
         () =>
@@ -66,7 +68,7 @@ export const Address = () => {
 
   useEffect(() => {
     getAddressUser();
-  }, [query, id]);
+  }, [getAddressUser]);
   return (
     <>
       <Flex
@@ -91,14 +93,19 @@ export const Address = () => {
                   handleQuery();
                 }
               }}
+              isDisabled={
+                !address?.length && query
+                  ? false
+                  : !address?.length
+                  ? true
+                  : false
+              }
             />
-
             <InputRightAddon bgColor={"#E73891"} border={"##E73891"} w={"10%"}>
               <Button
                 bgColor={"transparent"}
                 pos={"absolute"}
-                right={{ base: "-.6em", md: "-.8em" }}
-                // right={"-.7em"}
+                right={{ sm: "-.4em", base: "-.6em", md: "-.8em" }}
                 variant={"unstyled"}
                 onClick={handleQuery}
                 disabled={search ? false : true}
@@ -114,6 +121,7 @@ export const Address = () => {
             baseApi={baseApi}
             search={query}
             id={id}
+            name={name}
           />
         </Box>
       </Flex>
@@ -125,11 +133,11 @@ export const Address = () => {
               borderRadius={"md"}
               border={"2px"}
               borderColor={
-                item.status ? "rgba(231, 56, 145,.69)" : "transparent"
+                item?.status ? "rgba(231, 56, 145,.69)" : "transparent"
               }
-              bgColor={item.status ? "rgba(231, 56, 145,.234)" : ""}
+              bgColor={item?.status ? "rgba(231, 56, 145,.234)" : ""}
               bgGradient={
-                item.status
+                item?.status
                   ? ""
                   : "linear(to-r, rgba(231, 56, 145, 0.33) 55.88%, rgba(233, 54, 188, 0.44) 100%)"
               }
@@ -149,7 +157,7 @@ export const Address = () => {
                   variant={"outline"}
                   colorScheme={"gray"}
                   pt={1}
-                  hidden={item.status ? false : true}
+                  hidden={item?.status ? false : true}
                 >
                   Main
                 </Badge>
@@ -161,12 +169,14 @@ export const Address = () => {
                       fontWeight={"semibold"}
                       fontSize={{ base: "16px", md: "20px" }}
                     >
-                      {item.received_name}
+                      {item?.received_name}
                     </Text>
-                    <Text>{item.full_address}</Text>
+                    <Text>
+                      {item?.full_address}, {item?.city}
+                    </Text>
                   </Box>
                   <Box pt={"3.5"}>
-                    {item.status ? (
+                    {item?.status ? (
                       <IoCheckmarkOutline
                         transform="scale(2.2)"
                         color="rgba(231, 56, 145,1)"
@@ -193,7 +203,7 @@ export const Address = () => {
                 <Text
                   as={"span"}
                   color="gray.500"
-                  hidden={item.status ? true : false}
+                  hidden={item?.status ? true : false}
                 >
                   {"|"}
                 </Text>

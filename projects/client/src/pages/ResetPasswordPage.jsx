@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
-  Link,
   Stack,
   Image,
   InputRightElement,
@@ -42,14 +40,7 @@ export const ResetPasswordPage = () => {
       console.log(result.data);
       setUser(result.data.user);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Something went wrong!",
-        customClass: {
-          container: "my-swal",
-        },
-      });
+      navigate("/401");
     }
   };
 

@@ -3,13 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   Button,
-  Checkbox,
   Flex,
   FormControl,
   FormLabel,
   Heading,
   Input,
-  Link,
   Stack,
   Image,
   InputRightElement,
@@ -31,6 +29,7 @@ export const VerificationPage = () => {
   const [user, setUser] = useState([]);
   const [show, setShow] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
+
   // console.log(params.token);
   // console.log(user);
 
@@ -44,14 +43,8 @@ export const VerificationPage = () => {
       console.log(result.data);
       setUser(result.data.user);
     } catch (err) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text: "Something went wrong!",
-        customClass: {
-          container: "my-swal",
-        },
-      });
+      console.log(err);
+      navigate("/401");
     }
   };
 

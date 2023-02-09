@@ -1,16 +1,8 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, Link } from "react-router-dom";
 
-import {
-  Box,
-  Container,
-  Divider,
-  Grid,
-  GridItem,
-  Text,
-  useMediaQuery,
-} from "@chakra-ui/react";
+import { Box, Container, Divider, Text, useMediaQuery } from "@chakra-ui/react";
 
 import { ProductDetailImage } from "./ProductDetailImage";
 import { SectionAddCart } from "./SectionAddCart";
@@ -30,30 +22,23 @@ export const ProductDetail = () => {
   const [category, setCategory] = useState();
   const url_detail = `${baseApi}/product/detail/${name}`;
 
-  const getProduct = async () => {
+  const getProduct = useCallback(async () => {
     const response = await (await axios.get(url_detail)).data;
-    setProduct(response);
-    setCategory(response.Product_Category.category);
-    setImageProduct(response.Product_Images);
-    const stock = response.Details.map((item) => item.stocks).reduce(
-      (a, b) => a + b,
-      0
-    );
-    if (response.weight >= 1000) {
-      const weight = response.weight / 1000;
-      setWeight(weight);
-    }
-    setTotalStock(stock);
-    setSubtotal(response.price);
-  };
+    setProduct(response.result);
+    setCategory(response.result.Product_Category.category);
+    setImageProduct(response.result.Product_Images);
+    setSubtotal(response.result.price);
+    setWeight(response.weight);
+    setTotalStock(response.stock);
+  }, [url_detail]);
 
   useEffect(() => {
     getProduct();
-  }, []);
+  }, [getProduct]);
   return (
     <Container
       maxW={"inherit"}
-      minH={"85vh"}
+      minH={"85.5vh"}
       color={"white"}
       px={{ base: "4", md: "32" }}
     >
@@ -62,7 +47,7 @@ export const ProductDetail = () => {
         flexDirection={setDir ? "column" : "row"}
         gap={{ base: "2", md: "4" }}
       >
-        <Box px={6} pt={2} m={setDir ? "auto" : "0"}>
+        <Box pt={2} m={setDir ? "auto" : "0"}>
           <ProductDetailImage
             baseServer={baseServer}
             imageProduct={imageProduct}
@@ -79,7 +64,7 @@ export const ProductDetail = () => {
               _hover={{ fontStyle: "italic" }}
               color={"rgb(213, 75, 121)"}
             >
-              {`Rp${product.price?.toLocaleString()}`}
+              {`Rp${product?.price?.toLocaleString()}`}
             </Text>
           </Box>
           <Divider my={"3"} />
@@ -107,7 +92,7 @@ export const ProductDetail = () => {
             <Text>{product?.desc}</Text>
           </Box>
         </Box>
-        <Box px={"6"} pt={4}>
+        <Box px={"6"} pt={4} mb={{ base: "14", md: "" }}>
           <SectionAddCart
             quantity={quantity}
             setQuantity={setQuantity}

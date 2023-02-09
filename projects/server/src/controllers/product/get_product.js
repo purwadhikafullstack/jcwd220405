@@ -1,11 +1,11 @@
-// const db = require("../../../models");
 const db = require("../../models");
 const { Op } = require("sequelize");
+const Sequelize = require("sequelize");
+
 const Product = db.Product;
 const productCategory = db.Product_Category;
 const productImage = db.Product_Image;
 const productWarehouses = db.Product_Warehouses;
-const Sequelize = require("sequelize");
 
 module.exports = {
   allProduct: async (req, res) => {
@@ -37,21 +37,6 @@ module.exports = {
                 ],
               },
             },
-            // {
-            //   category: {
-            //     [Op.like]: "%" + search + "%",
-            //   },
-            //   price: {
-            //     [Op.and]: [
-            //       {
-            //         [Op.gte]: price_min,
-            //       },
-            //       {
-            //         [Op.lte]: price_max,
-            //       },
-            //     ],
-            //   },
-            // },
           ],
         },
       });
@@ -63,17 +48,13 @@ module.exports = {
             attributes: {
               exclude: ["createdAt", "updatedAt"],
             },
-            // required: true,
           },
           {
             model: productCategory,
-            attributes: ["category"],
-            // required: true,
           },
           {
             model: productWarehouses,
             as: "Details",
-            // required: true,
           },
         ],
         attributes: [
@@ -102,22 +83,6 @@ module.exports = {
                 ],
               },
             },
-            // {
-            //   category: {
-            //     [Op.like]: "%" + search + "%",
-            //   },
-            //   price: {
-            //     [Op.and]: [
-            //       {
-            //         [Op.gte]: price_min,
-            //       },
-            //       {
-            //         [Op.lte]: price_max,
-            //       },
-            //     ],
-            //   },
-            // },
-            //
           ],
         },
         offset: offset,
@@ -164,10 +129,55 @@ module.exports = {
           name: req.params.name,
         },
       });
-      res.status(200).send(response);
-    } catch (err) {
-      console.log(err);
-      res.status(404).send(err);
+      const stock = response.Details.map((item) => item.stocks).reduce(
+        (a, b) => a + b,
+        0
+      );
+      const weight = response.weight >= 1000 ? response.weight / 1000 : "";
+      res.status(200).send({ result: response, stock: stock, weight: weight });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  homeProduct: async (req, res) => {
+    try {
+      const length = await Product.count();
+      const offset = Math.floor(Math.random() * length - 12);
+      const all = await Product.findAll({
+        include: [
+          {
+            model: productImage,
+            attributes: ["image"],
+            required: true,
+          },
+        ],
+        attributes: ["id", "name", "desc", "price", "weight"],
+        offset: offset < 0 ? 1 : offset,
+        limit: 12,
+      });
+
+      res.status(200).send({
+        result: all,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
+    }
+  },
+  homeCategory: async (req, res) => {
+    try {
+      const category = await productCategory.findAll({
+        attributes: { exclude: ["createdAt", "updatedAt"] },
+        raw: true,
+      });
+
+      res.status(200).send({
+        result: category,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(400).send(error);
     }
   },
 };

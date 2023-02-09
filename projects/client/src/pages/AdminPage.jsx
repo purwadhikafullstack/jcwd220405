@@ -42,7 +42,7 @@ import { AdminBody } from "../components/Admin/AdminBody";
 export const AdminPage = () => {
   const [context, setContext] = useState(0);
 
-  const { name, role, picture } = useSelector((state) => state.userSlice.value);
+  const { name, role } = useSelector((state) => state.userSlice.value);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ export const AdminPage = () => {
                 <HStack>
                   <Avatar
                     size={"sm"}
-                    src={picture}
+                    src={"https://bit.ly/broken-link"}
                     border={"1px solid white"}
                   />
                   <VStack
@@ -177,24 +177,16 @@ export const AdminPage = () => {
   };
 
   const DrawerItems = () => {
-    const items =
-      role === 3
-        ? [
-            "Users",
-            "Warehouses",
-            "Products",
-            "Categories",
-            "Orders",
-            "Mutations",
-            "Reports",
-          ]
-        : [
-            "Products",
-            "Categories",
-            "Orders",
-            "Mutations",
-            "Reports",
-          ];
+    const items = [
+      "Users",
+      "Warehouses",
+      "Products",
+      "Categories",
+      "Orders",
+      "Mutations",
+      "Reports",
+      "Sales",
+    ];
 
     return (
       <Box>

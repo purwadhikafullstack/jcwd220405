@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 // chakra
 import {
@@ -14,10 +13,8 @@ import {
   Avatar,
   Center,
   Box,
-  Text,
   Stack,
 } from "@chakra-ui/react";
-import { useEffect } from "react";
 
 //component
 import { RegisterModal } from "./Authentications/RegisterModal";

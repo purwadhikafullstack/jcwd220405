@@ -20,9 +20,6 @@ import {
 import gameboy from "../../assets/gameboy.jpg";
 import { ShoppingSummary } from "./ShoppingSummary";
 
-
-
-
 //react + redux + axios
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
@@ -30,7 +27,7 @@ import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { useRef } from "react";
 import { useCallback } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 //base api
 const port = process.env.REACT_APP_SERVER;
@@ -38,21 +35,22 @@ const baseApi = process.env.REACT_APP_API_BASE_URL;
 
 //page
 export const Shipment = () => {
-
+  const navigate = useNavigate();
   const { id } = useSelector((state) => state.userSlice.value);
   const { onOpen, onClose, isOpen } = useDisclosure();
   const [detail, setDetail] = useState([]); //result cart
   const [service, setService] = useState([]); //rajaongkir
-  // const [product, setProduct] = useState([]);
   const [userAddress, setUserAddress] = useState(""); //origincity_id
   const [totalWeight, setTotalWeight] = useState(""); //totalweight untuk raja ongkir
   const [deliveryFee, setDeliveryFee] = useState(0); //delivery_fee dari raja ongkir
   const [userAddressID, setUserAddressID] = useState(""); //idAddress yang status 1
   const [cartID, setCartID] = useState(""); //idCart
   const [totalQuantity, setTotalQuantity] = useState(0);
-  // const [quantity, setQuantity] = useState("");
   const [productPricetotal, setProductPriceTotal] = useState(0); //harga produk x quantity
   const [finalPrice, setFinalPrice] = useState(""); //price total + deliver fee
+  const [warehouse, setWarehouse] = useState("");
+  const [warehouseCity, setWarehouseCity] = useState("");
+  const [warehouseProvince, setWarehouseProvince] = useState("");
   const ongkirTotal = useRef("");
 
   const getCost = useCallback(async () => {
@@ -63,7 +61,6 @@ export const Shipment = () => {
       setUserAddress(result[0]?.User?.Address_Users[0]?.city_id);
       setUserAddressID(result[0]?.User?.Address_Users[0]?.id);
       setCartID(result[0]?.id);
-      // setQuantity(result[0]?.quantity);
 
       const sumQty = result
         ?.map((item) => item?.quantity)
@@ -74,46 +71,40 @@ export const Shipment = () => {
         ?.map((item) => item?.quantity * item?.Product?.weight)
         .reduce((a, b) => a + b, 0);
       setTotalWeight(sumWeight);
-      
+
       const sumPriceTotal = result
         ?.map((item) => item?.quantity * item?.price)
         .reduce((a, b) => a + b, 0);
       setProductPriceTotal(sumPriceTotal);
-      console.log(productPricetotal);
 
       const sumfinalPrice = parseInt(productPricetotal) + parseInt(deliveryFee);
       setFinalPrice(sumfinalPrice);
 
+      const originWarehouse = await (
+        await Axios.post(`${baseApi}/getWarehouse/${id}`)
+      ).data;
+
+      setWarehouse(originWarehouse.origin[0].id);
+      setWarehouseCity(originWarehouse.origin[0].city);
+      setWarehouseProvince(originWarehouse.origin[0].province);
+
       const rajaOngkir = {
-        origin: 153,
+        origin: originWarehouse.origin[0].city_id,
+        // origin: 153,
         destination: userAddress,
         weight: totalWeight,
         courier: "jne",
       };
 
-      // console.log(rajaOngkir);
-
       const resultOngkir = await (
         await Axios.post(`${baseApi}/shipment/cost`, rajaOngkir)
       ).data;
 
-      // console.log(resultOngkir);
-
-      // console.log(resultOngkir[0].costs[0]?.cost[0]?.value);
       setService(resultOngkir[0].costs);
-      // setDeliveryFee(resultOngkir[0]?.costs[0]?.cost[0]?.value);
-      // console.log(deliveryFee);
     } catch (err) {
       console.log(err);
     }
-  }, [
-    totalWeight,
-    id,
-    userAddress,
-    productPricetotal,
-    deliveryFee,
-    // totalQuantity,
-  ]);
+  }, [totalWeight, id, userAddress, productPricetotal, deliveryFee]);
 
   const createOrder = useCallback(async () => {
     try {
@@ -123,6 +114,8 @@ export const Shipment = () => {
         CartId: cartID,
         final_price: finalPrice,
         IdAddress: userAddressID,
+        WarehouseId: warehouse,
+        Item: detail,
       };
       const resultCreateOrder = await Axios.post(
         `${baseApi}/createOrder/${id}`,
@@ -132,16 +125,26 @@ export const Shipment = () => {
       Swal.fire({
         icon: "success",
         title: "Payment on Process",
-        text: `${resultCreateOrder.data}`,
+        text: `${resultCreateOrder.data.message}`,
 
         customClass: {
           container: "my-swal",
         },
       });
+      navigate("/order-list");
     } catch (err) {
       console.log(err);
     }
-  }, [cartID, deliveryFee, productPricetotal, id, finalPrice, userAddressID]);
+  }, [
+    cartID,
+    deliveryFee,
+    productPricetotal,
+    id,
+    finalPrice,
+    userAddressID,
+    warehouse,
+    navigate,
+  ]);
 
   useEffect(() => {
     getCost();
@@ -158,7 +161,9 @@ export const Shipment = () => {
               return (
                 <Box key={index}>
                   <Box mb={5}>
-                    <Text>Gudang Dummy</Text>
+                    <Text>
+                      Dikirim Dari : {warehouseCity}, {warehouseProvince}
+                    </Text>
                     <Divider borderTop={"1px"} borderBottom={"2px"} />
                   </Box>
                   <Box

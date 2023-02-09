@@ -30,6 +30,7 @@ module.exports = (sequelize, DataTypes) => {
       delivery_fee: DataTypes.INTEGER,
       total_price: DataTypes.INTEGER,
       final_price: DataTypes.INTEGER,
+      payment_proof: DataTypes.STRING(100),
     },
     {
       sequelize,

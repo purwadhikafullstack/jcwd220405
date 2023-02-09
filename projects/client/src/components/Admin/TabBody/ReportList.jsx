@@ -15,9 +15,6 @@ import {
   Flex,
   Box,
   Center,
-  InputGroup,
-  Input,
-  InputRightElement,
   IconButton,
   Stack,
   Skeleton,
@@ -26,7 +23,6 @@ import {
 } from "@chakra-ui/react";
 
 // icons
-import { BiSearch } from "react-icons/bi";
 import { BsArrowUp, BsArrowDown } from "react-icons/bs";
 import { SlArrowRight, SlArrowLeft } from "react-icons/sl";
 import { RxReload } from "react-icons/rx";

@@ -1,5 +1,4 @@
 import { Container } from "@chakra-ui/react";
-import React from "react";
 import { Cart } from "../../components/Cart/Cart";
 import { NavbarComp } from "../../components/Navbar";
 

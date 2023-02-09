@@ -1,5 +1,4 @@
 import { Box, Button, Text } from "@chakra-ui/react";
-import React from "react";
 
 export const PaginationProduct = ({ page, setPage, totalPage }) => {
   return (

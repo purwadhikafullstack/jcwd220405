@@ -25,6 +25,7 @@ import { ProfileAddressPage } from "./pages/ProfilePage/ProfileAddressPage";
 import { ResetPasswordPage } from "./pages/ResetPasswordPage";
 import { OrderListPage } from "./pages/OrderListPage";
 import { CheckoutPage } from "./pages/CheckoutPage/CheckoutPage";
+import { UnAuthorizedRequest } from "./pages/NotFound/UnAuthorized";
 
 //redux
 import { useDispatch, useSelector } from "react-redux";
@@ -77,7 +78,6 @@ function App() {
   useEffect(() => {
     // testApi();
     keepLogin();
-    console.log("MOKOMDO HERE");
   }, [keepLogin]);
 
   // console.log(role)
@@ -87,13 +87,31 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="/profile/settings" element={<ProfilePage />} />
-          <Route
-            path="/profile/settings/address"
-            element={<ProfileAddressPage />}
-          />
-          <Route path="/order-list" element={<OrderListPage />} />
         </Route>
+        <Route
+          path="/order-list"
+          element={
+            <ProtectingRoute>
+              <OrderListPage />
+            </ProtectingRoute>
+          }
+        />
+        <Route
+          path="/profile/settings"
+          element={
+            <ProtectingRoute>
+              <ProfilePage />
+            </ProtectingRoute>
+          }
+        />
+        <Route
+          path="/profile/settings/address"
+          element={
+            <ProtectingRoute>
+              <ProfileAddressPage />
+            </ProtectingRoute>
+          }
+        />
         <Route path="/product" element={<ProductPage />} />
         <Route path="/product/:name" element={<DetailProductPage />} />
         <Route
@@ -130,6 +148,7 @@ function App() {
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />
+        <Route path="/401" element={<UnAuthorizedRequest />} />
         {/* <Footer /> */}
       </Routes>
     </>

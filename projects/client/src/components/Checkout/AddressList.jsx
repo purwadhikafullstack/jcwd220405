@@ -3,6 +3,7 @@ import { AddressModal } from "./AddressModal";
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
 import { useSelector } from "react-redux";
+import { useCallback } from "react";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -10,20 +11,20 @@ export const AddressList = () => {
   const [address, setAddress] = useState([]);
   const { id } = useSelector((state) => state.userSlice.value);
 
-  const defaultAddress = async () => {
+  const defaultAddress = useCallback(async () => {
     try {
       const result = await (await Axios.get(`${baseApi}/address/${id}`)).data;
+      // console.log(result.result);
 
-      setAddress(result);
-      // console.log(address);
+      setAddress(result.result);
     } catch (err) {
       console.log(err);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     defaultAddress();
-  }, [id]);
+  }, [defaultAddress]);
 
   return (
     <>

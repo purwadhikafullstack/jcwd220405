@@ -22,6 +22,7 @@ import {
   Container,
   useMediaQuery,
   useToast,
+  Tooltip,
 } from "@chakra-ui/react";
 
 // icons
@@ -41,12 +42,10 @@ import { logout } from "../redux/userSlice";
 
 export const NavbarComp = ({
   setPage,
-  handleSearch,
   searchquery,
   setSearchParams,
   setPmax,
   setPmin,
-  setClick,
 }) => {
   const { name } = useSelector((state) => state.userSlice.value);
 
@@ -60,6 +59,8 @@ export const NavbarComp = ({
   function handleSearch() {
     if (location.pathname === "/product") {
       setPage(1);
+      setPmax(null);
+      setPmin(null);
       setSearchParams(`search_query=${valuesearch}`);
     }
   }
@@ -149,7 +150,6 @@ export const NavbarComp = ({
                           setPage(1);
                           setPmax(null);
                           setPmin(null);
-                          setClick(0);
                           setSearchParams(`search_query=${e.target.value}`);
                         }
                         e.preventDefault();
@@ -157,9 +157,6 @@ export const NavbarComp = ({
                     }}
                     onChange={(e) => {
                       setValueSearch(e.target.value);
-                      if (location.pathname === "/product") {
-                        setClick(0);
-                      }
                     }}
                     defaultValue={searchquery}
                   />
@@ -172,32 +169,30 @@ export const NavbarComp = ({
                   transition={"0.5s"}
                   _hover={{ bg: "#C146ED" }}
                 >
-                  <IconButton
-                    icon={<BiSearchAlt />}
-                    h={{ base: "10px", md: "40x" }}
-                    minW={{ base: "30px", md: "40px" }}
-                    fontSize={{ md: "2xl" }}
-                    borderRadius={0}
-                    transform={"skew(20deg)"}
-                    bg="none"
-                    color={"black"}
-                    _hover={{
-                      bg: "none",
-                    }}
-                    _active={{
-                      bg: "none",
-                      color: "white",
-                    }}
-                    onClick={() => {
-                      navigate(`/product?search_query=${valuesearch}`);
-                      handleSearch();
-                      if (location.pathname === "/product") {
-                        setClick(0);
-                      }
-                    }}
-                    disabled={valuesearch ? false : true}
-                    title={"Search"}
-                  />
+                  <Tooltip label="Search" hasArrow>
+                    <IconButton
+                      icon={<BiSearchAlt />}
+                      h={{ base: "10px", md: "40x" }}
+                      minW={{ base: "30px", md: "40px" }}
+                      fontSize={{ md: "2xl" }}
+                      borderRadius={0}
+                      transform={"skew(20deg)"}
+                      bg="none"
+                      color={"black"}
+                      _hover={{
+                        bg: "none",
+                      }}
+                      _active={{
+                        bg: "none",
+                        color: "white",
+                      }}
+                      onClick={() => {
+                        navigate(`/product?search_query=${valuesearch}`);
+                        handleSearch();
+                      }}
+                      disabled={valuesearch ? false : true}
+                    />
+                  </Tooltip>
                 </Box>
               </Flex>
             </GridItem>

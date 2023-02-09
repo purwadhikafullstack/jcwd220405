@@ -6,7 +6,6 @@ import {
   InputLeftElement,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
 
 export const FilterProduct = ({
   valueMax,
@@ -14,19 +13,31 @@ export const FilterProduct = ({
   valueMin,
   setValueMin,
   setPrice,
-  click,
-  setClick,
+  product,
+  pmax,
+  pmin,
 }) => {
   return (
     <>
       <Box
-        w={{ base: "80%", md: "20%" }}
         pt={"2.5"}
         m={{ base: "auto", md: "0" }}
         mb={"6"}
+        hidden={product?.length ? false : true}
       >
-        <Box mb={"6px"}>
+        <Box mb={"12px"} display={"flex"} gap={"1"}>
           <Text fontWeight={"bold"}>Filter</Text>
+          <Text
+            fontWeight={"semibold"}
+            color={"#D54B79"}
+            textDecoration={"underline"}
+            cursor={"pointer"}
+            hidden={pmax || pmin ? false : true}
+            onClick={() => window.location.reload()}
+            fontSize={"12px"}
+          >
+            Reset
+          </Text>
         </Box>
         <Box
           borderColor="whiteAlpha.400"
@@ -36,7 +47,7 @@ export const FilterProduct = ({
           mb={"6px"}
         >
           <Box display={"flex"} flexDirection={"column"} gap={"4"}>
-            <Text>Harga</Text>
+            <Text>Price</Text>
             <InputGroup>
               <InputLeftElement
                 pointerEvents="none"
@@ -47,6 +58,9 @@ export const FilterProduct = ({
               <Input
                 placeholder="Minimum Price"
                 onChange={(e) => setValueMin(e.target.value)}
+                onMouseLeave={() => {
+                  setPrice();
+                }}
               />
             </InputGroup>
             <InputGroup>
@@ -59,6 +73,7 @@ export const FilterProduct = ({
               <Input
                 placeholder="Maximum Price"
                 onChange={(e) => setValueMax(e.target.value)}
+                onMouseLeave={() => setPrice()}
               />
             </InputGroup>
           </Box>
@@ -71,9 +86,7 @@ export const FilterProduct = ({
             }}
             onClick={() => {
               setPrice();
-              setClick(click + 1);
             }}
-            disabled={click === 2 ? true : false}
           >
             Search
           </Button>

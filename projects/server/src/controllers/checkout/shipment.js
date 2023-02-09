@@ -7,9 +7,11 @@ const product_image = db.Product_Image;
 const User = db.User;
 const Warehouse = db.Warehouse;
 const Transaction = db.Transaction;
+const TransactionWarehouse = db.Transaction_Product_Warehouses;
 const { Op } = require("sequelize");
 const axios = require("axios");
 const rajaOngkir = process.env.RAJA_ONGKIR;
+const rajaOngkirURL = process.env.RAJA_ONGKIR_URL;
 
 module.exports = {
   getShipment: async (req, res) => {
@@ -62,16 +64,15 @@ module.exports = {
     try {
       // const { user } = req.params;
 
-      const { origin, destination, weight, courier, delivery_fee } = req.body;
+      const { origin, destination, weight, courier } = req.body;
 
       const cost = await axios.post(
-        "https://api.rajaongkir.com/starter/cost",
+        `${rajaOngkirURL}/cost`,
         {
           origin,
           destination,
           weight,
           courier,
-          delivery_fee,
         },
         {
           headers: {
@@ -80,6 +81,7 @@ module.exports = {
           },
         }
       );
+      // console.log(cost);
 
       res.status(200).send(cost.data.rajaongkir.results);
     } catch (err) {
@@ -88,16 +90,23 @@ module.exports = {
   },
   getWarehouse: async (req, res) => {
     try {
+      // const { WarehouseId } = req.body;
+      const { id } = req.params;
       // find lat lng warehouse origin
-      const originWarehouse = await Warehouse.findOne({
-        where: { id: WarehouseId },
+      const originUser = await address.findOne({
+        where: {
+          idUser: id,
+          status: 1,
+        },
         raw: true,
       });
 
-      const originLat = originWarehouse.lat;
-      const originLng = originWarehouse.lng;
+      // console.log(originUser);
 
-      console.log("buat cari warehouse");
+      const originLat = originUser.lat;
+      const originLng = originUser.lng;
+
+      // console.log("buat cari warehouse");
 
       function calCrow(lat1, lon1, lat2, lon2) {
         var R = 6371; // km
@@ -123,6 +132,7 @@ module.exports = {
 
       // find closest warehouses
       const closestWarehouse = await Warehouse.findAll({ raw: true });
+      // console.log(closestWarehouse);
 
       const nearestOne = [];
       for (let i = 0; i < closestWarehouse.length; i++) {
@@ -134,9 +144,10 @@ module.exports = {
         );
 
         // skipped warehouse same id
-        if (closestWarehouse[i].id === originWarehouse.id) {
-          continue;
-        }
+        // if (closestWarehouse[i].id === originWarehouse.id) {
+        //   continue;
+        // }
+        // console.log(closestWarehouse[i]);
 
         nearestOne.push({
           warehouse: closestWarehouse[i],
@@ -146,24 +157,39 @@ module.exports = {
 
       const warehouseSort = nearestOne
         .sort((a, b) => a.range - b.range)
-        .map((value) => value.warehouse.id);
+        .map((value) => value.warehouse);
 
-      console.log(warehouseSort);
-      res.status(200).send("Success");
+      // console.log(warehouseSort);
+
+      res.status(200).send({
+        message: "Success",
+        origin: warehouseSort,
+      });
     } catch (err) {
       res.status(400).send(err);
     }
   },
+
   createOrder: async (req, res) => {
     try {
       const { user } = req.params;
 
       const time = new Date();
 
-      const { delivery_fee, total_price, CartId, final_price, IdAddress } =
-        req.body;
+      const {
+        delivery_fee,
+        total_price,
+        CartId,
+        final_price,
+        IdAddress,
+        // quantity,
+        // price,
+        // product,
+        WarehouseId,
+        Item,
+      } = req.body;
 
-      await Transaction.create({
+      const createOrder = await Transaction.create({
         delivery_fee: delivery_fee,
         total_price: total_price,
         // CartId: CartId,
@@ -179,7 +205,74 @@ module.exports = {
           time.getSeconds(),
         OrderStatusId: 1,
       });
-      res.status(200).send("Silahkan upload bukti pembayaran");
+      // console.log(createOrder.id);
+      // console.log(Item);
+
+      let quantity = Item.map((item) => item.quantity);
+      // console.log(quantity);
+      let price = Item.map((item) => item.price);
+      // console.log(price);
+      let IdProduct = Item.map((item) => item.IdProduct);
+      // console.log(IdProduct);
+
+      for (let i = 0; i < IdProduct.length; i++) {
+        await TransactionWarehouse.create({
+          quantity: quantity[i],
+          price: price[i],
+          ProductId: IdProduct[i],
+          TransactionId: createOrder.id,
+          WarehouseId: WarehouseId,
+        });
+      }
+
+      let cartDestroy = Item.map((item) => item.id);
+      // console.log(cart);
+
+      for (let i = 0; i < cartDestroy.length; i++) {
+        await cart.destroy({
+          where: {
+            id: cartDestroy[i],
+          },
+        });
+      }
+
+      res.status(200).send({
+        message: "Payment on progress, please upload your payment receipt",
+      });
+    } catch (err) {
+      res.status(400).send(err);
+    }
+  },
+
+  uploadPayment: async (req, res) => {
+    try {
+      let fileUploaded = req.file;
+      console.log(fileUploaded);
+
+      const checkHasPaid = await Transaction.findOne({
+        where: {
+          id: req.params.id,
+        },
+        raw: true,
+      });
+      if (checkHasPaid.payment_proof) throw "You have already paid";
+
+      // console.log(checkHasPaid);
+
+      await Transaction.update(
+        {
+          payment_proof: `/public/payment/${fileUploaded.filename}`,
+          OrderStatusId: 2,
+        },
+        {
+          where: {
+            id: req.params.id,
+          },
+        }
+      );
+      res
+        .status(200)
+        .send("Payment Uploaded, Please Wait for Admin Confirmation");
     } catch (err) {
       res.status(400).send(err);
     }
