@@ -76,7 +76,7 @@ export const Address = () => {
         direction={{ base: "column", md: "row" }}
         gap={{ base: "3", md: "5" }}
       >
-        <Box flex={".5"}>
+        <Box flex={".5"} mb={"4"}>
           <InputGroup>
             <Input
               placeholder={"Search for recipient address or name"}

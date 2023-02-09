@@ -3,26 +3,24 @@ import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 
 // chakra
-import {
-  Box,
-  Grid,
-  GridItem,
-  Image,
-  Center,
-} from "@chakra-ui/react";
+import { Box, Grid, GridItem, Image, Center } from "@chakra-ui/react";
 
 // picture
 import banner1 from "../assets/banner1.png";
+import banner11 from "../assets/banner1.1.png";
+import banner12 from "../assets/banner1.2.png";
+import banner13 from "../assets/banner1.3.png";
+import banner14 from "../assets/banner1.4.png";
+
 import banner2_1 from "../assets/banner2.1.png";
 import banner3 from "../assets/banner3.png";
 import banner4 from "../assets/banner4.png";
 
+import { useNavigate } from "react-router-dom";
+
 export const CarouselBanner = () => {
-  const PicBanner = [
-    banner1,
-    "https://imaging.nikon.com/lineup/dslr/df/img/sample/img_02_l.jpg",
-    "https://www.cameraegg.org/wp-content/uploads/2016/01/Nikon-D500-Sample-Images-2.jpg",
-  ];
+  const navigate = useNavigate();
+  const PicBanner = [banner11, banner12, banner13, banner14, banner1];
 
   return (
     <Center>
@@ -99,6 +97,8 @@ export const CarouselBanner = () => {
                 w={"530px"}
                 src={banner2_1}
                 alt=""
+                cursor={"pointer"}
+                onClick={() => navigate("/product?search_query=Gaming")}
               />
             </Center>
           </GridItem>
@@ -109,6 +109,8 @@ export const CarouselBanner = () => {
                 w={"190px"}
                 src={banner3}
                 alt=""
+                cursor={"pointer"}
+                onClick={() => navigate("/product?search_query=Mouse")}
               />
             </Center>
           </GridItem>
@@ -119,6 +121,8 @@ export const CarouselBanner = () => {
                 w={"190px"}
                 src={banner4}
                 alt=""
+                cursor={"pointer"}
+                onClick={() => navigate("/product?search_query=Headphone")}
               />
             </Center>
           </GridItem>

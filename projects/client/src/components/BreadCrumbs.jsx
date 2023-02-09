@@ -18,8 +18,6 @@ export const BreadCrumbsComp = () => {
   const arr = url.split("/");
   let homeURL = "";
   arr.shift();
-  // console.log(arr);
-  // console.log(arr.length);
 
   return (
     <Box>
@@ -28,7 +26,7 @@ export const BreadCrumbsComp = () => {
           <Image h={"1rem"} src={icon} />
         </BreadcrumbItem>
         <BreadcrumbItem>
-          {arr.length > 1 ? (homeURL = "/") : (homeURL = "#")}
+          {arr.length > 1 ? (homeURL = "/") : (homeURL = "/")}
           <BreadcrumbLink href={homeURL} color={"white"}>
             Home
           </BreadcrumbLink>

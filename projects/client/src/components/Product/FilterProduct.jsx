@@ -48,7 +48,7 @@ export const FilterProduct = ({
         >
           <Box display={"flex"} flexDirection={"column"} gap={"4"}>
             <Text>Price</Text>
-            <InputGroup>
+            <InputGroup mb={"4px"}>
               <InputLeftElement
                 pointerEvents="none"
                 color="gray.300"

@@ -111,7 +111,7 @@ module.exports = {
         user: verify.id,
       });
     } catch (err) {
-      res.send(400).send(err);
+      res.status(400).send(err);
     }
   },
 

@@ -28,7 +28,6 @@ const ListHeader = ({ children }) => {
 
 export const Footer = () => {
   return (
-    // bg={"#2B0A3E"}
     <Box>
       <Container maxW={"7xl"} py={3} borderTop={"1px solid white"}>
         <BreadCrumbsComp />
@@ -77,7 +76,7 @@ export const Footer = () => {
       </Container>
       <Center>
         <Text my={"30px"} color={"white"} textAlign="center">
-          Copyright ©️ 2022 All Rights Reversed by MOKOMDO
+          Copyright ©️ {new Date().getFullYear()} All Rights Reversed by MOKOMDO
         </Text>
       </Center>
     </Box>

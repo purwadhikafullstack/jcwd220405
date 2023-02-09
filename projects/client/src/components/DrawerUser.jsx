@@ -23,6 +23,7 @@ import { LoginModal } from "./Authentications/LoginModal";
 //redux
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../redux/userSlice";
+import { resetCart } from "../redux/cartSlice";
 import { Link } from "react-router-dom";
 
 import { CgShoppingCart } from "react-icons/cg";
@@ -34,6 +35,7 @@ export const DrawerCompUser = () => {
 
   const onLogout = async () => {
     dispatch(logout());
+    dispatch(resetCart());
     localStorage.removeItem("token");
   };
 

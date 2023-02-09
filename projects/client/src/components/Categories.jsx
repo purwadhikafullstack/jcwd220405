@@ -18,9 +18,7 @@ export const Categories = () => {
     try {
       const response = await (await axios.get(`${baseApi}/category`)).data;
       setCategory(response.result);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, []);
 
   function toDetail(item) {
@@ -32,37 +30,37 @@ export const Categories = () => {
   }, [getCategory]);
   return (
     <Box maxW={"full"}>
-      <Box maxW={"85%"} m={"auto"}>
-        <Swiper
-          freeMode={true}
-          grabCursor={true}
-          modules={[FreeMode]}
-          className="mySwiper"
-          breakpoints={{
-            0: {
-              slidesPerView: 1,
-              spaceBetween: 5,
-            },
-            505: {
-              slidesPerView: 2,
-              spaceBetween: 10,
-            },
-            808: {
-              slidesPerView: 3,
-              spaceBetween: 15,
-            },
-            1111: {
-              slidesPerView: 4,
-              spaceBetween: 15,
-            },
-            1280: {
-              slidesPerView: 5,
-              spaceBetween: 10,
-            },
-          }}
-        >
-          {category ? (
-            category?.map((item, index) => {
+      {category?.length ? (
+        <Box maxW={"85%"} m={"auto"}>
+          <Swiper
+            freeMode={true}
+            grabCursor={true}
+            modules={[FreeMode]}
+            className="mySwiper"
+            breakpoints={{
+              0: {
+                slidesPerView: 1,
+                spaceBetween: 5,
+              },
+              505: {
+                slidesPerView: 2,
+                spaceBetween: 10,
+              },
+              808: {
+                slidesPerView: 3,
+                spaceBetween: 15,
+              },
+              1111: {
+                slidesPerView: 4,
+                spaceBetween: 15,
+              },
+              1280: {
+                slidesPerView: 5,
+                spaceBetween: 10,
+              },
+            }}
+          >
+            {category?.map((item, index) => {
               return (
                 <SwiperSlide key={index}>
                   <Box
@@ -105,14 +103,14 @@ export const Categories = () => {
                   </Box>
                 </SwiperSlide>
               );
-            })
-          ) : (
-            <Stack>
-              <Skeleton height="100px" />
-            </Stack>
-          )}
-        </Swiper>
-      </Box>
+            })}
+          </Swiper>
+        </Box>
+      ) : (
+        <Stack w={"85vw"}>
+          <Skeleton height="150px" />
+        </Stack>
+      )}
     </Box>
   );
 };

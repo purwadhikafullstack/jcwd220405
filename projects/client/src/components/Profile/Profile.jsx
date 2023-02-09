@@ -159,7 +159,7 @@ export const Profile = () => {
   }, [getUser]);
   return (
     <Flex gap={7} direction={settingDir ? "column" : "row"}>
-      <Box flex={"1"}>
+      <Box flex={"1"} mb={"4"}>
         <Card boxShadow="0 0 3px white" mb={10} color={"inherit"}>
           <CardBody>
             <a

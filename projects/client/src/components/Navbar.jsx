@@ -13,7 +13,6 @@ import {
   Flex,
   Link,
   IconButton,
-  Button,
   Image,
   Input,
   Grid,
@@ -27,7 +26,7 @@ import {
 
 // icons
 import { BiSearchAlt } from "react-icons/bi";
-import { CgShoppingCart, CgHeart } from "react-icons/cg";
+import { CgHeart } from "react-icons/cg";
 
 // comp
 import { DrawerCompUser } from "./DrawerUser";
@@ -37,8 +36,7 @@ import { CartButton } from "./Button/CartButton";
 import { useEffect } from "react";
 
 //redux
-import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../redux/userSlice";
+import { useSelector } from "react-redux";
 
 export const NavbarComp = ({
   setPage,
@@ -65,6 +63,16 @@ export const NavbarComp = ({
     }
   }
 
+  function soon() {
+    return toast({
+      position: "top",
+      title: `Coming soon...`,
+      status: "info",
+      duration: 1500,
+      isClosable: true,
+    });
+  }
+
   return (
     <Box px={{ base: 4, md: "28" }} py={{ base: 1, md: 4 }}>
       <Container>
@@ -76,9 +84,10 @@ export const NavbarComp = ({
             gap={{ base: 3, md: 3, lg: 5 }}
           >
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", md: "200px" }}>
-              <Center>
-                <Image
-                  to={"/"}
+              <Center onClick={() => window.location.replace("/")}>
+                <Link
+                  as={Image}
+                  href={"/"}
                   src={icon}
                   w={"auto"}
                   h={8}
@@ -109,8 +118,6 @@ export const NavbarComp = ({
                   border={"1px solid white"}
                   transform={"skew(-20deg)"}
                   p={{ base: "3px" }}
-                  // paddingBottom={{ base: "5px" }}
-                  // h={{ base: "10px", md: "30px" }}
                 >
                   <Input
                     h={{ md: "30px" }}
@@ -163,7 +170,7 @@ export const NavbarComp = ({
                 </Box>
                 <Box
                   border={"1px solid white"}
-                  paddingTop={{ base: "1px" }}
+                  paddingTop={{ base: "1px", md: "4px" }}
                   transform={"skew(-20deg)"}
                   bg={"#D54B79"}
                   transition={"0.5s"}
@@ -199,25 +206,8 @@ export const NavbarComp = ({
             <GridItem
               display={{ base: "none", md: "block" }}
               w={{ base: "50px", md: "150px" }}
-              // borderRight={"1px solid white"}
             >
               <Flex>
-                {/* <IconButton
-                  icon={<CgShoppingCart />}
-                  fontSize={"35px"}
-                  href={"#"}
-                  bg={"none"}
-                  borderRadius={0}
-                  borderRight={"1px solid white"}
-                  color={"#D54B79"}
-                  width={70}
-                  height={30}
-                  _hover={{
-                    bg: "none",
-                    color: "#C146ED",
-                  }}
-                  _active={{ color: "white" }}
-                /> */}
                 <CartButton />
                 <IconButton
                   icon={<CgHeart />}
@@ -234,6 +224,7 @@ export const NavbarComp = ({
                     color: "#C146ED",
                   }}
                   _active={{ color: "white" }}
+                  onClick={() => soon()}
                 />
               </Flex>
             </GridItem>

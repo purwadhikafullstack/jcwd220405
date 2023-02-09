@@ -95,7 +95,7 @@ export const Product = ({
           justifyContent={"space-between"}
           alignItems={"center"}
           hidden={product?.length && search ? false : true}
-          mb={"6px"}
+          mb={"10px"}
           flexDirection={{ base: "column", md: "row" }}
           gap={{ base: 2, md: 0 }}
         >

@@ -1,4 +1,11 @@
-import { Box, Image, Center, Divider, Heading } from "@chakra-ui/react";
+import {
+  Box,
+  Image,
+  Center,
+  Divider,
+  Heading,
+  useMediaQuery,
+} from "@chakra-ui/react";
 
 // image
 import banner2 from "../assets/anoun2.png";
@@ -10,6 +17,8 @@ import { HomeProduct } from "../components/Product/HomeProduct";
 import { Categories } from "../components/Categories";
 
 export const HomePage = () => {
+  const [setHide] = useMediaQuery("(max-width: 666px)");
+
   return (
     <Box>
       <CarouselBanner />
@@ -20,6 +29,7 @@ export const HomePage = () => {
           minH={{ base: "70px", lg: "auto" }}
           padding={"30px"}
           pt={0}
+          hidden={setHide ? true : false}
         />
       </Center>
       {/* <FeaturedCategories /> */}
