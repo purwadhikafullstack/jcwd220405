@@ -55,6 +55,10 @@ export const LoginModal = () => {
         })
       );
 
+      if (result.data.isUserExist.role === 2 || 3) {
+        window.location.replace("/admin");
+      }
+
       localStorage.setItem("token", result.data.token);
 
       Swal.fire({

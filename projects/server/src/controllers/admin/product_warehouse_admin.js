@@ -6,6 +6,10 @@ const journal = db.Journal;
 module.exports = {
   addStocks: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { stocks, ProductId, WarehouseId } = req.body;
 
       await productWarehouses.create({
@@ -22,6 +26,10 @@ module.exports = {
   },
   deleteStocks: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+      
       const { ProductId, WarehouseId } = req.body;
 
       await productWarehouses.destroy({
@@ -39,6 +47,10 @@ module.exports = {
   },
   editStocks: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { stocks } = req.body;
       const { ProductId, WarehouseId } = req.query;
 

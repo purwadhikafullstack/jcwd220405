@@ -10,7 +10,11 @@ const journal = db.Journal;
 module.exports = {
   allMutation: async (req, res) => {
     try {
-      const { search, sort, direction, pagination, role, userId } = req.query;
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
+      const { search, sort, direction, pagination, userId } = req.query;
 
       const allWarehouse = await warehouse.findAll();
       const allProducts = await product.findAll();
@@ -33,9 +37,7 @@ module.exports = {
         raw: true,
       });
 
-      console.log(warehouseId)
-
-      if (+role === 2) {
+      if (+req.role === 2) {
         const { count, rows } = await mutation.findAndCountAll({
           where: {
             IdWarehouseFrom: warehouseId ? warehouseId.id : null,
@@ -57,7 +59,7 @@ module.exports = {
         });
       }
 
-      if (+role === 3) {
+      if (+req.role === 3) {
         const { count, rows } = await mutation.findAndCountAll({
           where: {
             invoice: {
@@ -84,6 +86,10 @@ module.exports = {
   },
   addMutation: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { IdWarehouseTo, IdWarehouseFrom, ProductId, quantity } = req.body;
 
       const time = new Date();
@@ -110,6 +116,10 @@ module.exports = {
   },
   approvalMutation: async (req, res) => {
     try {
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
       const { WarehouseIdFrom, WarehouseIdTo, ProductId } = req.query;
       const { approval } = req.body;
 
@@ -199,7 +209,7 @@ module.exports = {
           stock_after: +stocksFrom - +quantity,
           desc: "Mutation Update",
           StockMutationId: req.params.id,
-          JournalTypeId: 3,
+          JournalTypeId: 4,
           ProductId,
           WarehouseId: WarehouseIdFrom,
         });
@@ -209,7 +219,7 @@ module.exports = {
           stock_after: +stocksTo + +quantity,
           desc: "Mutation Update",
           StockMutationId: req.params.id,
-          JournalTypeId: 4,
+          JournalTypeId: 3,
           ProductId,
           WarehouseId: WarehouseIdTo,
         });
@@ -221,5 +231,24 @@ module.exports = {
       console.log(err);
     }
   },
-  deleteMutation: async (req, res) => {},
+  deleteMutation: async (req, res) => {
+    try {
+      const { IdWarehouseTo } = req.query;
+
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
+      await mutation.destroy({
+        where: {
+          IdWarehouseTo,
+        },
+      });
+
+      res.status(200).send("Delete Success");
+    } catch (err) {
+      res.status(400).send(err);
+      console.log(err);
+    }
+  },
 };

@@ -58,6 +58,7 @@ export const EditProduct = ({ getProducts, category, item, warehouse }) => {
 
 const EditForm = ({ close, category_name, getProducts, item, warehouse }) => {
   const url = process.env.REACT_APP_API_BASE_URL + `/admin/`;
+  const token = localStorage.getItem("token");
 
   // console.log(getProducts);
   // console.log(warehouse);
@@ -95,13 +96,22 @@ const EditForm = ({ close, category_name, getProducts, item, warehouse }) => {
         +value.weight !== item.weight ||
         +ProductCategoryId.current.value !== item.Product_Category.id
       ) {
-        await Axios.patch(url + `edit_product/${item.id}`, editData);
+        await Axios.patch(url + `edit_product/${item.id}`, editData, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
       }
 
       if (+value.stocks !== item.total_stocks) {
         await Axios.patch(
           url + `edit_stocks?ProductId=${item.id}&WarehouseId=${warehouse}`,
-          updateStocks
+          updateStocks,
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          }
         );
       }
 

@@ -22,7 +22,6 @@ import {
   Stack,
   Skeleton,
   Text,
-  Select,
 } from "@chakra-ui/react";
 
 // swal
@@ -40,6 +39,7 @@ import { AddMutation } from "./MutationProps/AddMutation";
 
 export const MutationList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const { id, role } = useSelector((state) => state.userSlice.value);
 
@@ -61,7 +61,11 @@ export const MutationList = () => {
         url +
         `all_mutations?search=${search}&role=${role}&userId=${id}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
-      const resultMutation = await Axios.get(mutationsURL);
+      const resultMutation = await Axios.get(mutationsURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
       setMutations(resultMutation.data.result);
       setPages(resultMutation.data.pages);
@@ -74,7 +78,7 @@ export const MutationList = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [url, id, role, sort, direction, pagination, search]);
+  }, [url, id, role, sort, direction, pagination, search, token]);
 
   const approvalFunc = useCallback(
     async (
@@ -88,7 +92,12 @@ export const MutationList = () => {
         await Axios.patch(
           url +
             `approval_mutation/${ItemId}?WarehouseIdTo=${WarehouseIdTo}&WarehouseIdFrom=${WarehouseIdFrom}&ProductId=${ProductId}`,
-          { approval: approvalValue }
+          { approval: approvalValue },
+          {
+            headers: {
+              authorization: `Bearer ${token}`,
+            },
+          }
         );
         getMutations();
       } catch (err) {
@@ -102,7 +111,7 @@ export const MutationList = () => {
         });
       }
     },
-    [url, getMutations]
+    [url, getMutations, token]
   );
 
   const approvalWarning = async (
@@ -130,8 +139,8 @@ export const MutationList = () => {
             ProductId,
             approvalValue
           );
-          Swal.fire("Success!", "Mutation requested", "success");
-        } 
+          Swal.fire("Success!", "Mutation Updated", "success");
+        }
       });
     } catch (err) {
       console.log(err);

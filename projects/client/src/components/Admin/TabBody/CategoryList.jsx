@@ -40,6 +40,7 @@ import { EditCategory } from "./CategoryProps/EditCategory";
 
 export const CategoryList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const { role } = useSelector((state) => state.userSlice.value);
 
@@ -58,7 +59,11 @@ export const CategoryList = () => {
         url +
         `all_category?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
-      const result = await Axios.get(productURL);
+      const result = await Axios.get(productURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       setCategory(result.data.result);
       setPages(result.data.pages);
 
@@ -67,11 +72,15 @@ export const CategoryList = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [url, direction, pagination, search, sort]);
+  }, [url, direction, pagination, search, sort, token]);
 
   const deleteCategory = async (id) => {
     try {
-      await Axios.delete(url + `delete_category/${id}`);
+      await Axios.delete(url + `delete_category/${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       getCategory();
     } catch (err) {
       console.log(err);

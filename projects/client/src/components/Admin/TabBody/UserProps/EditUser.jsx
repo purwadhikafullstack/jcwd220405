@@ -56,6 +56,7 @@ export const EditUser = ({ user, getUsers }) => {
 const EditForm = ({ user, close, getUsers }) => {
   const url =
     process.env.REACT_APP_API_BASE_URL + `/admin/edit_user/${user.id}`;
+    const token = localStorage.getItem("token");
 
   const role = useRef("");
 
@@ -76,7 +77,11 @@ const EditForm = ({ user, close, getUsers }) => {
           name: value.name,
           role: +role.current.value,
         };
-        await Axios.patch(url, editData);
+        await Axios.patch(url, editData, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
         getUsers();
       }
 

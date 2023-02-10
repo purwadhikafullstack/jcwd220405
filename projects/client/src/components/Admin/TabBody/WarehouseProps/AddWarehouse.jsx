@@ -65,6 +65,7 @@ export const AddWarehouse = ({ getWarehouse, admin, provinces, products }) => {
 
 const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const [cities, setCities] = useState();
   const [province, setProvince] = useState();
@@ -104,7 +105,11 @@ const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
         UserId: UserId.current.value,
       };
 
-      const newWarehouse = await Axios.post(url + `add_warehouse`, data);
+      const newWarehouse = await Axios.post(url + `add_warehouse`, data, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
       await products.map(async (item) => {
         const stocks = {
@@ -112,8 +117,12 @@ const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
           ProductId: item.id,
           WarehouseId: newWarehouse.data.id,
         };
-        return await Axios.post(url + `add_stocks`, stocks)
-      })
+        return await Axios.post(url + `add_stocks`, stocks, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
+      });
 
       Swal.fire({
         icon: "success",
@@ -209,7 +218,7 @@ const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
               name="postal_code"
             />
             <FormLabel>Admin Id</FormLabel>
-            <Select ref={UserId}>
+            <Select ref={UserId} placeholder={"- Select -"}>
               {admin.map((item, index) => {
                 return (
                   <option value={item.id} key={index}>

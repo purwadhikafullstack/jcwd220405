@@ -59,6 +59,7 @@ const {
   mutationComp,
   journalComp,
   salesAdmin,
+  roleAdmin,
 } = admin;
 
 // user

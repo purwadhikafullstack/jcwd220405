@@ -65,6 +65,7 @@ export const AddProduct = ({ getProducts, category, warehouses }) => {
 
 const AddForm = ({ close, category_name, getProducts, warehouses }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const ProductCategoryId = useRef("");
 
@@ -87,7 +88,11 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
         weight: +value.weight,
         ProductCategoryId: +ProductCategoryId.current.value,
       };
-      const result = await Axios.post(url + "add_product", data);
+      const result = await Axios.post(url + "add_product", data, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
       await warehouses.map(async (warehouse) => {
         const stocks = {
@@ -96,7 +101,11 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
           WarehouseId: warehouse.id,
         };
 
-        return await Axios.post(url + `add_stocks`, stocks);
+        return await Axios.post(url + `add_stocks`, stocks, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
       });
 
       Swal.fire({
@@ -166,7 +175,7 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
                   name="weight"
                 />
                 <FormLabel>Category</FormLabel>
-                <Select ref={ProductCategoryId}>
+                <Select ref={ProductCategoryId} placeholder={"- Select -"}>
                   {category_name?.map((item, index) => {
                     return (
                       <option value={item.id} key={index}>

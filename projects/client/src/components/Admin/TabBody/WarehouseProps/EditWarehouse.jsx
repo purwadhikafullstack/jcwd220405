@@ -64,6 +64,7 @@ const EditForm = ({ close, getWarehouse, admin, provinces, warehouse }) => {
   const url =
     process.env.REACT_APP_API_BASE_URL +
     `/admin/edit_warehouse/${warehouse.id}`;
+  const token = localStorage.getItem("token");
 
   const [cities, setCities] = useState();
   const [province, setProvince] = useState(warehouse.province);
@@ -107,7 +108,11 @@ const EditForm = ({ close, getWarehouse, admin, provinces, warehouse }) => {
           postal_code: +value.postal_code,
           UserId: UserId.current.value,
         };
-        await Axios.patch(url, data);
+        await Axios.patch(url, data, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
       }
 
       Swal.fire({

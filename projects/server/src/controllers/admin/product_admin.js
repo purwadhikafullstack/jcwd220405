@@ -9,6 +9,10 @@ const productWarehouses = db.Product_Warehouses;
 module.exports = {
   addProduct: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { name, desc, price, weight, ProductCategoryId } = req.body;
 
       const result = await product.create({
@@ -27,6 +31,10 @@ module.exports = {
   },
   editProduct: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await product.update(req.body, {
         where: {
           id: req.params.id,
@@ -41,6 +49,10 @@ module.exports = {
   },
   deleteProduct: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await product.destroy({
         where: {
           id: req.params.id,
@@ -55,6 +67,10 @@ module.exports = {
   },
   allProduct: async (req, res) => {
     try {
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
       const { search, sort, direction, pagination } = req.query;
 
       const raw = await product.findAll()
@@ -97,6 +113,10 @@ module.exports = {
   },
   warehouseProduct: async (req, res) => {
     try {
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
       const { search, sort, direction, pagination, warehouse } = req.query;
 
       const { count, rows } = await product.findAndCountAll({

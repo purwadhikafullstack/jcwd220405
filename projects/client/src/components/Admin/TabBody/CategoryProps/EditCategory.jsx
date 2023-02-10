@@ -57,6 +57,7 @@ const EditForm = ({ close, categoryValue, getCategory }) => {
   const url =
     process.env.REACT_APP_API_BASE_URL +
     `/admin/edit_category/${categoryValue.id}`;
+  const token = localStorage.getItem("token");
 
   const validation = Yup.object().shape({
     category: Yup.string().required("Required"),
@@ -68,7 +69,11 @@ const EditForm = ({ close, categoryValue, getCategory }) => {
         const editData = {
           category: value.category,
         };
-        await Axios.patch(url, editData);
+        await Axios.patch(url, editData, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
         getCategory();
 
         Swal.fire({
@@ -108,10 +113,7 @@ const EditForm = ({ close, categoryValue, getCategory }) => {
             <Form>
               <FormControl>
                 <FormLabel>Category</FormLabel>
-                <Input
-                  as={Field}
-                  name={"category"}
-                />
+                <Input as={Field} name={"category"} />
                 <ErrorMessage
                   style={{ color: "red" }}
                   component="div"

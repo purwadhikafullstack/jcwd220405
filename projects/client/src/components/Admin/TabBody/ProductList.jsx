@@ -40,6 +40,7 @@ import { EditProduct } from "./ProductProps/EditProduct";
 
 export const ProductList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const { role } = useSelector((state) => state.userSlice.value);
 
@@ -70,9 +71,21 @@ export const ProductList = () => {
           : url +
             `warehouse_products?warehouse=${warehouse}&search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
-      const resultProducts = await Axios.get(productURL);
-      const resultCategories = await Axios.get(url + "all_category?search=");
-      const resultWarehouse = await Axios.get(url + "all_warehouse?search=");
+      const resultProducts = await Axios.get(productURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const resultCategories = await Axios.get(url + "all_category?search=", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const resultWarehouse = await Axios.get(url + "all_warehouse?search=", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
       setProducts(resultProducts.data.result);
       setPages(resultProducts.data.pages);
@@ -84,11 +97,15 @@ export const ProductList = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [url, direction, pagination, search, sort, warehouse]);
+  }, [url, direction, pagination, search, sort, warehouse, token]);
 
   const deleteProduct = async (id) => {
     try {
-      await Axios.delete(url + `delete_product/${id}`);
+      await Axios.delete(url + `delete_product/${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       getProducts();
     } catch (err) {
       console.log(err);

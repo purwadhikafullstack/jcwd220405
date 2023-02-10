@@ -64,6 +64,7 @@ export const AddMutation = ({ warehouses, products, warehouseId }) => {
 
 const AddForm = ({ close, warehouses, products, warehouseId }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/add_mutation";
+  const token = localStorage.getItem("token");
 
   const WarehouseTo = useRef("");
   const WarehouseFrom = useRef("");
@@ -89,7 +90,11 @@ const AddForm = ({ close, warehouses, products, warehouseId }) => {
           text: "Receiver and Sender can't be the same",
         });
       } else {
-        await Axios.post(url, data);
+        await Axios.post(url, data, {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
         Swal.fire({
           icon: "success",
           title: "Success",
@@ -126,7 +131,7 @@ const AddForm = ({ close, warehouses, products, warehouseId }) => {
           return (
             <Form>
               <FormControl isRequired>
-                <FormLabel>Warehouse Receiver</FormLabel>
+                <FormLabel>Request Warehouse</FormLabel>
                 {warehouseId === null ? (
                   <Select ref={WarehouseTo} placeholder={"- Select -"}>
                     {warehouses?.map((item, index) => {
@@ -144,7 +149,7 @@ const AddForm = ({ close, warehouses, products, warehouseId }) => {
                     </option>
                   </Select>
                 )}
-                <FormLabel>Warehouse Sender</FormLabel>
+                <FormLabel>Response Warehouse</FormLabel>
                 <Select ref={WarehouseFrom}>
                   <option>- Select -</option>
                   {warehouses?.map((item, index) => {

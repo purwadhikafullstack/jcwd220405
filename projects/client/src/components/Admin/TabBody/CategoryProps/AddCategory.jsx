@@ -57,6 +57,7 @@ export const AddCategory = ({ getCategory }) => {
 
 const AddForm = ({ close, getCategory }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/add_category";
+  const token = localStorage.getItem("token");
 
   // const category = useRef("");
 
@@ -71,7 +72,11 @@ const AddForm = ({ close, getCategory }) => {
       };
 
       console.log();
-      await Axios.post(url, data);
+      await Axios.post(url, data, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       getCategory();
 
       Swal.fire({

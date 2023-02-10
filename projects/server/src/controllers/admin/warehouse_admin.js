@@ -8,6 +8,10 @@ const warehouse = db.Warehouse;
 module.exports = {
   allWarehouse: async (req, res) => {
     try {
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
       const { search, sort, direction, pagination } = req.query;
 
       const { count, rows } = await warehouse.findAndCountAll({
@@ -29,6 +33,10 @@ module.exports = {
   },
   editWarehouse: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await warehouse.update(req.body, {
         where: {
           id: req.params.id,
@@ -43,6 +51,10 @@ module.exports = {
   },
   addWarehouse: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const {
         warehouse_name,
         province,
@@ -85,6 +97,10 @@ module.exports = {
   },
   deleteWarehouse: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await warehouse.destroy({
         where: {
           id: req.params.id,

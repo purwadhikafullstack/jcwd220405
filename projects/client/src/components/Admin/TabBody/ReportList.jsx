@@ -33,6 +33,7 @@ import { RxReload } from "react-icons/rx";
 
 export const ReportList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const { id, role } = useSelector((state) => state.userSlice.value);
 
@@ -55,9 +56,16 @@ export const ReportList = () => {
           : url +
             `warehouse_journal?UserId=${id}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
 
-      const resultJournal = await Axios.get(journalURL);
-      // const resultCategories = await Axios.get(url + "all_category");
-      const resultWarehouse = await Axios.get(url + "all_warehouse?search=");
+      const resultJournal = await Axios.get(journalURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      const resultWarehouse = await Axios.get(url + "all_warehouse?search=", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
 
       setWarehouses(resultWarehouse.data.result);
       setJournals(resultJournal.data.result);
@@ -68,7 +76,7 @@ export const ReportList = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [url, sort, direction, pagination, warehouse, id, role]);
+  }, [url, sort, direction, pagination, warehouse, id, role, token]);
 
   useEffect(() => {
     getJournals();

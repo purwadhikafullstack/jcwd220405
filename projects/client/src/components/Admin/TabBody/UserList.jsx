@@ -37,6 +37,7 @@ import { EditUser } from "./UserProps/EditUser";
 
 export const UserList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const [users, setUsers] = useState();
   const [sort, setSort] = useState("id");
@@ -52,19 +53,36 @@ export const UserList = () => {
       const userURL =
         url +
         `all_user?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-      const resultUsers = await Axios.get(userURL);
-      setUsers(resultUsers.data.result);
-      setPages(resultUsers.data.pages);
+      const resultUsers = await Axios.get(userURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      setUsers(resultUsers.data.result, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      setPages(resultUsers.data.pages, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     } catch (err) {
       console.log(err);
     }
-  }, [sort, pagination, direction, search, url]);
+  }, [sort, pagination, direction, search, url, token]);
 
   const deleteUser = async (id) => {
     try {
-      await Axios.delete(url + `delete_user/${id}`);
+      await Axios.delete(url + `delete_user/${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       getUsers();
     } catch (err) {
       console.log(err);

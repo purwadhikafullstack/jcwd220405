@@ -6,6 +6,10 @@ const user = db.User;
 module.exports = {
   allUser: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { search, sort, direction, pagination } = req.query;
 
       const pages = Math.ceil(
@@ -54,6 +58,10 @@ module.exports = {
   },
   editUser: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await user.update(req.body, {
         where: {
           id: req.params.id,
@@ -67,6 +75,10 @@ module.exports = {
   },
   deleteUser: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       await user.destroy({
         where: {
           id: req.params.id,
@@ -80,6 +92,10 @@ module.exports = {
   },
   warehouseAdmin: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const result = await user.findAll({
         where: {
           role: 2,

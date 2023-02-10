@@ -23,6 +23,9 @@ import {
   Text,
 } from "@chakra-ui/react";
 
+// swal
+import Swal from "sweetalert2";
+
 // icons
 import { BiSearch } from "react-icons/bi";
 import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
@@ -35,6 +38,7 @@ import { EditWarehouse } from "./WarehouseProps/EditWarehouse";
 
 export const WarehouseList = () => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/";
+  const token = localStorage.getItem("token");
 
   const [warehouse, setWarehouse] = useState();
   const [admin, setAdmin] = useState();
@@ -53,7 +57,11 @@ export const WarehouseList = () => {
       const warehouseURL =
         url +
         `all_warehouse?search=${search}&sort=${sort}&direction=${direction}&pagination=${pagination}`;
-      const resultWarehouse = await Axios.get(warehouseURL);
+      const resultWarehouse = await Axios.get(warehouseURL, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       setWarehouse(resultWarehouse.data.result);
       setPages(resultWarehouse.data.pages);
       document.documentElement.scrollTop = 0;
@@ -61,7 +69,7 @@ export const WarehouseList = () => {
     } catch (err) {
       console.log(err);
     }
-  }, [sort, direction, pagination, search, url]);
+  }, [sort, direction, pagination, search, url, token]);
 
   const getProvince = async () => {
     try {
@@ -74,33 +82,78 @@ export const WarehouseList = () => {
     }
   };
 
-  const getProducts = useCallback(
-    async (req, res) => {
-      try {
-        const resultProduct = await Axios.get(url + `all_products?search=`);
-        setProducts(resultProduct.data.raw);
-      } catch (err) {
-        console.log(err);
-      }
-    },
-    [url]
-  );
+  const getProducts = useCallback(async () => {
+    try {
+      const resultProduct = await Axios.get(url + `all_products?search=`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      setProducts(resultProduct.data.raw);
+    } catch (err) {
+      console.log(err);
+    }
+  }, [url, token]);
 
   const getAdmin = useCallback(async () => {
     try {
-      const resultAdmin = await Axios.get(url + "warehouse_admin");
+      const resultAdmin = await Axios.get(url + "warehouse_admin", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       setAdmin(resultAdmin.data);
     } catch (err) {
       console.log(err);
     }
-  }, [url]);
+  }, [url, token]);
 
   const deleteWarehouse = async (id) => {
     try {
-      await Axios.delete(url + `delete_warehouse/${id}`);
+      await Axios.delete(url + `delete_warehouse/${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+      await Axios.delete(
+        url + `delete_mutation?IdWarehouseTo=${id}`,
+        {
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        }
+      );
       getWarehouse();
     } catch (err) {
       console.log(err);
+    }
+  };
+
+  const deleteWarning = async (id) => {
+    try {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          deleteWarehouse(id);
+          Swal.fire("Deleted!", "Warehouse deleted.", "success");
+        }
+      });
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response.data.name
+          ? err.response.data.errors[0].message.toUpperCase()
+          : err.response.data.toUpperCase(),
+      });
     }
   };
 
@@ -125,7 +178,7 @@ export const WarehouseList = () => {
       <Center paddingBottom={"5px"}>
         <Stack>
           <Flex>
-            <Box paddingRight={"12px"}>
+            <Box paddingRight={"5px"}>
               <InputGroup w={{ base: "200px", lg: "400px" }}>
                 <Input
                   placeholder={"Search"}
@@ -246,7 +299,7 @@ export const WarehouseList = () => {
                         />
                         <IconButton
                           onClick={() => {
-                            deleteWarehouse(item.id);
+                            deleteWarning(item.id);
                           }}
                           bg={"none"}
                           color={"#ff4d4d"}

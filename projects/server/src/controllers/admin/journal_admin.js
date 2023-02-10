@@ -8,12 +8,16 @@ const moment = require("moment");
 module.exports = {
   allJournal: async (req, res) => {
     try {
+      if (req.role === 1 || req.role === 2) {
+        throw "Unauthorize Access";
+      }
+
       const { sort, direction, pagination, WarehouseId } = req.query;
 
       // const thisMonth = moment().format("YYYY-MM-DD");
       // moment.suppressDeprecationWarnings = true
       // console.log(thisMonth)
-      
+
       const { count, rows } = await journal.findAndCountAll({
         where: {
           WarehouseId: {
@@ -37,6 +41,10 @@ module.exports = {
   },
   warehouseJournal: async (req, res) => {
     try {
+      if (req.role === 1) {
+        throw "Unauthorize Access";
+      }
+
       const { sort, direction, pagination, UserId } = req.query;
 
       const adminWarehouse = await warehouse.findOne({
@@ -59,6 +67,10 @@ module.exports = {
         },
         raw: true,
       });
+
+      if (!adminWarehouse) {
+        return null;
+      }
 
       const { count, rows } = await journal.findAndCountAll({
         where: {
