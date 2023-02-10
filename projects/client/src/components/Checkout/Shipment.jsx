@@ -56,6 +56,9 @@ export const Shipment = () => {
     try {
       const result = await (await Axios.get(`${baseApi}/shipment/${id}`)).data;
       setDetail(result);
+      if (!result?.length) {
+        navigate("/cart");
+      }
       setUserAddress(result[0]?.User?.Address_Users[0]?.city_id);
       setUserAddressID(result[0]?.User?.Address_Users[0]?.id);
       setCartID(result[0]?.id);
