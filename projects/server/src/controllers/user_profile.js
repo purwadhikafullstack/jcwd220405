@@ -26,7 +26,6 @@ module.exports = {
       });
       return res.status(200).send(response);
     } catch (error) {
-      console.error(error);
       return res.status(400).send(error);
     }
   },
@@ -42,7 +41,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   checkPassword: async (req, res) => {
@@ -60,7 +58,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   sendOtp: async (req, res) => {
@@ -124,7 +121,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   signOtp: async (req, res) => {
@@ -164,7 +160,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   settingEmail: async (req, res) => {
@@ -191,7 +186,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   uploadPicture: async (req, res) => {
@@ -215,7 +209,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
   settingPassword: async (req, res) => {
@@ -269,7 +262,6 @@ module.exports = {
       });
     } catch (error) {
       res.status(400).send(error);
-      console.log(error);
     }
   },
 };

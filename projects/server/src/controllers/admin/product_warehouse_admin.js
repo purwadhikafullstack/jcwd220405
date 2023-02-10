@@ -1,4 +1,3 @@
-// const db = require("../../../models");
 const db = require("../../models");
 const productWarehouses = db.Product_Warehouses;
 const journal = db.Journal;
@@ -21,7 +20,6 @@ module.exports = {
       res.status(200).send("Stocks Added");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteStocks: async (req, res) => {
@@ -29,7 +27,7 @@ module.exports = {
       if (req.role === 1 || req.role === 2) {
         throw "Unauthorize Access";
       }
-      
+
       const { ProductId, WarehouseId } = req.body;
 
       await productWarehouses.destroy({
@@ -42,7 +40,6 @@ module.exports = {
       res.status(200).send("Stocks Deleted");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   editStocks: async (req, res) => {
@@ -86,7 +83,6 @@ module.exports = {
       res.status(200).send("Stocks Updated");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

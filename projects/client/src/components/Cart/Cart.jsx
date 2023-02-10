@@ -36,9 +36,7 @@ export const Cart = ({ baseServer, baseApi }) => {
       setQuantity(response.qty);
       setSelectedCart(response.selectedItem);
       setTotalPriceCart(response.totalPrice);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, [baseApi, id, dispatch]);
 
   const deleteCart = async (item) => {
@@ -61,9 +59,7 @@ export const Cart = ({ baseServer, baseApi }) => {
         );
         return setTimeout(() => getCart(), 1500);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const updateCart = async (item, action, qty) => {
@@ -75,7 +71,6 @@ export const Cart = ({ baseServer, baseApi }) => {
       });
       getCart();
     } catch (error) {
-      console.error(error);
       return toast({
         title: `${error.response.data}`,
         status: "error",
@@ -92,9 +87,7 @@ export const Cart = ({ baseServer, baseApi }) => {
         type: item.status ? "unchecked" : "checked",
       });
       getCart();
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

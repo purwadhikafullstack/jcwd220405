@@ -66,9 +66,7 @@ export const WarehouseList = () => {
       setPages(resultWarehouse.data.pages);
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [sort, direction, pagination, search, url, token]);
 
   const getProvince = async () => {
@@ -77,9 +75,7 @@ export const WarehouseList = () => {
         process.env.REACT_APP_API_BASE_URL + "/province"
       );
       setProvinces(resultProvinces.data.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const getProducts = useCallback(async () => {
@@ -90,9 +86,7 @@ export const WarehouseList = () => {
         },
       });
       setProducts(resultProduct.data.raw);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, token]);
 
   const getAdmin = useCallback(async () => {
@@ -103,9 +97,7 @@ export const WarehouseList = () => {
         },
       });
       setAdmin(resultAdmin.data);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, token]);
 
   const deleteWarehouse = async (id) => {
@@ -115,18 +107,13 @@ export const WarehouseList = () => {
           authorization: `Bearer ${token}`,
         },
       });
-      await Axios.delete(
-        url + `delete_mutation?IdWarehouseTo=${id}`,
-        {
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await Axios.delete(url + `delete_mutation?IdWarehouseTo=${id}`, {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
       getWarehouse();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const deleteWarning = async (id) => {
@@ -146,7 +133,6 @@ export const WarehouseList = () => {
         }
       });
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

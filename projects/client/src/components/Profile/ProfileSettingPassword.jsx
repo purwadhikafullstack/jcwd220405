@@ -98,7 +98,6 @@ export const ProfileSettingPassword = ({ user, baseApi, toast }) => {
         localStorage.removeItem("token");
       }, 2500);
     } catch (error) {
-      console.log(error);
       toast({
         position: "top",
         title: error.response.data,

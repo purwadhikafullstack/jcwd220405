@@ -100,12 +100,10 @@ const AddForm = ({ close, warehouses, products, warehouseId }) => {
           title: "Success",
           text: "Request is sent",
         });
-         
+
         close();
       }
     } catch (err) {
-      console.log(err);
-
       Swal.fire({
         icon: "error",
         title: "Error",

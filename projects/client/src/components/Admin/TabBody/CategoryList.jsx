@@ -69,9 +69,7 @@ export const CategoryList = () => {
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, direction, pagination, search, sort, token]);
 
   const deleteCategory = async (id) => {
@@ -82,9 +80,7 @@ export const CategoryList = () => {
         },
       });
       getCategory();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const deleteWarning = async (id) => {
@@ -104,7 +100,6 @@ export const CategoryList = () => {
         }
       });
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

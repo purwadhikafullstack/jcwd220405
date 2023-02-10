@@ -9,7 +9,6 @@ import {
   CardBody,
   Image,
   Stack,
-  Spacer,
   CardFooter,
   Modal,
   ModalBody,
@@ -29,6 +28,7 @@ import { PaymentProof } from "../components/Button/PaymentButton";
 import { IoBagHandleOutline } from "react-icons/io5";
 import gameboy from "../assets/gameboy.jpg";
 import mokomdo from "../assets/mokomdo-simplified2.png";
+import swal from "sweetalert";
 
 //react + redux + axios
 import React, { useState, useEffect, useCallback } from "react";
@@ -47,7 +47,7 @@ export const OrderListPage = () => {
   const { id } = useSelector((state) => state.userSlice.value);
   const [isLoading, setisLoading] = useState(false);
   const [orderList, setOrderList] = useState([]);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  // const { isOpen, onOpen, onClose } = useDisclosure();
   const [page, setPage] = useState(1);
   const [totalPage, setTotalPage] = useState(0);
   const [statusName, setstatusName] = useState("");
@@ -61,36 +61,43 @@ export const OrderListPage = () => {
           `${baseApi}/order-list/${id}?page=${page - 1}&status=${statusName}`
         )
       ).data;
-      console.log(result);
       setOrderList(result.result);
       setTotalPage(result.totalPage);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [id, page, statusName]);
 
   const cancelOrder = async (item) => {
     try {
-      setisLoading(true);
-      await Axios.post(`${baseApi}/order-list/cancel/${id}`, { id: item.id });
-      setisLoading(false);
-      onClose();
-      getOrderList();
+      const once = await swal("Cancel this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        setisLoading(true);
+        await Axios.post(`${baseApi}/order-list/cancel/${id}`, { id: item.id });
+        setisLoading(false);
+        getOrderList();
+      }
     } catch (err) {
-      console.log(err);
       setisLoading(false);
     }
   };
 
   const completeOrder = async (item) => {
     try {
-      setisLoading(true);
-      await Axios.post(`${baseApi}/order-list/complete/${id}`, { id: item.id });
-      setisLoading(false);
-      onClose();
-      getOrderList();
+      const once = await swal("Complete this order?", {
+        dangerMode: true,
+        buttons: true,
+      });
+      if (once) {
+        setisLoading(true);
+        await Axios.post(`${baseApi}/order-list/complete/${id}`, {
+          id: item.id,
+        });
+        setisLoading(false);
+        getOrderList();
+      }
     } catch (err) {
-      console.log(err);
       setisLoading(false);
     }
   };
@@ -100,11 +107,8 @@ export const OrderListPage = () => {
       const result = await (
         await Axios.get(`${baseApi}/order-list/l/statusList`)
       ).data;
-      // console.log(result.result);
       setStatusList(result.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, []);
 
   const renderStatusList = () => {
@@ -139,10 +143,8 @@ export const OrderListPage = () => {
           <Box mt={4}>
             <Select
               bgColor={"white"}
-              // color={"white"}
               placeholder={statusName ? "Reset" : "--Select Transaction--"}
               onChange={(e) => {
-                console.log(e.target.value);
                 setstatusName(e.target.value);
                 setPage(1);
               }}
@@ -163,7 +165,6 @@ export const OrderListPage = () => {
           >
             <Flex direction={"column"}>
               {orderList?.map((item, index) => {
-                console.log(item);
                 return (
                   <Card
                     key={index}
@@ -193,14 +194,12 @@ export const OrderListPage = () => {
                           <Text>{item?.invoice}</Text>
                         </Box>
                       </Box>
-                      {/* <Spacer /> */}
                       <Box
                         color={"black"}
                         display="flex"
                         bgColor="#D0BDAC"
                         border={"0.1px"}
                         borderRadius={5}
-                        // p={1}
                         pb={1}
                         px={1}
                         overflow={setDir ? "auto" : ""}
@@ -208,12 +207,7 @@ export const OrderListPage = () => {
                         <Text>{item?.Order_Status?.status}</Text>
                       </Box>
                     </Box>
-                    <Card
-                      // direction={{ base: "column", md: "row" }}
-                      direction={setDir ? "column" : "row"}
-                      variant="ghost"
-                    >
-                      {/* <Box w={"130px"} h={"150px"} border={"2px"}> */}
+                    <Card direction={setDir ? "column" : "row"} variant="ghost">
                       <Box
                         w={setDir ? "100%" : "130px"}
                         h={setDir ? "100%" : "150px"}
@@ -227,8 +221,6 @@ export const OrderListPage = () => {
                                   ?.Product_Images[0]?.image
                               : gameboy
                           }
-                          // h="inherit"
-                          // w="inherit"
                           w={setDir ? "60%" : "130px"}
                           h={setDir ? "60%" : "150px"}
                           m={setDir ? "auto" : ""}
@@ -305,7 +297,6 @@ export const OrderListPage = () => {
                           >
                             Uploaded
                           </Button>
-                          {/* <Spacer /> */}
                           <Button
                             variant={"solid"}
                             bg="#D54B79"
@@ -320,34 +311,10 @@ export const OrderListPage = () => {
                             variant={"solid"}
                             bg="#D54B79"
                             color={"black"}
-                            onClick={onOpen}
+                            onClick={() => completeOrder(item)}
                           >
-                            Selesaikan Pesanan
+                            Complete Order
                           </Button>
-                          <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                              <ModalHeader>
-                                <Center>Cancel Order</Center>
-                              </ModalHeader>
-                              <ModalCloseButton />
-                              <ModalBody>
-                                Are you sure you want to complete this order?
-                              </ModalBody>
-                              <ModalFooter>
-                                <Button
-                                  onClick={() => completeOrder(item)}
-                                  isLoading={isLoading}
-                                  loadingText="Sending"
-                                >
-                                  Yes
-                                </Button>
-                                <Button onClick={onClose} ml={5} bg="#D54B79">
-                                  Cancel
-                                </Button>
-                              </ModalFooter>
-                            </ModalContent>
-                          </Modal>
                         </Box>
                       ) : (
                         <Box
@@ -362,39 +329,16 @@ export const OrderListPage = () => {
                             setDir={setDir}
                             minString={minString}
                           />
-                          {/* <Spacer /> */}
                           <Button
                             variant={"solid"}
                             bg="#D54B79"
                             color={"black"}
-                            onClick={onOpen}
+                            onClick={() => {
+                              cancelOrder(item);
+                            }}
                           >
                             Cancel Order
                           </Button>
-                          <Modal isOpen={isOpen} onClose={onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                              <ModalHeader>
-                                <Center>Cancel Order</Center>
-                              </ModalHeader>
-                              <ModalCloseButton />
-                              <ModalBody>
-                                Are you sure you want to cancel this order?
-                              </ModalBody>
-                              <ModalFooter>
-                                <Button
-                                  onClick={() => cancelOrder(item)}
-                                  isLoading={isLoading}
-                                  loadingText="Sending"
-                                >
-                                  Yes
-                                </Button>
-                                <Button onClick={onClose} ml={5} bg="#D54B79">
-                                  Cancel
-                                </Button>
-                              </ModalFooter>
-                            </ModalContent>
-                          </Modal>
                         </Box>
                       )}
                     </CardFooter>
@@ -417,7 +361,6 @@ export const OrderListPage = () => {
               h={"200px"}
               w={"1000px"}
               flexDirection={"column"}
-              // margin="auto"
             >
               <Box>
                 <Image position={"center"} src={mokomdo} />

@@ -40,9 +40,7 @@ export const Address = () => {
       ).data;
       setAddress(response?.result);
       setName(response?.name);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, [id, query]);
 
   const selectAddress = async (item) => {
@@ -61,9 +59,7 @@ export const Address = () => {
         1500
       );
       setTimeout(() => getAddressUser(), 1000);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { Container, Box, Divider, Text, Button, Stack } from "@chakra-ui/react";
+import { Box, Divider, Text, Stack } from "@chakra-ui/react";
 import { AddressModal } from "./AddressModal";
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
@@ -14,12 +14,9 @@ export const AddressList = () => {
   const defaultAddress = useCallback(async () => {
     try {
       const result = await (await Axios.get(`${baseApi}/address/${id}`)).data;
-      // console.log(result.result);
 
       setAddress(result.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [id]);
 
   useEffect(() => {

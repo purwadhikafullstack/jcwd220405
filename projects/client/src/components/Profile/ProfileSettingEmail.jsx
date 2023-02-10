@@ -45,7 +45,6 @@ export const ProfileSettingEmail = ({ user, baseApi, toast }) => {
       setIsCheck(response.status);
       setLoading(false);
     } catch (error) {
-      console.log(error);
       toast({
         position: "top",
         title: error.response.data,
@@ -101,7 +100,6 @@ export const ProfileSettingEmail = ({ user, baseApi, toast }) => {
         localStorage.removeItem("token");
       }, 2500);
     } catch (error) {
-      console.error(error);
       toast({
         position: "top",
         title: error.response.data,

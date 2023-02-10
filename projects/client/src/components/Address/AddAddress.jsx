@@ -42,9 +42,7 @@ export const AddAddress = ({ address, baseApi, search, id, name }) => {
     try {
       const response = await (await axios(`${baseApi}/province`)).data;
       setProvince(response.result);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, [baseApi]);
 
   const renderProvince = () => {
@@ -72,9 +70,7 @@ export const AddAddress = ({ address, baseApi, search, id, name }) => {
         )
       ).data;
       setCity(response.result);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   }, [baseApi, selectedProvince]);
 
   const renderCity = () => {
@@ -152,7 +148,6 @@ export const AddAddress = ({ address, baseApi, search, id, name }) => {
       setTimeout(() => setLoading(false), 2500);
       setTimeout(() => window.location.reload(), 3000);
     } catch (error) {
-      console.log(error);
       toast({
         position: "top",
         title: error.response.data,

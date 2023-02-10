@@ -47,9 +47,7 @@ export const Profile = () => {
       setbirthDate(response.birthDate);
       setGender(response.gender);
       setEmail(response.email);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, [id]);
 
   const settingUser = async (e) => {
@@ -96,9 +94,7 @@ export const Profile = () => {
         isClosable: true,
       });
       setTimeout(() => getUser(), 2500);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const handleChoose = (e) => {

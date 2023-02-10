@@ -1,5 +1,4 @@
 import {
-  Container,
   Box,
   Divider,
   Text,
@@ -56,7 +55,6 @@ export const Shipment = () => {
   const getCost = useCallback(async () => {
     try {
       const result = await (await Axios.get(`${baseApi}/shipment/${id}`)).data;
-      console.log(result);
       setDetail(result);
       setUserAddress(result[0]?.User?.Address_Users[0]?.city_id);
       setUserAddressID(result[0]?.User?.Address_Users[0]?.id);
@@ -90,7 +88,6 @@ export const Shipment = () => {
 
       const rajaOngkir = {
         origin: originWarehouse.origin[0].city_id,
-        // origin: 153,
         destination: userAddress,
         weight: totalWeight,
         courier: "jne",
@@ -101,9 +98,7 @@ export const Shipment = () => {
       ).data;
 
       setService(resultOngkir[0].costs);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [totalWeight, id, userAddress, productPricetotal, deliveryFee]);
 
   const createOrder = useCallback(async () => {
@@ -121,7 +116,6 @@ export const Shipment = () => {
         `${baseApi}/createOrder/${id}`,
         transactionData
       );
-      console.log(resultCreateOrder);
       Swal.fire({
         icon: "success",
         title: "Payment on Process",
@@ -132,9 +126,7 @@ export const Shipment = () => {
         },
       });
       navigate("/order-list");
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [
     cartID,
     deliveryFee,
@@ -150,14 +142,12 @@ export const Shipment = () => {
     getCost();
   }, [getCost, createOrder]);
 
-  // console.log(service);
   return (
     <Box>
       <>
         <Box mt={5}>
           <Box>
             {detail?.map((item, index) => {
-              // console.log(item);
               return (
                 <Box key={index}>
                   <Box mb={5}>
@@ -197,7 +187,6 @@ export const Shipment = () => {
                       <Text mt={5}>Rp {item?.price?.toLocaleString()}</Text>
                     </Box>
                   </Box>
-                  {/* <Divider borderTop={"1px"} borderBottom={"2px"} /> */}
                 </Box>
               );
             })}
@@ -210,18 +199,15 @@ export const Shipment = () => {
                 colorScheme={"pink"}
                 textColor="black"
                 bg={"#D54B79"}
-                // m="auto"
                 mb={5}
                 borderColor="gray"
                 fontWeight={600}
-                // onClick={() => getCost()}
                 onChange={() =>
                   setDeliveryFee(parseInt(ongkirTotal.current.value))
                 }
                 ref={ongkirTotal}
               >
                 {service?.map((item, index) => {
-                  // console.log(item?.cost[0]?.value);
                   return (
                     <option
                       value={item?.cost[0]?.value}
@@ -303,11 +289,7 @@ export const Shipment = () => {
                       borderColor="gray"
                       color={"white"}
                     >
-                      <Radio
-                        colorScheme={"pink"}
-                        // value={payment}
-                        defaultChecked
-                      >
+                      <Radio colorScheme={"pink"} defaultChecked>
                         Transfer Bank
                       </Radio>
                     </Box>

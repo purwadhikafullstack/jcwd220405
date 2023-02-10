@@ -12,7 +12,6 @@ import banner2 from "../assets/anoun2.png";
 
 // components
 import { CarouselBanner } from "../components/CarouselBanner";
-import { FeaturedCategories } from "../components/FeatCategories";
 import { HomeProduct } from "../components/Product/HomeProduct";
 import { Categories } from "../components/Categories";
 
@@ -32,7 +31,6 @@ export const HomePage = () => {
           hidden={setHide ? true : false}
         />
       </Center>
-      {/* <FeaturedCategories /> */}
       <Box mb={"8"} color={"white"}>
         <Box maxW={"85%"} m={"auto"}>
           <Divider border={"2px"} mb={"2"} />

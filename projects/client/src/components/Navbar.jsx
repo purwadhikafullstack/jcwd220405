@@ -33,7 +33,6 @@ import { DrawerCompUser } from "./DrawerUser";
 import { RegisterModal } from "../components/Authentications/RegisterModal";
 import { LoginModal } from "../components/Authentications/LoginModal";
 import { CartButton } from "./Button/CartButton";
-import { useEffect } from "react";
 
 //redux
 import { useSelector } from "react-redux";
@@ -84,7 +83,10 @@ export const NavbarComp = ({
             gap={{ base: 3, md: 3, lg: 5 }}
           >
             <GridItem colSpan={{ base: 1 }} w={{ base: "50px", md: "200px" }}>
-              <Center onClick={() => window.location.replace("/")}>
+              <Center
+                onClick={() => window.location.replace("/")}
+                cursor={"pointer"}
+              >
                 <Link
                   as={Image}
                   href={"/"}

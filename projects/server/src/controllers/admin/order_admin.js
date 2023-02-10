@@ -68,7 +68,7 @@ module.exports = {
           ],
           order: [["OrderStatusId", "ASC"]],
           offset: offset,
-          limit: limit_list,
+          // limit: limit_list,
         });
         const totalPage = Math.ceil(allOrder?.length / limit_list);
 
@@ -123,7 +123,7 @@ module.exports = {
           ],
           order: [["OrderStatusId", "ASC"]],
           offset: offset,
-          limit: limit_list,
+          // limit: limit_list,
         });
         const totalPage = Math.ceil(branchOrder?.length / limit_list);
 
@@ -139,7 +139,6 @@ module.exports = {
       }
       return res.status(200).send("order list");
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -151,7 +150,6 @@ module.exports = {
       });
       res.status(200).send({ message: "Warehouse List", result: allWarehouse });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -163,7 +161,6 @@ module.exports = {
       });
       res.status(200).send({ message: "Status List", result: allStatus });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -212,7 +209,6 @@ module.exports = {
       }
       return res.status(200).send({ message: "Reject Order" });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -550,7 +546,6 @@ module.exports = {
 
       return res.status(201).send({ message: "Success Confirm Order" });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -623,7 +618,6 @@ module.exports = {
 
       return res.status(201).send({ message: "Success Send Order" });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -746,7 +740,6 @@ module.exports = {
       }
       return res.status(201).send({ message: "Cancel Order" });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },

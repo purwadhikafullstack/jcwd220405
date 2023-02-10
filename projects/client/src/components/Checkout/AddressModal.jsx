@@ -21,7 +21,6 @@ import Axios from "axios";
 import { useSelector } from "react-redux";
 import { IoCheckmarkOutline } from "react-icons/io5";
 
-// address gw fix dulu ya mas, nb: AS
 import { AddAddress } from "../Address/AddAddress";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
@@ -46,9 +45,7 @@ export const AddressModal = () => {
       ).data;
       setName(result.name);
       setAddress(result.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const selectAddress = async (item) => {
@@ -67,9 +64,7 @@ export const AddressModal = () => {
         100
       );
       setTimeout(() => window.location.reload(), 500);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -122,7 +117,6 @@ export const AddressModal = () => {
               </InputGroup>
               <Box mt={5} color={"white"}>
                 <Center>
-                  {/* address gw fix dulu ya mas, nb: AS */}
                   <AddAddress
                     address={address}
                     baseApi={baseApi}

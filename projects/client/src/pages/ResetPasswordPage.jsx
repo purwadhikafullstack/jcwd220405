@@ -37,7 +37,6 @@ export const ResetPasswordPage = () => {
           Authorization: `Bearer ${params.token}`,
         },
       });
-      console.log(result.data);
       setUser(result.data.user);
     } catch (err) {
       navigate("/401");
@@ -61,14 +60,11 @@ export const ResetPasswordPage = () => {
 
   const onResetPass = async (data) => {
     try {
-      console.log(data);
-
       if (data.password !== data.confirmPassword) {
         return Swal.fire({
           icon: "error",
           title: "Oooops ...",
           text: "make sure password and confirm password match",
-          // timer: 2000,
           customClass: {
             container: "my-swal",
           },
@@ -89,10 +85,8 @@ export const ResetPasswordPage = () => {
         password: data.password,
         confirmPassword: data.confirmPassword,
       });
-      console.log(result);
       navigate("/");
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -143,7 +137,6 @@ export const ResetPasswordPage = () => {
           }}
         >
           {(props) => {
-            // console.log(props);
             return (
               <Form>
                 <Stack spacing={4} w={"full"} maxW={"md"}>

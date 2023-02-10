@@ -59,8 +59,6 @@ const AddForm = ({ close, getCategory }) => {
   const url = process.env.REACT_APP_API_BASE_URL + "/admin/add_category";
   const token = localStorage.getItem("token");
 
-  // const category = useRef("");
-
   const validation = Yup.object().shape({
     category: Yup.string().required("Cannot Be Empty"),
   });
@@ -71,7 +69,6 @@ const AddForm = ({ close, getCategory }) => {
         category: value.category,
       };
 
-      console.log();
       await Axios.post(url, data, {
         headers: {
           authorization: `Bearer ${token}`,
@@ -87,7 +84,6 @@ const AddForm = ({ close, getCategory }) => {
 
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

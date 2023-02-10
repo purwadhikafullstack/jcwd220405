@@ -73,9 +73,7 @@ export const ReportList = () => {
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, sort, direction, pagination, warehouse, id, role, token]);
 
   useEffect(() => {

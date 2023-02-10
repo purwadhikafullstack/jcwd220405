@@ -19,7 +19,6 @@ import Axios from "axios";
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
 export const PaymentProof = ({ id, setDir, minString }) => {
-  //   console.log(id);
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [image, setImage] = useState("");
@@ -36,17 +35,12 @@ export const PaymentProof = ({ id, setDir, minString }) => {
       cursor: "pointer",
     },
   };
-  // const minString = (str, num) => {
-  //   if (str?.length > num) return str.slice(0, num) + "...";
-  //   return str;
-  // };
 
   const handleChoose = (e) => {
     setImage(e.target.files[0]);
   };
 
   const handleUpload = async () => {
-    console.log(image);
     try {
       if (image?.size > 1028576) {
         return toast({
@@ -86,7 +80,6 @@ export const PaymentProof = ({ id, setDir, minString }) => {
 
       setTimeout(() => window.location.reload(), 2500);
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Something went wrong",

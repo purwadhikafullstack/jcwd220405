@@ -68,8 +68,7 @@ module.exports = {
         totalPrice,
       });
     } catch (error) {
-      console.log(error);
-      res.status(404).send(error);
+      res.status(400).send(error);
     }
   },
   userAddToCart: async (req, res) => {
@@ -116,7 +115,6 @@ module.exports = {
         message: "Success Add Cart",
       });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -131,7 +129,6 @@ module.exports = {
         message: "Success delete cart",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -205,7 +202,6 @@ module.exports = {
         message: "empty",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -244,7 +240,6 @@ module.exports = {
         message: "empty",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },

@@ -14,12 +14,10 @@ import {
   Input,
   Center,
   VStack,
-  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
 import * as Yup from "yup";
 import { Field, ErrorMessage, Formik, Form } from "formik";
-import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useState } from "react";
 
@@ -28,7 +26,6 @@ const url = process.env.REACT_APP_API_BASE_URL;
 export const RegisterModal = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const navigate = useNavigate();
 
   const RegisterSchema = Yup.object().shape({
     email: Yup.string().email().required(),
@@ -38,7 +35,6 @@ export const RegisterModal = () => {
     try {
       setIsLoading(true);
       const result = await axios.post(`${url}/user/register`, data);
-      // console.log(result);
 
       Swal.fire({
         icon: "success",
@@ -52,7 +48,6 @@ export const RegisterModal = () => {
       setIsLoading(false);
       onClose();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

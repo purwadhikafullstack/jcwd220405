@@ -18,7 +18,6 @@ module.exports = {
         .status(200)
         .json({ raw: response, result: response.rajaongkir.results });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -38,7 +37,6 @@ module.exports = {
         .status(200)
         .json({ raw: response, result: response.rajaongkir.results });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },

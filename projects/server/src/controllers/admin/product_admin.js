@@ -1,6 +1,5 @@
 const Sequelize = require("sequelize");
 const { Op } = require("sequelize");
-// const db = require("../../../models");
 const db = require("../../models");
 const product = db.Product;
 const category = db.Product_Category;
@@ -23,10 +22,14 @@ module.exports = {
         ProductCategoryId,
       });
 
+      await db.Product_Image.create({
+        image: "/public/product/default-product.png",
+        IdProduct: result.id,
+      });
+
       res.status(200).send({ msg: "Product Added", id: result.id });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   editProduct: async (req, res) => {
@@ -44,7 +47,6 @@ module.exports = {
       res.status(200).send("Edit Successful");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteProduct: async (req, res) => {
@@ -62,7 +64,6 @@ module.exports = {
       res.status(200).send("Product Deleted");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   allProduct: async (req, res) => {
@@ -73,7 +74,7 @@ module.exports = {
 
       const { search, sort, direction, pagination } = req.query;
 
-      const raw = await product.findAll()
+      const raw = await product.findAll();
 
       const { count, rows } = await product.findAndCountAll({
         where: {
@@ -108,7 +109,6 @@ module.exports = {
         .send({ pages: Math.ceil(count.length / 10), result: rows, raw });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   warehouseProduct: async (req, res) => {
@@ -139,10 +139,7 @@ module.exports = {
           },
         ],
         attributes: {
-          include: [
-            // [Sequelize.fn("COUNT", Sequelize.col("stocks")), "total_stocks"],
-            [Sequelize.col("stocks"), "total_stocks"],
-          ],
+          include: [[Sequelize.col("stocks"), "total_stocks"]],
         },
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
         limit: 10,
@@ -153,7 +150,6 @@ module.exports = {
       res.status(200).send({ pages: Math.ceil(count / 10), result: rows });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

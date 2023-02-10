@@ -24,7 +24,6 @@ export const UnAuthorizedRequest = () => {
             w={"1500px"}
             flexDirection={"column"}
             color="black"
-            // margin="auto"
           >
             <Box>
               <Image src={mokomdo} m="auto" />

@@ -5,7 +5,8 @@ const address = db.Address_User;
 
 const axios = require("axios");
 
-const { GEOAPIFY_KEY, RAJA_ONGKIR, RAJA_ONGKIR_URL, GEOAPIFY_KEY_URL } = process.env;
+const { GEOAPIFY_KEY, RAJA_ONGKIR, RAJA_ONGKIR_URL, GEOAPIFY_KEY_URL } =
+  process.env;
 
 module.exports = {
   getAddressUser: async (req, res) => {
@@ -53,7 +54,6 @@ module.exports = {
         .status(200)
         .send({ result: addressUser, name: defaultName ? defaultName[0] : "" });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -72,7 +72,6 @@ module.exports = {
         .status(200)
         .json({ raw: response, result: response.rajaongkir.results });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -92,7 +91,6 @@ module.exports = {
         .status(200)
         .json({ raw: response, result: response.rajaongkir.results });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -114,7 +112,8 @@ module.exports = {
 
       const forwardAddress = await (
         await axios.get(
-          GEOAPIFY_KEY_URL + `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
+          GEOAPIFY_KEY_URL +
+            `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
           {
             headers: { "Accept-Encoding": "gzip,deflate,compress" },
           }
@@ -150,7 +149,6 @@ module.exports = {
         message: "Success add address",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -166,7 +164,6 @@ module.exports = {
         message: "Success delete address",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -188,7 +185,8 @@ module.exports = {
 
       const forwardAddress = await (
         await axios.get(
-          GEOAPIFY_KEY_URL + `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
+          GEOAPIFY_KEY_URL +
+            `/search?street=${full_address}&postcode=${postal_code}&city=${city}&limit=1&format=json&apiKey=${GEOAPIFY_KEY}`,
           {
             headers: { "Accept-Encoding": "gzip,deflate,compress" },
           }
@@ -222,7 +220,6 @@ module.exports = {
         message: "Success update address",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },
@@ -242,7 +239,6 @@ module.exports = {
         message: "Success select address",
       });
     } catch (error) {
-      console.log(error);
       return res.status(400).send(error);
     }
   },

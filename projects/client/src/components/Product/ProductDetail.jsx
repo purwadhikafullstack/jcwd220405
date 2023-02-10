@@ -23,13 +23,15 @@ export const ProductDetail = () => {
   const url_detail = `${baseApi}/product/detail/${name}`;
 
   const getProduct = useCallback(async () => {
-    const response = await (await axios.get(url_detail)).data;
-    setProduct(response.result);
-    setCategory(response.result.Product_Category.category);
-    setImageProduct(response.result.Product_Images);
-    setSubtotal(response.result.price);
-    setWeight(response.weight);
-    setTotalStock(response.stock);
+    try {
+      const response = await (await axios.get(url_detail)).data;
+      setProduct(response.result);
+      setCategory(response.result.Product_Category.category);
+      setImageProduct(response.result.Product_Images);
+      setSubtotal(response.result.price);
+      setWeight(response.weight);
+      setTotalStock(response.stock);
+    } catch (error) {}
   }, [url_detail]);
 
   useEffect(() => {

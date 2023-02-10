@@ -54,9 +54,7 @@ export const Product = ({
       setTotalPage(response.totalPage);
       setTotalRows(response.totalRows);
       setOffset(response.offset);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, [urlProduct, search]);
 
   const crossTitle = (str, num) => {

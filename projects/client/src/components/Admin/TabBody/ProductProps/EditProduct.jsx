@@ -60,11 +60,7 @@ const EditForm = ({ close, category_name, getProducts, item, warehouse }) => {
   const url = process.env.REACT_APP_API_BASE_URL + `/admin/`;
   const token = localStorage.getItem("token");
 
-  // console.log(getProducts);
-  // console.log(warehouse);
-
   const ProductCategoryId = useRef("");
-  const stocks = useRef("");
 
   const validation = Yup.object().shape({
     name: Yup.string().required("Cannot be Empty"),
@@ -124,7 +120,6 @@ const EditForm = ({ close, category_name, getProducts, item, warehouse }) => {
       getProducts();
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

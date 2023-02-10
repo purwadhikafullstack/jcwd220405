@@ -24,7 +24,7 @@ export const AdminBody = ({ tabNum, role }) => {
           ReportList,
           SalesList
         ]
-      : [ProductList, CategoryList, OrderList, MutationList, ReportList];
+      : [ProductList, CategoryList, OrderList, MutationList, ReportList, SalesList];
   const TabBody = tabs[tabNum];
 
   return (

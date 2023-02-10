@@ -99,7 +99,6 @@ module.exports = {
         totalPage: totalPage,
       });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -136,7 +135,6 @@ module.exports = {
       const weight = response.weight >= 1000 ? response.weight / 1000 : "";
       res.status(200).send({ result: response, stock: stock, weight: weight });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -161,7 +159,6 @@ module.exports = {
         result: all,
       });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },
@@ -176,7 +173,6 @@ module.exports = {
         result: category,
       });
     } catch (error) {
-      console.log(error);
       res.status(400).send(error);
     }
   },

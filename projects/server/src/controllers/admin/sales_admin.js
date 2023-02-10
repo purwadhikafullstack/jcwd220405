@@ -4,13 +4,7 @@ const { Op } = require("sequelize");
 const Transaction = db.Transaction;
 const TransactionWarehouses = db.Transaction_Product_Warehouses;
 const Warehouse = db.Warehouse;
-const orderStatus = db.Order_Status;
-const User = db.User;
-const Address = db.Address_User;
 const Product = db.Product;
-const ProductWarehouses = db.Product_Warehouses;
-const StockMutation = db.Stock_Mutation;
-const Journal = db.Journal;
 const ProductCategories = db.Product_Category;
 const moment = require("moment");
 
@@ -43,8 +37,6 @@ module.exports = {
             updatedAt: month
               ? { [Op.between]: [startOfMonth, endOfMonth] }
               : { [Op.not]: null },
-
-            // whichMonth ? whichMonth : { [Op.not]: null },
           },
           having: {
             ["Transaction_Product_Warehouses.Product.Product_Category.id"]:
@@ -88,7 +80,6 @@ module.exports = {
 
         let totalSales = [];
         let price = allSales.map((item) => {
-          // console.log(item.Transaction_Product_Warehouses)
           return item.Transaction_Product_Warehouses.map((item) => item.price);
         });
         let cleanprice = price.flat(1);
@@ -125,8 +116,6 @@ module.exports = {
         });
         const offset = limit_list * page_list;
         const totalPage = Math.ceil(totalRows / limit_list);
-
-        console.log(warehouseBranch);
 
         const branchSales = await Transaction.findAll({
           where: {

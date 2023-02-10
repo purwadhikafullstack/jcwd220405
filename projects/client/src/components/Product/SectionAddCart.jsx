@@ -96,7 +96,6 @@ export const SectionAddCart = ({
 
       return onOpen();
     } catch (error) {
-      console.error(error);
       return toast({
         title: `${error.response.data}`,
         status: "error",

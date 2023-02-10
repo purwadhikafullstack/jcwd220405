@@ -117,7 +117,6 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
       getProducts();
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -146,7 +145,7 @@ const AddForm = ({ close, category_name, getProducts, warehouses }) => {
           return (
             <Form>
               <FormControl isRequired>
-                <FormLabel>Category Name</FormLabel>
+                <FormLabel>Product Name</FormLabel>
                 <Input name={"name"} as={Field} />
                 <ErrorMessage
                   style={{ color: "red" }}

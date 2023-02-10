@@ -56,7 +56,7 @@ export const EditUser = ({ user, getUsers }) => {
 const EditForm = ({ user, close, getUsers }) => {
   const url =
     process.env.REACT_APP_API_BASE_URL + `/admin/edit_user/${user.id}`;
-    const token = localStorage.getItem("token");
+  const token = localStorage.getItem("token");
 
   const role = useRef("");
 
@@ -93,7 +93,6 @@ const EditForm = ({ user, close, getUsers }) => {
 
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

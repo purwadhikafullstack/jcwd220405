@@ -85,9 +85,7 @@ const EditForm = ({ close, getWarehouse, admin, provinces, warehouse }) => {
         process.env.REACT_APP_API_BASE_URL + `/city/${provinceId}`
       );
       setCities(resultCities.data.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [provinceId]);
 
   const editWarehouse = async (value) => {
@@ -124,7 +122,6 @@ const EditForm = ({ close, getWarehouse, admin, provinces, warehouse }) => {
       getWarehouse();
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

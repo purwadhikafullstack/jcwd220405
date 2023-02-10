@@ -80,17 +80,13 @@ const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
     postal_code: Yup.number().required("Cannot be Empty"),
   });
 
-  // console.log(products)
-
   const getCities = useCallback(async () => {
     try {
       const resultCities = await Axios.get(
         process.env.REACT_APP_API_BASE_URL + `/city/${provinceId}`
       );
       setCities(resultCities.data.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [provinceId]);
 
   const addWarehouse = async (value) => {
@@ -133,7 +129,6 @@ const AddForm = ({ close, getWarehouse, admin, provinces, products }) => {
       getWarehouse();
       close();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

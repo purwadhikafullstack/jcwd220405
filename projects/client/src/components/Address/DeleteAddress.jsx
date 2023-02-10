@@ -38,7 +38,6 @@ export const DeleteAddress = ({ item, getAddressUser, baseApi, id }) => {
       setTimeout(() => onClose(), 2500);
       setTimeout(() => getAddressUser(), 3000);
     } catch (error) {
-      console.log(error);
       setLoading(false);
     }
   };

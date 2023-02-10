@@ -1,4 +1,3 @@
-// const db = require("../../../models");
 const db = require("../../models");
 const { Op } = require("sequelize");
 const mutation = db.Stock_Mutation;
@@ -25,7 +24,6 @@ module.exports = {
         },
         attributes: {
           exclude: [
-            // "warehouse_name",
             "UserId",
             "province",
             "city",
@@ -81,12 +79,11 @@ module.exports = {
       }
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   addMutation: async (req, res) => {
     try {
-      if (req.role === 1 || req.role === 2) {
+      if (req.role === 1) {
         throw "Unauthorize Access";
       }
 
@@ -111,7 +108,6 @@ module.exports = {
       res.status(200).send("Mutation Added");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   approvalMutation: async (req, res) => {
@@ -228,7 +224,6 @@ module.exports = {
       }
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteMutation: async (req, res) => {
@@ -248,7 +243,6 @@ module.exports = {
       res.status(200).send("Delete Success");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

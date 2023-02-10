@@ -59,8 +59,6 @@ function App() {
       const cart = await (await Axios.get(`${url}/cart/${id}`)).data;
       dispatch(cartUser(cart.result));
     } catch (err) {
-      console.log(err);
-      console.log(err.response.data);
     }
   }, [dispatch, id, token]);
 
@@ -121,9 +119,7 @@ function App() {
         <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
 
         {/* admin */}
-
         {role === 1 ? null : <Route path="/admin" element={<AdminPage />} />}
-        {/* <Route path="/admin" element={<AdminPage />} /> */}
 
         {/* not found  */}
         <Route path="*" element={<NotFoundPage />} />

@@ -1,4 +1,3 @@
-
 // chakra
 import {
   Drawer,
@@ -39,22 +38,8 @@ export const DrawerCompUser = () => {
     localStorage.removeItem("token");
   };
 
-  //   const User = () => {
-  //     setUser("test");
-  //   };
-
-  // useEffect(() => {}, [user]);
-
   return (
     <Box>
-      {/* <Button borderRadius={"50%"}>
-        <Avatar
-          size={"sm"}
-          src={"https://bit.ly/broken-link"}
-          bg="grey"
-          onClick={onOpen}
-        />
-      </Button> */}
       <Button
         as={Avatar}
         size={"xl"}
@@ -77,7 +62,9 @@ export const DrawerCompUser = () => {
                   bg="grey"
                 />
               </Center>
-              <Box textAlign={"center"}>Hy, {name}</Box>
+              <Box textAlign={"center"} hidden={name ? false : true}>
+                Hi, {name}
+              </Box>
             </Box>
           </DrawerHeader>
           <DrawerBody display={"flex"} flexDir={"column"}>
@@ -86,11 +73,10 @@ export const DrawerCompUser = () => {
                 <Button as={Link} to={"/profile/settings"}>
                   Profile
                 </Button>
-                <Button>History</Button>
-                <Button
-                as={Link} to={"/cart"}
-                  leftIcon={<CgShoppingCart />}
-                >
+                <Button as={Link} to={"/order-list"}>
+                  History
+                </Button>
+                <Button as={Link} to={"/cart"} leftIcon={<CgShoppingCart />}>
                   Cart
                 </Button>
               </Stack>

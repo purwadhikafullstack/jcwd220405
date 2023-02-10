@@ -1,28 +1,9 @@
-import {
-  Box,
-  Button,
-  useDisclosure,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  Center,
-  ModalCloseButton,
-  InputGroup,
-  InputLeftElement,
-  Input,
-  ModalBody,
-  Text,
-  useToast,
-  Container,
-  Heading,
-} from "@chakra-ui/react";
+import { Box, Button, Text, Container, Heading } from "@chakra-ui/react";
 import { AddressList } from "./AddressList";
 import Axios from "axios";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { CheckoutShipment } from "./CheckoutShipment";
 
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
@@ -34,9 +15,8 @@ export const CheckoutAddress = () => {
   const checkAddress = useCallback(async () => {
     try {
       const result = await (await Axios.get(`${baseApi}/address/${id}`)).data;
-      // console.log(result);
+
       setAddress(result.result);
-      // console.log(address.result);
     } catch (err) {
       console.log(err);
     }
@@ -60,9 +40,7 @@ export const CheckoutAddress = () => {
       maxWidth={"80%"}
       display={"flex"}
       flexDirection={{ base: "column", md: "row" }}
-      // bgGradient="linear(150.64deg, #3B0D2C 0%, rgba(74, 10, 71, 1) 16.61%, #2F0C39 61.16%, rgba(38, 8, 67, 1)  92.29%)"
       color={"white"}
-      // bg="#9400D3"
       border={"2px"}
       borderColor="gray.200"
       borderRadius="lg"
@@ -78,7 +56,7 @@ export const CheckoutAddress = () => {
         >
           <Heading color={"salmon"}>Checkout</Heading>
         </Box>
-        {address ? (
+        {address?.length ? (
           <AddressList />
         ) : (
           <Box mt={8}>

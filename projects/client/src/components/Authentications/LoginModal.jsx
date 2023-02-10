@@ -6,7 +6,6 @@ import Axios from "axios";
 import Swal from "sweetalert2";
 import { ResetPassword } from "./ResetPasswordModal";
 import {
-  Box,
   Button,
   useDisclosure,
   Modal,
@@ -19,7 +18,6 @@ import {
   FormControl,
   FormLabel,
   Input,
-  Link,
 } from "@chakra-ui/react";
 const url = process.env.REACT_APP_API_BASE_URL;
 
@@ -55,7 +53,10 @@ export const LoginModal = () => {
         })
       );
 
-      if (result.data.isUserExist.role === 2 || 3) {
+      if (
+        result.data.isUserExist.role === 2 ||
+        result.data.isUserExist.role === 3
+      ) {
         window.location.replace("/admin");
       }
 
@@ -73,7 +74,6 @@ export const LoginModal = () => {
 
       onCloseLogin();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Failed Attempt",
@@ -96,7 +96,6 @@ export const LoginModal = () => {
         bg="#440F5D"
         href={"#"}
         onClick={onOpenLogin}
-        // textAlign={"center"}
         pt={{ base: "3", md: 0 }}
       >
         Sign In

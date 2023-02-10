@@ -75,9 +75,7 @@ export const MutationList = () => {
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, id, role, sort, direction, pagination, search, token]);
 
   const approvalFunc = useCallback(
@@ -101,7 +99,6 @@ export const MutationList = () => {
         );
         getMutations();
       } catch (err) {
-        console.log(err);
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -143,7 +140,6 @@ export const MutationList = () => {
         }
       });
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

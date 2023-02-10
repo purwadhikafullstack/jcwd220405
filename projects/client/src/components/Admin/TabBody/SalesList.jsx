@@ -23,13 +23,11 @@ import {
   Text,
   Select,
   HStack,
-  Heading,
   Button,
   Spacer,
 } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { BiSearch } from "react-icons/bi";
-import { BsFillTrashFill, BsArrowUp, BsArrowDown } from "react-icons/bs";
 const baseApi = process.env.REACT_APP_API_BASE_URL;
 
 export const SalesList = () => {
@@ -59,22 +57,17 @@ export const SalesList = () => {
           }&id=${id}&role=${role}&page=${page - 1}`
         )
       ).data;
-      console.log(response);
       setSalesList(response.allSales);
       setCleanSales(response.cleantotalSales);
       setTotalPage(response.totalPage);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [filterMonth, filterCat, wrId, searchQuery, id, role, page]);
 
   const getCategories = useCallback(async () => {
     try {
       const response = await (await Axios.get(`${baseApi}/category`)).data;
       setCategory(response.result);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, []);
 
   const renderCategories = () => {
@@ -93,9 +86,7 @@ export const SalesList = () => {
         await Axios.get(`${baseApi}/admin/warehouse-list`)
       ).data;
       setWrList(response.result);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, []);
 
   const renderWarehouse = () => {
@@ -145,10 +136,8 @@ export const SalesList = () => {
               <Input
                 placeholder={"Search"}
                 _focusVisible={{ border: "1px solid #b759b4" }}
-                // ref={searchValue}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  console.log(e.target.value);
                 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -208,7 +197,6 @@ export const SalesList = () => {
                 bgColor={"white"}
                 textColor="black"
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setFilterCat(e.target.value);
                 }}
                 placeholder={filterCat ? "Reset" : "--Categories--"}
@@ -221,7 +209,6 @@ export const SalesList = () => {
                 bgColor={"white"}
                 textColor="black"
                 onChange={(e) => {
-                  console.log(e.target.value);
                   setWrId(e.target.value);
                 }}
                 placeholder={wrId ? "Reset" : "--Warehouse--"}

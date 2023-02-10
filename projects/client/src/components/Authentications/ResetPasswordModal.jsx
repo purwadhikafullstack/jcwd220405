@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import { useRef } from "react";
 import Axios from "axios";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -37,7 +36,6 @@ export const ResetPassword = () => {
     try {
       setIsLoading(true);
       const result = await Axios.post(`${url}/user/emailresetpass`, e);
-      console.log(result);
 
       Swal.fire({
         icon: "success",
@@ -51,7 +49,6 @@ export const ResetPassword = () => {
       setIsLoading(false);
       onClose();
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

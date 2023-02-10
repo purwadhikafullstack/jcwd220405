@@ -1,5 +1,4 @@
 const { Op } = require("sequelize");
-// const db = require("../../../models");
 const db = require("../../models");
 const user = db.User;
 
@@ -70,7 +69,6 @@ module.exports = {
       res.status(200).send("Edit User Success");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteUser: async (req, res) => {
@@ -87,7 +85,6 @@ module.exports = {
       res.status(200).send("User Deleted");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   warehouseAdmin: async (req, res) => {
@@ -105,7 +102,6 @@ module.exports = {
       res.status(200).send(result);
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

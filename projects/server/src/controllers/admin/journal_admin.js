@@ -3,7 +3,6 @@ const db = require("../../models");
 const journal = db.Journal;
 const journal_type = db.Journal_Type;
 const warehouse = db.Warehouse;
-const moment = require("moment");
 
 module.exports = {
   allJournal: async (req, res) => {
@@ -14,18 +13,11 @@ module.exports = {
 
       const { sort, direction, pagination, WarehouseId } = req.query;
 
-      // const thisMonth = moment().format("YYYY-MM-DD");
-      // moment.suppressDeprecationWarnings = true
-      // console.log(thisMonth)
-
       const { count, rows } = await journal.findAndCountAll({
         where: {
           WarehouseId: {
             [Op.like]: `%${WarehouseId}%`,
           },
-          // createdAt: {
-          //     [Op.like]: `%${thisMonth}%`,
-          // },
         },
         include: [{ model: journal_type }],
         order: [[sort ? sort : "id", direction ? direction : "ASC"]],
@@ -36,7 +28,6 @@ module.exports = {
       res.status(200).send({ result: rows, pages: Math.ceil(count / 10) });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   warehouseJournal: async (req, res) => {
@@ -85,7 +76,6 @@ module.exports = {
       res.status(200).send({ result: rows, pages: Math.ceil(count / 10) });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

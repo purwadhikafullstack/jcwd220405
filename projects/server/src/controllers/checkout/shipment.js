@@ -1,4 +1,3 @@
-// const db = require("../../../models");
 const db = require("../../models");
 const cart = db.Cart;
 const address = db.Address_User;
@@ -8,7 +7,6 @@ const User = db.User;
 const Warehouse = db.Warehouse;
 const Transaction = db.Transaction;
 const TransactionWarehouse = db.Transaction_Product_Warehouses;
-const { Op } = require("sequelize");
 const axios = require("axios");
 const rajaOngkir = process.env.RAJA_ONGKIR;
 const rajaOngkirURL = process.env.RAJA_ONGKIR_URL;
@@ -62,8 +60,6 @@ module.exports = {
   },
   getCost: async (req, res) => {
     try {
-      // const { user } = req.params;
-
       const { origin, destination, weight, courier } = req.body;
 
       const cost = await axios.post(
@@ -81,7 +77,6 @@ module.exports = {
           },
         }
       );
-      // console.log(cost);
 
       res.status(200).send(cost.data.rajaongkir.results);
     } catch (err) {
@@ -90,8 +85,8 @@ module.exports = {
   },
   getWarehouse: async (req, res) => {
     try {
-      // const { WarehouseId } = req.body;
       const { id } = req.params;
+
       // find lat lng warehouse origin
       const originUser = await address.findOne({
         where: {
@@ -101,12 +96,8 @@ module.exports = {
         raw: true,
       });
 
-      // console.log(originUser);
-
       const originLat = originUser.lat;
       const originLng = originUser.lng;
-
-      // console.log("buat cari warehouse");
 
       function calCrow(lat1, lon1, lat2, lon2) {
         var R = 6371; // km
@@ -132,7 +123,6 @@ module.exports = {
 
       // find closest warehouses
       const closestWarehouse = await Warehouse.findAll({ raw: true });
-      // console.log(closestWarehouse);
 
       const nearestOne = [];
       for (let i = 0; i < closestWarehouse.length; i++) {
@@ -143,12 +133,6 @@ module.exports = {
           closestWarehouse[i].lng
         );
 
-        // skipped warehouse same id
-        // if (closestWarehouse[i].id === originWarehouse.id) {
-        //   continue;
-        // }
-        // console.log(closestWarehouse[i]);
-
         nearestOne.push({
           warehouse: closestWarehouse[i],
           range: nearestWarehouse,
@@ -158,8 +142,6 @@ module.exports = {
       const warehouseSort = nearestOne
         .sort((a, b) => a.range - b.range)
         .map((value) => value.warehouse);
-
-      // console.log(warehouseSort);
 
       res.status(200).send({
         message: "Success",
@@ -182,9 +164,6 @@ module.exports = {
         CartId,
         final_price,
         IdAddress,
-        // quantity,
-        // price,
-        // product,
         WarehouseId,
         Item,
       } = req.body;
@@ -192,7 +171,6 @@ module.exports = {
       const createOrder = await Transaction.create({
         delivery_fee: delivery_fee,
         total_price: total_price,
-        // CartId: CartId,
         IdUser: user,
         final_price: final_price,
         IdAddress: IdAddress,
@@ -205,15 +183,12 @@ module.exports = {
           time.getSeconds(),
         OrderStatusId: 1,
       });
-      // console.log(createOrder.id);
-      // console.log(Item);
 
       let quantity = Item.map((item) => item.quantity);
-      // console.log(quantity);
+
       let price = Item.map((item) => item.price);
-      // console.log(price);
+
       let IdProduct = Item.map((item) => item.IdProduct);
-      // console.log(IdProduct);
 
       for (let i = 0; i < IdProduct.length; i++) {
         await TransactionWarehouse.create({
@@ -226,7 +201,6 @@ module.exports = {
       }
 
       let cartDestroy = Item.map((item) => item.id);
-      // console.log(cart);
 
       for (let i = 0; i < cartDestroy.length; i++) {
         await cart.destroy({
@@ -247,7 +221,6 @@ module.exports = {
   uploadPayment: async (req, res) => {
     try {
       let fileUploaded = req.file;
-      console.log(fileUploaded);
 
       const checkHasPaid = await Transaction.findOne({
         where: {
@@ -256,8 +229,6 @@ module.exports = {
         raw: true,
       });
       if (checkHasPaid.payment_proof) throw "You have already paid";
-
-      // console.log(checkHasPaid);
 
       await Transaction.update(
         {

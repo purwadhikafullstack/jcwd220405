@@ -30,9 +30,6 @@ export const VerificationPage = () => {
   const [show, setShow] = useState(false);
   const [showConfirm, setConfirm] = useState(false);
 
-  // console.log(params.token);
-  // console.log(user);
-
   const VerifyToken = async () => {
     try {
       const result = await Axios.get(`${url}/user/verification`, {
@@ -40,10 +37,8 @@ export const VerificationPage = () => {
           Authorization: `Bearer ${params.token}`,
         },
       });
-      console.log(result.data);
       setUser(result.data.user);
     } catch (err) {
-      console.log(err);
       navigate("/401");
     }
   };
@@ -69,14 +64,11 @@ export const VerificationPage = () => {
 
   const OnSignUp = async (data) => {
     try {
-      console.log(data);
-
       if (data.password !== data.confirmPassword) {
         return Swal.fire({
           icon: "error",
           title: "Oooops ...",
           text: "make sure password and confirm password match",
-          // timer: 2000,
           customClass: {
             container: "my-swal",
           },
@@ -97,10 +89,8 @@ export const VerificationPage = () => {
         confirmPassword: data.confirmPassword,
         userName: data.userName,
       });
-      console.log(result);
       navigate("/");
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",
@@ -145,7 +135,6 @@ export const VerificationPage = () => {
           }}
         >
           {(props) => {
-            // console.log(props);
             return (
               <Form>
                 <Stack spacing={4} w={"full"} maxW={"md"}>

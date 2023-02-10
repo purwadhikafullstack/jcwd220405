@@ -46,7 +46,6 @@ module.exports = {
       res.status(200).send("Edit Warehouse Success");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   addWarehouse: async (req, res) => {
@@ -74,9 +73,6 @@ module.exports = {
         )
       ).data;
 
-      // console.log(forwardAddress.results[0].lon)
-      // console.log(forwardAddress.results[0].lat)
-
       const result = await warehouse.create({
         warehouse_name,
         province,
@@ -92,7 +88,6 @@ module.exports = {
       res.status(200).send(result);
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteWarehouse: async (req, res) => {
@@ -109,7 +104,6 @@ module.exports = {
       res.status(200).send("Warehouse Deleted");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

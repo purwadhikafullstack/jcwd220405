@@ -71,9 +71,7 @@ export const UserList = () => {
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [sort, pagination, direction, search, url, token]);
 
   const deleteUser = async (id) => {
@@ -84,9 +82,7 @@ export const UserList = () => {
         },
       });
       getUsers();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const deleteWarning = async (id) => {
@@ -106,7 +102,6 @@ export const UserList = () => {
         }
       });
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

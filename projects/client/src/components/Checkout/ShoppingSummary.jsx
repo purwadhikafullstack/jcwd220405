@@ -10,9 +10,7 @@ export const ShoppingSummary = ({
     <>
       <Box
         maxW={"100%%"}
-        //   bgColor={"gray.300"}
         textColor={"black"}
-        //   borderColor="black"
         bgGradient="linear-gradient(104.04deg, #E73A79 0%, rgba(231, 56, 145, 0.72) 54.88%, rgba(233, 54, 188, 0.77) 100%)"
         border={"2px"}
         borderRadius="10px"

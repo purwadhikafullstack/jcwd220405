@@ -1,8 +1,6 @@
 const fs = require("fs");
-// const db = require("../../models");
 const db = require("../models");
 const user = db.User;
-const { Op } = require("sequelize");
 const transporter = require("../helpers/transporter");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -41,7 +39,6 @@ module.exports = {
       const registered = await user.create({
         email,
       });
-      console.log(registered);
 
       const afterRegistered = moment()
         .add(24, "hours")
@@ -97,14 +94,12 @@ module.exports = {
       res.status(200).send(data);
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 
   verification: async (req, res) => {
     try {
       const verify = jwt.verify(req.token, key);
-      // console.log(verify);
 
       res.status(200).send({
         message: "Verification Test",
@@ -125,7 +120,6 @@ module.exports = {
         },
         raw: true,
       });
-      // console.log(isUserExist)
       if (!isUserExist) throw "User not Found!";
 
       const isValid = await bcrypt.compare(password, isUserExist.password);
@@ -136,7 +130,7 @@ module.exports = {
         email: isUserExist.email,
         name: isUserExist.name,
         role: isUserExist.role,
-        picture: isUserExist.picture
+        picture: isUserExist.picture,
       };
       const token = jwt.sign(payload, key);
 
@@ -150,14 +144,12 @@ module.exports = {
 
   keeplogin: async (req, res) => {
     try {
-      // console.log(req.user);
       const isUserExist = await db.User.findOne({
         where: {
           id: req.user.id,
         },
         raw: true,
       });
-      // console.log(isUserExist);
 
       res.status(200).send(isUserExist);
     } catch (err) {

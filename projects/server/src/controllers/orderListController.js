@@ -1,7 +1,5 @@
-// const db = require("../../models");
 const db = require("../models");
 const transaction = db.Transaction;
-const cart = db.Cart;
 const product = db.Product;
 const product_image = db.Product_Image;
 const transaction_product = db.Transaction_Product_Warehouses;
@@ -60,10 +58,7 @@ module.exports = {
         order: [["createdAt", "DESC"]],
         offset: offset,
         limit: limit_list,
-        // raw: true,
       });
-
-      // console.log(transactionUser);
 
       res.status(200).send({
         message: "Transaction List",
@@ -124,11 +119,9 @@ module.exports = {
     try {
       const allStatus = await order_status.findAll({
         attributes: ["id", "status"],
-        // raw: true,
       });
       res.status(200).send({ message: "Status List", result: allStatus });
     } catch (err) {
-      // console.log(err);
       res.status(400).send(err);
     }
   },

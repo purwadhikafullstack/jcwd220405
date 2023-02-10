@@ -1,5 +1,4 @@
 const { Op } = require("sequelize");
-// const db = require("../../../models");
 const db = require("../../models");
 const product_category = db.Product_Category;
 
@@ -19,7 +18,6 @@ module.exports = {
       res.status(200).send("Category Added!");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   editCategory: async (req, res) => {
@@ -37,7 +35,6 @@ module.exports = {
       res.status(200).send("Edit Successful");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   deleteCategory: async (req, res) => {
@@ -54,7 +51,6 @@ module.exports = {
       res.status(200).send("Category Deleted");
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
   allCategory: async (req, res) => {
@@ -90,7 +86,6 @@ module.exports = {
       res.status(200).send({ result, pages });
     } catch (err) {
       res.status(400).send(err);
-      console.log(err);
     }
   },
 };

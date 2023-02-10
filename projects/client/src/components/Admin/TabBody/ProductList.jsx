@@ -94,9 +94,7 @@ export const ProductList = () => {
 
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }, [url, direction, pagination, search, sort, warehouse, token]);
 
   const deleteProduct = async (id) => {
@@ -107,9 +105,7 @@ export const ProductList = () => {
         },
       });
       getProducts();
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   };
 
   const deleteWarning = async (id) => {
@@ -129,7 +125,6 @@ export const ProductList = () => {
         }
       });
     } catch (err) {
-      console.log(err);
       Swal.fire({
         icon: "error",
         title: "Error",

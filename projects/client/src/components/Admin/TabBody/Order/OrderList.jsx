@@ -33,9 +33,7 @@ export const OrderList = () => {
       ).data;
       setOrderList(response.result);
       setTotalPage(response.totalPage);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, [wrId, id, role, page, statusId]);
 
   const rejectOrder = async (order) => {
@@ -58,9 +56,7 @@ export const OrderList = () => {
         );
         setTimeout(() => getOrderList(), 1000);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const confirmOrder = async (order) => {
@@ -85,9 +81,7 @@ export const OrderList = () => {
         );
         setTimeout(() => getOrderList(), 1000);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const sendOrder = async (order) => {
@@ -112,9 +106,7 @@ export const OrderList = () => {
         );
         setTimeout(() => getOrderList(), 1000);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const cancelOrder = async (order) => {
@@ -139,9 +131,7 @@ export const OrderList = () => {
         );
         setTimeout(() => getOrderList(), 1000);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   };
 
   const warehouseList = useCallback(async () => {
@@ -150,9 +140,7 @@ export const OrderList = () => {
         await axios.get(`${baseApi}/admin/warehouse-list`)
       ).data;
       setWrList(response.result);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, []);
 
   const renderWarehouse = () => {
@@ -171,9 +159,7 @@ export const OrderList = () => {
         await axios.get(`${baseApi}/admin/status-list`)
       ).data;
       setStatusList(response.result);
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   }, []);
 
   const renderStatus = () => {

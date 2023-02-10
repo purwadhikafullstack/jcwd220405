@@ -29,6 +29,8 @@ export const userSlice = createSlice({
       state.value.name = null;
       state.value.is_verified = null;
       state.value.role = null;
+      state.value.picture = null;
+
     },
   },
 });

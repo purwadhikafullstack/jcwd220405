@@ -40,7 +40,6 @@ export const ReVerifyButton = ({ user, baseApi, toast }) => {
         isClosable: true,
       });
     } catch (error) {
-      console.log(error);
       setShow(error.response.data);
       return toast({
         position: "top",
@@ -70,7 +69,6 @@ export const ReVerifyButton = ({ user, baseApi, toast }) => {
       setTimeout(() => setLoading(false), 2000);
       setTimeout(() => window.location.reload(), 2500);
     } catch (error) {
-      console.log(error);
       setLoading(false);
       return toast({
         position: "top",
